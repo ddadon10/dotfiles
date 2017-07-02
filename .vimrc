@@ -21,8 +21,7 @@ Plugin 'vim-scripts/indentpython'
 Plugin 'Valloric/YouCompleteMe'
 
 " Syntax Checking/Highlighting
-Plugin 'scrooloose/syntastic'
-Plugin 'nvie/vim-flake8'
+Plugin 'w0rp/ale'
 
 " Nerd Tree
 Plugin 'scrooloose/nerdtree'
@@ -68,29 +67,25 @@ set foldlevel=99
 nnoremap <space> za
 
 
-" Python Indetation
+
+" Tab config
+
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+
+" Python Config
 au BufNewFile,BufRead *.py
-    \ set tabstop=4 |
-    \ set softtabstop=4 |
-    \ set shiftwidth=4 |
     \ set textwidth=79 |
-    \ set expandtab |
     \ set autoindent |
     \ set fileformat=unix |
 
 
-
-" Full stack indentation 
-au BufNewFile,BufRead *.js, *.html, *.css
-    \ set tabstop=2 |
-    \ set softtabstop=2 |
-    \ set shiftwidth=2 |
-    
     
 " Flag bad whitespaces
 highlight BadWhitespace ctermbg=red guibg=darkred
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
-
 
 " Set Line Numbering
 set nu
@@ -104,16 +99,25 @@ if has("gui_running")
     let g:airline_solarized_bg='dark'
 endif
 
-" Show NERDTree at start 
-au VimEnter *  NERDTree
-
-
 " Custom Nerdtree
 let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 if has("gui_running")
+    au VimEnter *  NERDTree "Show NERDTree at start
     let g:WebDevIconsUnicodeDecorateFolderNodes = 1
     let g:DevIconsEnableFoldersOpenClose = 1
 endif
+
+
+" Custom YouCompleteMe
+let g:ycm_show_diagnostics_ui = 0
+
+" Ale config
+let g:airline#extensions#ale#enabled = 1
+let g:ale_sign_column_always = 1
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
 
 " Set Fonts 
 set encoding=utf-8
@@ -128,10 +132,12 @@ else
    colorscheme zenburn
 endif
 
-" Remove Menubar,Toolbar and Mouse on Gvim
+" Remove Menubar,Toolbar, Scrollbar and Mouse on Gvim
 if has("gui_running")
-    set guioptions -=m 
-    set guioptions -=T
+    set guioptions-=m  "remove menu bar
+    set guioptions-=T  "remove toolbar
+    set guioptions-=r  "remove right-hand scroll bar
+    set guioptions-=L  "remove left-hand scroll bar
     set mouse=c
 endif
 
