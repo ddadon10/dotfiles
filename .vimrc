@@ -30,7 +30,6 @@ Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 
 " Airline
 Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
 
 " Web/Fullstack
 Plugin 'mattn/emmet-vim'
@@ -39,8 +38,7 @@ Plugin 'mattn/emmet-vim'
 Plugin 'ryanoasis/vim-devicons'
 
 " Colors
-Plugin 'jnurmine/Zenburn'
-Plugin 'altercation/vim-colors-solarized'
+Plugin 'morhetz/gruvbox'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -81,7 +79,6 @@ au BufNewFile,BufRead *.py
     \ set autoindent |
     \ set fileformat=unix |
 
-
     
 " Flag bad whitespaces
 highlight BadWhitespace ctermbg=red guibg=darkred
@@ -90,25 +87,18 @@ au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 " Set Line Numbering
 set nu
 
-" Custom Vim Airline
+" Vim Airline
+set laststatus=2
+let g:airline_powerline_fonts = 1
 
-if has("gui_running")
-    set laststatus=2
-    let g:airline_powerline_fonts=1
-    let g:airline_theme='solarized'
-    let g:airline_solarized_bg='dark'
-endif
-
-" Custom Nerdtree
+" NerdTree
 let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
-if has("gui_running")
-    au VimEnter *  NERDTree "Show NERDTree at start
-    let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-    let g:DevIconsEnableFoldersOpenClose = 1
-endif
+"au VimEnter *  NERDTree "Show NERDTree at start
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
 
 
-" Custom YouCompleteMe
+" YouCompleteMe
 let g:ycm_show_diagnostics_ui = 0
 
 " Ale config
@@ -121,26 +111,19 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
 " Set Fonts 
 set encoding=utf-8
-set guifont=DejaVuSansMono\ Nerd\ Font\ 12
 
+" Set Colorscheme
+set t_Co=256
+set background=dark
+colorscheme gruvbox
 
-" Set Flattened Colorscheme (http://ethanschoonover.com/solarized)
-if has("gui_running")
-    set background=dark
-    colorscheme solarized
-else
-   colorscheme zenburn
+" Fix Bug background color on 256colors terminal
+
+if &term =~ '256color'
+    " Disable Background Color Erase (BCE) so that color schemes
+    " work properly when Vim is used inside tmux and GNU screen.
+    set t_ut=
 endif
-
-" Remove Menubar,Toolbar, Scrollbar and Mouse on Gvim
-if has("gui_running")
-    set guioptions-=m  "remove menu bar
-    set guioptions-=T  "remove toolbar
-    set guioptions-=r  "remove right-hand scroll bar
-    set guioptions-=L  "remove left-hand scroll bar
-    set mouse=c
-endif
-
 
 
 " Remove Arrow key
@@ -148,16 +131,6 @@ noremap <Up> <NOP>
 noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
-
-" Remove hjkl
-noremap h <NOP>
-noremap j <NOP>
-noremap k <NOP>
-noremap l <NOP>
-
-
-" Change backspace default behavior
-set backspace=indent,eol,start
 
 " Things to do if needed:
 " Virtualenv Support
