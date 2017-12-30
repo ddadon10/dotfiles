@@ -1,48 +1,32 @@
-" Thanks to https://github.com/RealPython for this amazing guide! : https://realpython.com/blog/python/vim-and-python-a-match-made-in-heaven/
-" I have customized the .vimrc
+" Minimal vimrc, no plugins required
 
-set nocompatible              " required
-filetype off                  " required
+" ----- Vim Behavior -----
+" Backspace in insert mode works like normal editor
+set backspace=indent,eol,start 
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Indent by 2 spaces when auto-indenting
+set shiftwidth=2
 
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+" Indent by 2 spaces when hitting tab
+set softtabstop=2
 
-" Add all your plugins here (note older versions of Vundle used Bundle instead of Plugin)
+"Enable syntax highlighting
+syntax on
 
-" Code Styling
-Plugin 'tmhedberg/SimpylFold'
-Plugin 'vim-scripts/indentpython'
+" No show mode
+set noshowmode
 
-" Autocomplete
-Plugin 'Valloric/YouCompleteMe'
+" Auto indenting
+set autoindent
 
-" Syntax Checking/Highlighting
-Plugin 'w0rp/ale'
+" Line numbers
+set number
 
-" Nerd Tree
-Plugin 'scrooloose/nerdtree'
-Plugin 'jistr/vim-nerdtree-tabs'
-Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+" Set 256 colors
+set t_Co=256
 
-" Airline
-Plugin 'bling/vim-airline'
-
-" Web/Fullstack
-Plugin 'mattn/emmet-vim'
-
-" Icons
-Plugin 'ryanoasis/vim-devicons'
-
-" Colors
-Plugin 'morhetz/gruvbox'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+" Set Colorscheme
+colorscheme desert
 
 
 " Split Layouts and Navigations
@@ -54,88 +38,72 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+" ----- Format the status line -----
 
-" Custom Syntax Checking/Highlighting
-let python_highlight_all=1
-syntax on
+" Git branch
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
 
-" Enable folding with spacebar
-set foldmethod=indent
-set foldlevel=99
-nnoremap <space> za
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0?'  ⎇  '.l:branchname.'':''
+endfunction
+
+"Display current Mode 
+let g:currentmode={
+    \ 'n'  : 'Normal ',
+    \ 'no' : 'N·Operator Pending ',
+    \ 'v'  : 'Visual ',
+    \ 'V'  : 'Visual Line ',
+    \ '' : 'Visual Block ',
+    \ 's'  : 'Select ',
+    \ 'S'  : 'Select Line ',
+    \ '^S' : 'Select Block ',
+    \ 'i'  : 'Insert ',
+    \ 'R'  : 'Replace ',
+    \ 'Rv' : 'Visual Replace ',
+    \ 'c'  : 'Command ',
+    \ 'cv' : 'Vim Ex ',
+    \ 'ce' : 'Ex ',
+    \ 'r'  : 'Prompt ',
+    \ 'rm' : 'More ',
+    \ 'r?' : 'Confirm ',
+    \ '!'  : 'Shell ',
+    \ 't'  : 'Terminal '
+    \}
 
 
+" Default (Normal) Mode Color
+hi User1 ctermbg=2 ctermfg=16
 
-" Tab config
+"Git Color
+hi User2 ctermbg=102 ctermfg=16
 
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set expandtab
+"Filename Color
+hi User3 ctermbg=240 ctermfg=252
 
-" Python Config
-au BufNewFile,BufRead *.py
-    \ set textwidth=79 |
-    \ set autoindent |
-    \ set fileformat=unix |
+"Separation Color
+hi User4 ctermbg=234 ctermfg=252
 
-    
-" Flag bad whitespaces
-highlight BadWhitespace ctermbg=red guibg=darkred
-au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+"Line Color
+hi User5 ctermbg=251 ctermfg=232
 
-" Set Line Numbering
-set nu
-
-" Vim Airline
 set laststatus=2
-let g:airline_powerline_fonts = 1
-
-" NerdTree
-let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
-"au VimEnter *  NERDTree "Show NERDTree at start
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
-
-
-" YouCompleteMe
-let g:ycm_show_diagnostics_ui = 0
-
-" Ale config
-let g:airline#extensions#ale#enabled = 1
-let g:ale_sign_column_always = 1
-let g:ale_echo_msg_error_str = 'E'
-let g:ale_echo_msg_warning_str = 'W'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-
-
-" Set Fonts 
-set encoding=utf-8
-
-" Set Colorscheme
-set t_Co=256
-set background=dark
-colorscheme gruvbox
-
-" Fix Bug background color on 256colors terminal
-
-if &term =~ '256color'
-    " Disable Background Color Erase (BCE) so that color schemes
-    " work properly when Vim is used inside tmux and GNU screen.
-    set t_ut=
-endif
-
-
-" Remove Arrow key
-noremap <Up> <NOP>
-noremap <Down> <NOP>
-noremap <Left> <NOP>
-noremap <Right> <NOP>
-
-" Things to do if needed:
-" Virtualenv Support
-
-" Plugin to install after experience on VIM:
-" CtrlP ('kien/ctrlp.vim')
-" Git Fugitive ('tpope/vim-fugitive')
+set statusline=
+set statusline+=%1*
+set statusline+=\ %{toupper(g:currentmode[mode()])} 
+set statusline+=%2*
+set statusline+=%{StatuslineGit()}\ 
+set statusline+=%3*
+set statusline+=\ %f\ 
+set statusline+=%4*
+set statusline+=%=
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}\ 
+set statusline+=\[%{&fileformat}\]\ 
+set statusline+=%5*
+set statusline+=\ %p%%
+set statusline+=\ LN\ %l:%c
+set statusline+=\ 
 
