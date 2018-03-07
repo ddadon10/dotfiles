@@ -91,6 +91,9 @@ set t_Co=256
 set background=dark
 colorscheme gruvbox
 
+" Enable Highlight in search
+set hlsearch
+
 " Enable Syntax Highlighting
 let python_highlight_all=1
 syntax on
@@ -158,7 +161,11 @@ noremap <F3> :Autoformat<CR>
 
 " Plugin to install after experience on VIM:
 " CtrlP ('kien/ctrlp.vim')
+" Nerd Commenter ('https://github.com/scrooloose/nerdcommenter')
+"
+" Plugin to install when I will need git integration
 " Git Fugitive ('tpope/vim-fugitive')
-
+" Vim Gitgutter ('https://github.com/airblade/vim-gitgutter')
+"
 " Plugin to install if needed:
 " Simpyl fold (Python) 'tmhedberg/SimpylFold'
