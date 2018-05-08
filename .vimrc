@@ -11,7 +11,7 @@ Plugin 'gmarik/Vundle.vim'
 " ----- Plugins -----
 
 " Autocomplete
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'ajh17/VimCompletesMe'
 
 " Syntax Checking/Highlighting
 Plugin 'w0rp/ale'
@@ -51,7 +51,7 @@ filetype plugin indent on    " required
 set splitbelow
 set splitright
 
-" Remap shortcut to split layouts easily
+" Remap shortcut to navigate between splited layouts easily
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
@@ -91,9 +91,6 @@ set t_Co=256
 set background=dark
 colorscheme gruvbox
 
-" Enable Highlight in search
-set hlsearch
-
 " Enable Syntax Highlighting
 let python_highlight_all=1
 syntax on
@@ -101,6 +98,9 @@ syntax on
 " Layout config
 set textwidth=79
 set autoindent
+
+" Backspace configuration
+set backspace=indent,eol,start
 
 " Brackets autocompletion
 ino " ""<left>
@@ -113,6 +113,10 @@ ino {;<CR> {<CR>};<ESC>O
 
 " File format config
 set fileformat=unix
+
+
+" Show cmd while typing
+set showcmd
 
 " Fix Bug background color on 256colors terminal
 if &term =~ '256color'
@@ -140,9 +144,6 @@ let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 "au VimEnter *  NERDTree "Show NERDTree at start
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
-
-" YouCompleteMe
-let g:ycm_show_diagnostics_ui = 0
 
 " Ale config
 let g:airline#extensions#ale#enabled = 1
