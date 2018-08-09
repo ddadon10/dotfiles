@@ -26,7 +26,7 @@ set number
 set t_Co=256
 
 " Set Colorscheme
-colorscheme desert
+" colorscheme desert
 
 
 " Split Layouts and Navigations
