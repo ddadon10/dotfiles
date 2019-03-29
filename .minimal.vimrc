@@ -25,10 +25,6 @@ set number
 " Set 256 colors
 set t_Co=256
 
-" Set Colorscheme
-" colorscheme desert
-
-
 " Split Layouts and Navigations
 set splitbelow
 set splitright
@@ -37,6 +33,10 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+
+" Autocomplete
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
 
 " ----- Format the status line -----
 

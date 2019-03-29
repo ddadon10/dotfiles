@@ -81,6 +81,7 @@ noremap <Right> <NOP>
 set nu
 
 " Set Fonts 
+" For console vim (nogui) directly change the font of your terminal
 set encoding=utf-8
 if has("gui_running")
   set guifont=DejaVuSansMono\ Nerd\ Font:h12
@@ -101,15 +102,6 @@ set autoindent
 
 " Backspace configuration
 set backspace=indent,eol,start
-
-" Brackets autocompletion
-ino " ""<left>
-ino ' ''<left>
-ino ( ()<left>
-ino [ []<left>
-ino { {}<left>
-ino {<CR> {<CR>}<ESC>O
-ino {;<CR> {<CR>};<ESC>O
 
 " File format config
 set fileformat=unix
