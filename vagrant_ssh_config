@@ -1,6 +1,6 @@
-Host local
+Host remote
   HostName 127.0.0.1
-  User vagrant
+  User root
   Port 2222
   UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
