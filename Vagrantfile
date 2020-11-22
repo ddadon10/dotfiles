@@ -8,7 +8,8 @@ rm /home/vagrant/pubkey.pub
 dnf -y upgrade
 dnf -y install \
     java-11-openjdk-devel \
-    maven
+    maven \
+    git
 echo "Done! Rebooting in 5 seconds"
 sleep 5
 reboot
