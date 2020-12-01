@@ -2,6 +2,7 @@
 alias rm="rm -i"
 alias ls="ls -aF"
 alias vrc="vi ~/.zshrc && source ~/.zshrc"
+alias edit="open -a TextEdit"
 
 # Set Python3 as default
 alias python="python3"
