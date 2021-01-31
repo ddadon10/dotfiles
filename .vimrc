@@ -1,73 +1,44 @@
-set nocompatible              " required
-filetype off                  " required
+" A .vimrc without any plugins required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" ----- Vim Behavior -----
+filetype plugin indent on  " Enable filetype detection
 
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+set backspace=indent,eol,start  " Backspace in insert mode works like normal editor
 
-" ----- Plugins -----
+syntax on  " Enable syntax highlighting
 
-" Autocomplete
-Plugin 'ajh17/VimCompletesMe'
+set fileformat=unix  " File format 
 
-" Syntax Checking/Highlighting
-Plugin 'w0rp/ale'
+set splitbelow  " Horizontal splitting a window will put the new window below the current one
 
-" Autoformat
-Plugin 'Chiel92/vim-autoformat'
+set splitright  " Vertical splitting a window will put the new window right of the current one
 
-" Nerd Tree
-Plugin 'scrooloose/nerdtree'
-Plugin 'jistr/vim-nerdtree-tabs'
-Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
 
-" Airline
-Plugin 'bling/vim-airline'
+" ----- Indentation -----
+set autoindent  " Enable Auto indent
 
-" Icons
-Plugin 'ryanoasis/vim-devicons'
+set shiftwidth=2  " Indent by 2 spaces when auto-indenting
 
-" Colors
-Plugin 'morhetz/gruvbox'
+set softtabstop=2  " Indent by 2 spaces when hitting tab
 
-" Python
-"Plugin 'vim-scripts/indentpython'
+" ----- UI -----
+colorscheme desert  " Good default colorscheme
 
-" HTML/CSS 
-Plugin 'mattn/emmet-vim'
+set textwidth=79  " Max textwidth
 
-" End Plugins and call Vundle
+set number  " Show line numbers
 
-call vundle#end()            " required
-filetype plugin indent on    " required
+set showcmd  " Show cmd while typing
 
+set noshowmode  " Do not show the mode, like --INSERT--, it wil be added back to the status line
 
 " ----- Keys and shortcut config -----
-
-" Split Layouts and Navigations
-set splitbelow
-set splitright
-
 " Remap shortcut to navigate between splited layouts easily
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
-
-
-" Tab key config
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set expandtab
-
-" Enable folding with spacebar
-set foldmethod=indent
-set foldlevel=99
-nnoremap <space> za
 
 " Remove Arrow key
 noremap <Up> <NOP>
@@ -75,90 +46,86 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
-" ----- Vim Behavior -----
+" Enable folding with spacebar
+set foldmethod=indent
+set foldlevel=99
+nnoremap <space> za
 
-" Set Line Numbering
-set nu
+" ----- Searching -----
+set hlsearch  " highlighting of search matches
 
-" Set Fonts 
-" For console vim (nogui) directly change the font of your terminal
-set encoding=utf-8
-if has("gui_running")
-  set guifont=DejaVuSansMono\ Nerd\ Font:h12
-endif
+set incsearch  " incremental searching
 
-" Set Colorscheme
-set t_Co=256
-set background=dark
-colorscheme gruvbox
+set ignorecase  " Ignore case in search patterns
 
-" Enable Syntax Highlighting
-let python_highlight_all=1
-syntax on
+set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
 
-" Layout config
-set textwidth=79
-set autoindent
+nnoremap <CR> :nohlsearch<CR><CR>  " turn off search highlighting with <CR> (carriage-return)
 
-" Backspace configuration
-set backspace=indent,eol,start
+" ----- Status line -----
+" Git branch
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
 
-" File format config
-set fileformat=unix
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0?'  ⎇  '.l:branchname.'':''
+endfunction
 
-
-" Show cmd while typing
-set showcmd
-
-" Fix Bug background color on 256colors terminal
-if &term =~ '256color'
-    " Disable Background Color Erase (BCE) so that color schemes
-    " work properly when Vim is used inside tmux and GNU screen.
-    set t_ut=
-endif
-
-
-" -- Python --
-
-" Flag bad whitespaces
-highlight BadWhitespace ctermbg=red guibg=darkred
-au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+"Display current Mode 
+let g:currentmode={
+    \ 'n'  : 'Normal ',
+    \ 'no' : 'N·Operator Pending ',
+    \ 'v'  : 'Visual ',
+    \ 'V'  : 'Visual Line ',
+    \ '' : 'Visual Block ',
+    \ 's'  : 'Select ',
+    \ 'S'  : 'Select Line ',
+    \ '^S' : 'Select Block ',
+    \ 'i'  : 'Insert ',
+    \ 'R'  : 'Replace ',
+    \ 'Rv' : 'Visual Replace ',
+    \ 'c'  : 'Command ',
+    \ 'cv' : 'Vim Ex ',
+    \ 'ce' : 'Ex ',
+    \ 'r'  : 'Prompt ',
+    \ 'rm' : 'More ',
+    \ 'r?' : 'Confirm ',
+    \ '!'  : 'Shell ',
+    \ 't'  : 'Terminal '
+    \}
 
 
-" ----- Plugin Config -----
+" Default (Normal) Mode Color
+hi User1 ctermbg=2 ctermfg=16
 
-" Vim Airline
+"Git Color
+hi User2 ctermbg=102 ctermfg=16
+
+"Filename Color
+hi User3 ctermbg=240 ctermfg=252
+
+"Separation Color
+hi User4 ctermbg=234 ctermfg=252
+
+"Line Color
+hi User5 ctermbg=251 ctermfg=232
+
 set laststatus=2
-let g:airline_powerline_fonts = 1
-
-" NerdTree
-let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
-"au VimEnter *  NERDTree "Show NERDTree at start
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
-
-" Ale config
-let g:airline#extensions#ale#enabled = 1
-let g:ale_sign_column_always = 1
-let g:ale_echo_msg_error_str = 'E'
-let g:ale_echo_msg_warning_str = 'W'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-
-"Autoformat config
-noremap <F3> :Autoformat<CR>
-
-" ----- Misc -----
-
-" Things to do if needed:
-" Virtualenv Support
-
-" Plugin to install after experience on VIM:
-" CtrlP ('kien/ctrlp.vim')
-" Nerd Commenter ('https://github.com/scrooloose/nerdcommenter')
-"
-" Plugin to install when I will need git integration
-" Git Fugitive ('tpope/vim-fugitive')
-" Vim Gitgutter ('https://github.com/airblade/vim-gitgutter')
-"
-" Plugin to install if needed:
-" Simpyl fold (Python) 'tmhedberg/SimpylFold'
+set statusline=
+set statusline+=%1*
+set statusline+=\ %{toupper(g:currentmode[mode()])} 
+set statusline+=%2*
+set statusline+=%{StatuslineGit()}\ 
+set statusline+=%3*
+set statusline+=\ %f\ 
+set statusline+=%4*
+set statusline+=%=
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}\ 
+set statusline+=\[%{&fileformat}\]\ 
+set statusline+=%5*
+set statusline+=\ %p%%
+set statusline+=\ LN\ %l:%c
+set statusline+=\ 
