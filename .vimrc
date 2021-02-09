@@ -93,6 +93,7 @@ nnoremap <CR> :nohlsearch<CR><CR>  " turn off search highlighting with <CR> (car
 :map <leader>f <Action>(ReformatCode)
 :map <leader>g <Action>(Generate)
 :map <leader>t <Action>(GotoTest)
+:map <leader>u <Action>(FindUsages)
 :map <leader>/ <Action>(CommentByLineComment)
 :map <leader>[ <Action>(GotoDeclaration)
 :map <leader>{ <Action>(GotoImplementation)
