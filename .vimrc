@@ -40,12 +40,6 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
-" Remove Arrow key
-noremap <Up> <NOP>
-noremap <Down> <NOP>
-noremap <Left> <NOP>
-noremap <Right> <NOP>
-
 " In insert or command mode, move by using Ctrl
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -55,6 +49,12 @@ cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
 cnoremap <C-k> <Up>
 cnoremap <C-l> <Right>
+
+" Remove Arrow key
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
 
 " Enable folding with spacebar
 set foldmethod=indent
