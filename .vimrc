@@ -86,6 +86,7 @@ map <leader><F11> <Action>(ActivateDebugToolWindow)
 map <leader><F12> <Action>(ActivateTerminalToolWindow)
 
 map <leader>a <Action>(GotoAction)
+map <leader>b <Action>(Annotate)
 map <leader>d <Action>(QuickJavaDoc)
 map <leader>e <Action>(GotoNextError)
 map <leader>E <Action>(GotoPreviousError)
