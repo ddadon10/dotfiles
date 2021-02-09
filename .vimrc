@@ -70,42 +70,43 @@ set ignorecase  " Ignore case in search patterns
 
 set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
 
-nnoremap <CR> :nohlsearch<CR><CR>  " turn off search highlighting with <CR> (carriage-return)
+nnoremap <CR> :nohlsearch<CR><CR>
 
 " ----- IDEAvim -----
-:map <leader>0 <Action>(Run)
-:map <leader>) <Action>(RunClass)
-:map <leader>- <Action>(Debug)
-:map <leader>_ <Action>(DebugClass)
-:map <leader>= <Action>(Stop)
+map <leader>0 <Action>(Run)
+map <leader>) <Action>(RunClass)
+map <leader>- <Action>(Debug)
+map <leader>_ <Action>(DebugClass)
+map <leader>= <Action>(Stop)
 
-:map <leader><F1> <Action>(ActivateProjectToolWindow)
-:map <leader><F2> <Action>(ActivateStructureToolWindow)
-:map <leader><F10> <Action>(ActivateRunToolWindow)
-:map <leader><F11> <Action>(ActivateDebugToolWindow)
-:map <leader><F12> <Action>(ActivateTerminalToolWindow)
+map <leader><F1> <Action>(ActivateProjectToolWindow)
+map <leader><F2> <Action>(ActivateStructureToolWindow)
+map <leader><F10> <Action>(ActivateRunToolWindow)
+map <leader><F11> <Action>(ActivateDebugToolWindow)
+map <leader><F12> <Action>(ActivateTerminalToolWindow)
 
-:map <leader>a <Action>(GotoAction)
-:map <leader>r <Action>(RenameElement)
-:map <leader>d <Action>(QuickJavaDoc)
-:map <leader>e <Action>(GotoNextError)
-:map <leader>E <Action>(GotoPreviousError)
-:map <leader>f <Action>(ReformatCode)
-:map <leader>g <Action>(Generate)
-:map <leader>t <Action>(GotoTest)
-:map <leader>u <Action>(FindUsages)
-:map <leader>/ <Action>(CommentByLineComment)
-:map <leader>[ <Action>(GotoDeclaration)
-:map <leader>{ <Action>(GotoImplementation)
-:map <leader><CR> <Action>(ShowIntentionActions)
+map <leader>a <Action>(GotoAction)
+map <leader>d <Action>(QuickJavaDoc)
+map <leader>e <Action>(GotoNextError)
+map <leader>E <Action>(GotoPreviousError)
+map <leader>f <Action>(ReformatCode)
+map <leader>g <Action>(Generate)
+map <leader>n <Action>(CloseAllNotifications)
+map <leader>r <Action>(RenameElement)
+map <leader>t <Action>(GotoTest)
+map <leader>u <Action>(FindUsages)
+map <leader>/ <Action>(CommentByLineComment)
+map <leader>[ <Action>(GotoDeclaration)
+map <leader>{ <Action>(GotoImplementation)
+map <leader><CR> <Action>(ShowIntentionActions)
 
-:map <leader>C <Action>(CheckinProject)
-:map <leader>P <Action>(Vcs.Push)
-:map <leader>U <Action>(Vcs.UpdateProject)
-:map <leader>B <Action>(Git.Branches)
+map <leader>C <Action>(CheckinProject)
+map <leader>P <Action>(Vcs.Push)
+map <leader>U <Action>(Vcs.UpdateProject)
+map <leader>B <Action>(Git.Branches)
 
-:map <C-CR> <Action>(EditorCompleteStatement)
-:imap <C-CR> <c-o><C-CR>
+map <C-CR> <Action>(EditorCompleteStatement)
+imap <C-CR> <c-o><C-CR>
 
 " Additonal Settings To add to .ideavimrc that
 " set ideamarks " Sync IntellIJ bookmarks and Vim marks
