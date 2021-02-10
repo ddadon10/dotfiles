@@ -104,7 +104,7 @@ map <leader><CR> <Action>(ShowIntentionActions)
 
 map <leader>C <Action>(CheckinProject)
 map <leader>P <Action>(Vcs.Push)
-map <leader>U <Action>(Vcs.UpdateProject)
+map <leader>L <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
 map <leader>M <Action>(Annotate)
 
