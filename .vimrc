@@ -86,7 +86,7 @@ map <leader><F11> <Action>(ActivateDebugToolWindow)
 map <leader><F12> <Action>(ActivateTerminalToolWindow)
 
 map <leader>a <Action>(GotoAction)
-map <leader>b <Action>(Annotate)
+map <leader>b <Action>(ToggleLineBreakpoint)
 map <leader>d <Action>(QuickJavaDoc)
 map <leader>e <Action>(GotoNextError)
 map <leader>E <Action>(GotoPreviousError)
@@ -105,9 +105,12 @@ map <leader>C <Action>(CheckinProject)
 map <leader>P <Action>(Vcs.Push)
 map <leader>U <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
+map <leader>M <Action>(Annotate)
 
+" Set Enter to be by default EditorCompleteStatement and Ctrl+Enter to be Enter
 map <C-CR> <Action>(EditorCompleteStatement)
-imap <C-CR> <c-o><C-CR>
+imap <CR> <c-o><C-CR>
+inoremap <C-CR> <CR>
 
 " Additonal Settings To add to .ideavimrc that
 " set ideamarks " Sync IntellIJ bookmarks and Vim marks
