@@ -73,6 +73,7 @@ set smartcase  " Override the 'ignorecase' option if the search pattern contains
 nnoremap <CR> :nohlsearch<CR><CR>
 
 " ----- IDEAvim -----
+map <leader>9 <Action>(Resume)
 map <leader>0 <Action>(Run)
 map <leader>) <Action>(RunClass)
 map <leader>- <Action>(Debug)
