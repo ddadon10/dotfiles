@@ -97,6 +97,7 @@ map <leader>n <Action>(CloseAllNotifications)
 map <leader>r <Action>(RenameElement)
 map <leader>t <Action>(GotoTest)
 map <leader>u <Action>(FindUsages)
+map <leader>x <Action>(EvaluateExpression)
 map <leader>/ <Action>(CommentByLineComment)
 map <leader>[ <Action>(GotoDeclaration)
 map <leader>{ <Action>(GotoImplementation)
@@ -108,10 +109,8 @@ map <leader>L <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
 map <leader>M <Action>(Annotate)
 
-" Set Enter to be by default EditorCompleteStatement and Ctrl+Enter to be Enter
 map <C-CR> <Action>(EditorCompleteStatement)
-imap <CR> <c-o><C-CR>
-inoremap <C-CR> <CR>
+imap <C-CR> <c-o><C-CR>
 
 " Additonal Settings To add to .ideavimrc that
 " set ideamarks " Sync IntellIJ bookmarks and Vim marks
