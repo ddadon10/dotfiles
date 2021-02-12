@@ -1,4 +1,4 @@
-" A .vimrc without any plugins required
+" A .vimrc that work for vim and IntelliJ IDEA
 
 " ----- Vim Behavior -----
 filetype plugin indent on  " Enable filetype detection
