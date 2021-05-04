@@ -1,6 +1,6 @@
 # Some useful aliases
 alias rm="rm -i"
-alias ls="ls -aF"
+alias ls="ls -F"
 alias vrc="vi ~/.zshrc && source ~/.zshrc"
 
 # Set Python3 as default
