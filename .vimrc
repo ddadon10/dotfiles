@@ -1,4 +1,4 @@
-" A .vimrc that work for vim and IntelliJ IDEA
+" A .vimrc without any plugins required without any plugins required
 
 " ----- Vim Behavior -----
 filetype plugin indent on  " Enable filetype detection
@@ -72,6 +72,11 @@ set smartcase  " Override the 'ignorecase' option if the search pattern contains
 
 nnoremap <CR> :nohlsearch<CR><CR>
 
+" ----- Register config -----
+" Put d/x/r into the black hole register
+nnoremap d "_d
+nnoremap x "_x
+nnoremap r "_r
 " ----- IDEAvim -----
 map <leader>9 <Action>(Resume)
 map <leader>0 <Action>(Run)
@@ -80,31 +85,29 @@ map <leader>- <Action>(Debug)
 map <leader>_ <Action>(DebugClass)
 map <leader>= <Action>(Stop)
 
-map <leader><F1> <Action>(ActivateProjectToolWindow)
-map <leader><F2> <Action>(ActivateStructureToolWindow)
-map <leader><F10> <Action>(ActivateRunToolWindow)
-map <leader><F11> <Action>(ActivateDebugToolWindow)
-map <leader><F12> <Action>(ActivateTerminalToolWindow)
+map <leader>P <Action>(ActivateProjectToolWindow)
+map <leader>S <Action>(ActivateStructureToolWindow)
+map <leader>R <Action>(ActivateRunToolWindow)
+map <leader>D <Action>(ActivateDebugToolWindow)
+map <leader>T <Action>(ActivateTerminalToolWindow)
 
 map <leader>a <Action>(GotoAction)
 map <leader>b <Action>(ToggleLineBreakpoint)
-map <leader>d <Action>(QuickJavaDoc)
+map <leader>c <Action>(CommentByLineComment)
+map <leader>d <Action>(GotoDeclaration)
 map <leader>e <Action>(GotoNextError)
-map <leader>E <Action>(GotoPreviousError)
 map <leader>f <Action>(ReformatCode)
 map <leader>g <Action>(Generate)
+map <leader>j <Action>(QuickJavaDoc)
+map <leader>i <Action>(GotoImplementation)
 map <leader>n <Action>(CloseAllNotifications)
 map <leader>r <Action>(RenameElement)
 map <leader>t <Action>(GotoTest)
 map <leader>u <Action>(FindUsages)
 map <leader>x <Action>(EvaluateExpression)
-map <leader>/ <Action>(CommentByLineComment)
-map <leader>[ <Action>(GotoDeclaration)
-map <leader>{ <Action>(GotoImplementation)
 map <leader><CR> <Action>(ShowIntentionActions)
 
 map <leader>C <Action>(CheckinProject)
-map <leader>P <Action>(Vcs.Push)
 map <leader>L <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
 map <leader>M <Action>(Annotate)
