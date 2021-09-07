@@ -1,4 +1,4 @@
-" A .vimrc without any plugins required without any plugins required
+" A .vimrc that works both with Vim and IntelliJ IDEA
 
 " ----- Vim Behavior -----
 filetype plugin indent on  " Enable filetype detection
@@ -77,19 +77,12 @@ nnoremap <CR> :nohlsearch<CR><CR>
 nnoremap d "_d
 nnoremap x "_x
 nnoremap r "_r
-" ----- IDEAvim -----
-map <leader>9 <Action>(Resume)
-map <leader>0 <Action>(Run)
-map <leader>) <Action>(RunClass)
-map <leader>- <Action>(Debug)
-map <leader>_ <Action>(DebugClass)
-map <leader>= <Action>(Stop)
 
-map <leader>P <Action>(ActivateProjectToolWindow)
-map <leader>S <Action>(ActivateStructureToolWindow)
-map <leader>R <Action>(ActivateRunToolWindow)
-map <leader>D <Action>(ActivateDebugToolWindow)
-map <leader>T <Action>(ActivateTerminalToolWindow)
+" ----- IDEAvim -----
+map <leader>R <Action>(Run)
+map <leader>K <Action>(Stop)
+map <leader>A <Action>(XDebugger.AttachToProcess)
+
 
 map <leader>a <Action>(GotoAction)
 map <leader>b <Action>(ToggleLineBreakpoint)
@@ -100,7 +93,7 @@ map <leader>f <Action>(ReformatCode)
 map <leader>g <Action>(Generate)
 map <leader>j <Action>(QuickJavaDoc)
 map <leader>i <Action>(GotoImplementation)
-map <leader>n <Action>(CloseAllNotifications)
+map <leader>n <Action>(Resume)
 map <leader>r <Action>(RenameElement)
 map <leader>t <Action>(GotoTest)
 map <leader>u <Action>(FindUsages)
@@ -112,8 +105,6 @@ map <leader>L <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
 map <leader>M <Action>(Annotate)
 
-map <C-CR> <Action>(EditorCompleteStatement)
-imap <C-CR> <c-o><C-CR>
 
 " Additonal Settings To add to .ideavimrc that
 " set ideamarks " Sync IntellIJ bookmarks and Vim marks
