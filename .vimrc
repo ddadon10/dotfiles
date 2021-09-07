@@ -83,7 +83,6 @@ map <leader>R <Action>(Run)
 map <leader>K <Action>(Stop)
 map <leader>A <Action>(XDebugger.AttachToProcess)
 
-
 map <leader>a <Action>(GotoAction)
 map <leader>b <Action>(ToggleLineBreakpoint)
 map <leader>c <Action>(CommentByLineComment)
