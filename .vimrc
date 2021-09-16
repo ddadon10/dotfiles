@@ -79,26 +79,31 @@ nnoremap x "_x
 nnoremap r "_r
 
 " ----- IDEAvim -----
-map <leader>R <Action>(Run)
-map <leader>K <Action>(Stop)
-map <leader>A <Action>(XDebugger.AttachToProcess)
-map <leader>N <Action>(Resume)
-map <leader>X <Action>(EvaluateExpression)
 
-map <leader>a <Action>(GotoAction)
+" attach
+map <leader>a <Action>(XDebugger.AttachToProcess)
 map <leader>b <Action>(ToggleLineBreakpoint)
 map <leader>c <Action>(CommentByLineComment)
 map <leader>d <Action>(GotoDeclaration)
 map <leader>e <Action>(GotoNextError)
 map <leader>f <Action>(ReformatCode)
 map <leader>g <Action>(Generate)
-map <leader>j <Action>(QuickJavaDoc)
 map <leader>i <Action>(GotoImplementation)
+map <leader>j <Action>(QuickJavaDoc)
+" kill
+map <leader>k <Action>(Stop)
+" next
+map <leader>n <Action>(Resume)
 map <leader>r <Action>(RenameElement)
+" start
+map <leader>s <Action>(Run)
 map <leader>t <Action>(GotoTest)
 map <leader>u <Action>(FindUsages)
+" evaluate eXpression
+map <leader>x <Action>(EvaluateExpression)
 map <leader><CR> <Action>(ShowIntentionActions)
 
+" Namespace Git shortcut with uppercase
 map <leader>C <Action>(CheckinProject)
 map <leader>L <Action>(Vcs.UpdateProject)
 map <leader>B <Action>(Git.Branches)
