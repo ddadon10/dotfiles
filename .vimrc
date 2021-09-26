@@ -15,6 +15,8 @@ set splitright  " Vertical splitting a window will put the new window right of t
 
 set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
 
+set nohlsearch " Disable search highlighting
+
 " ----- Indentation -----
 set autoindent  " Enable Auto indent
 
