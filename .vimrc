@@ -15,8 +15,6 @@ set splitright  " Vertical splitting a window will put the new window right of t
 
 set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
 
-set nohlsearch " Disable search highlighting
-
 " ----- Indentation -----
 set autoindent  " Enable Auto indent
 
@@ -64,15 +62,13 @@ set foldlevel=99
 nnoremap <space> za
 
 " ----- Searching -----
-set hlsearch  " highlighting of search matches
+set nohlsearch " Disable search highlighting
 
 set incsearch  " incremental searching
 
 set ignorecase  " Ignore case in search patterns
 
 set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
-
-nnoremap <CR> :nohlsearch<CR><CR>
 
 " ----- Register config -----
 " Put d/x/r into the black hole register
