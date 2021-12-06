@@ -15,6 +15,9 @@ set splitright  " Vertical splitting a window will put the new window right of t
 
 set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
 
+" Prevent vim from moving back one character after leaving insert mode
+inoremap <silent> <Esc> <Esc>`^
+
 " ----- Indentation -----
 set autoindent  " Enable Auto indent
 
