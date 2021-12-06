@@ -83,7 +83,8 @@ nnoremap r "_r
 
 " attach
 map <leader>a <Action>(XDebugger.AttachToProcess)
-map <leader>b <Action>(ToggleLineBreakpoint)
+" deBug
+map <leader>b <Action>(Debug)
 map <leader>c <Action>(CommentByLineComment)
 map <leader>d <Action>(GotoDeclaration)
 map <leader>e <Action>(GotoNextError)
@@ -93,6 +94,8 @@ map <leader>i <Action>(GotoImplementation)
 map <leader>j <Action>(QuickJavaDoc)
 " kill
 map <leader>k <Action>(Stop)
+" Line breakpoint
+map <leader>l <Action>(ToggleLineBreakpoint)
 " next
 map <leader>n <Action>(Resume)
 map <leader>r <Action>(RenameElement)
