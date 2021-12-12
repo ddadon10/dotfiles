@@ -96,8 +96,11 @@ if has('ide')
     map <leader>e <Action>(GotoNextError)
     map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
+    " searcH
+    map <leader>h <Action>(Find)
     map <leader>i <Action>(GotoImplementation)
-    map <leader>j <Action>(QuickJavaDoc)
+    " Jump
+    map <leader>j <Action>(GotoLine)
     " Kill
     map <leader>k <Action>(Stop)
     " Line breakpoint
