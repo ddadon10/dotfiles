@@ -99,8 +99,6 @@ if has('ide')
     " searcH
     map <leader>h <Action>(Find)
     map <leader>i <Action>(GotoImplementation)
-    " Jump
-    map <leader>j <Action>(GotoLine)
     " Kill
     map <leader>k <Action>(Stop)
     " Line breakpoint
