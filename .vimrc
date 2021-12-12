@@ -80,7 +80,6 @@ nnoremap x "_x
 nnoremap r "_r
 
 " ----- IDEAvim -----
-
 if has('ide')
     " -- Settings -- 
     set ideamarks " Sync IntellIJ bookmarks and Vim marks
