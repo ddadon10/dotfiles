@@ -81,24 +81,29 @@ nnoremap r "_r
 
 " ----- IDEAvim -----
 if has('ide')
+    " Inline comments are not supported, so each comment apply to the line below
+
     " -- Settings -- 
     set ideamarks " Sync IntellIJ bookmarks and Vim marks
 
+    " -- GoTo keybinding --
+    map gd <Action>(GotoDeclaration)
+    map ge <Action>(GotoNextError)
+    map gi <Action>(GotoImplementation)
+    map gt <Action>(GotoTest)
+    map gu <Action>(FindUsages)
+
     " -- Leader keybinding --
-    " Inline comments are not supported, so each comment apply to the line below
 
     " Attach
     map <leader>a <Action>(XDebugger.AttachToProcess)
     " deBug
     map <leader>b <Action>(Debug)
     map <leader>c <Action>(CommentByLineComment)
-    map <leader>d <Action>(GotoDeclaration)
-    map <leader>e <Action>(GotoNextError)
     map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
     " searcH
     map <leader>h <Action>(Find)
-    map <leader>i <Action>(GotoImplementation)
     " Kill
     map <leader>k <Action>(Stop)
     " Line breakpoint
@@ -108,8 +113,9 @@ if has('ide')
     map <leader>r <Action>(RenameElement)
     " Start
     map <leader>s <Action>(Run)
-    map <leader>t <Action>(GotoTest)
-    map <leader>u <Action>(FindUsages)
+    " consTant 
+    map <leader>t <Action>(IntroduceConstant)
+    map <leader>v <Action>(IntroduceVariable)
     " evaluate eXpression
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
