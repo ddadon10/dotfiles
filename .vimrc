@@ -92,6 +92,8 @@ if has('ide')
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTest)
     map gu <Action>(FindUsages)
+    map gh <Action>(Back)
+    map gl <Action>(Forward)
 
     " -- Leader keybinding --
 
@@ -123,9 +125,4 @@ if has('ide')
     map <leader>L <Action>(Vcs.UpdateProject)
     map <leader>B <Action>(Git.Branches)
     map <leader>M <Action>(Annotate)
-    
-    " -- Other keybinding --
-    " Replace vim back/forward with IntellIJ
-    map <C-o> <Action>(Back)
-    map <C-i> <Action>(Forward)
 endif
