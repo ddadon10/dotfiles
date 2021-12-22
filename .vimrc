@@ -92,8 +92,8 @@ if has('ide')
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTest)
     map gu <Action>(FindUsages)
-    map gh <Action>(Back)
-    map gl <Action>(Forward)
+    map gk <Action>(Back)
+    map gj <Action>(Forward)
 
     " -- Leader keybinding --
 
