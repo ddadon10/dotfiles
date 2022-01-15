@@ -9,7 +9,3 @@ alias pip="pip3"
 
 # Shell customization
 export PS1="%n@mbp %~ %% "
-
-# Env
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-export PATH=$JAVA_HOME/bin:/opt/apache-maven-3.6.3/bin:/opt/toolbox:$PATH
