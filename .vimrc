@@ -83,7 +83,8 @@ nnoremap r "_r
 if has('ide')
     " -- Settings -- 
     set ideamarks " Sync IntellIJ bookmarks and Vim marks
-
+    set idearefactormode=keep " Keep the mode that was enabled before refactoring
+    
     " -- Emulated Vim Plugins --
     set ideajoin
     set surround
