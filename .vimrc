@@ -81,10 +81,13 @@ nnoremap r "_r
 
 " ----- IDEAvim -----
 if has('ide')
-    " Inline comments are not supported, so each comment apply to the line below
-
     " -- Settings -- 
     set ideamarks " Sync IntellIJ bookmarks and Vim marks
+
+    " -- Emulated Vim Plugins --
+    set ideajoin
+    set surround
+    set ReplaceWithRegister
 
     " -- GoTo keybinding --
     map gd <Action>(GotoDeclaration)
@@ -96,6 +99,7 @@ if has('ide')
     map gj <Action>(Forward)
 
     " -- Leader keybinding --
+    " Inline comments in keybinding are not supported, so each comment apply to the line below
 
     " Attach
     map <leader>a <Action>(XDebugger.AttachToProcess)
@@ -125,4 +129,29 @@ if has('ide')
     map <leader>L <Action>(Vcs.UpdateProject)
     map <leader>B <Action>(Git.Branches)
     map <leader>M <Action>(Annotate)
+
+    " -- Shortcut conflict config --
+    sethandler <C-2> a:vim
+    sethandler <C-S-2> a:vim
+    sethandler <C-S-6> a:vim
+    sethandler <C-A> a:vim
+    sethandler <C-B> a:vim
+    sethandler <C-D> a:vim
+    sethandler <C-E> a:vim
+    sethandler <C-F> a:vim
+    sethandler <C-G> a:vim
+    sethandler <C-H> a:vim
+    sethandler <C-I> a:vim
+    sethandler <C-J> a:vim
+    sethandler <C-K> a:vim
+    sethandler <C-L> a:vim
+    sethandler <C-M> a:vim
+    sethandler <C-N> a:vim
+    sethandler <C-O> a:vim
+    sethandler <C-P> a:vim
+    sethandler <C-R> a:vim
+    sethandler <C-S> a:vim
+    sethandler <C-T> a:vim
+    sethandler <C-V> a:vim
+    sethandler <C-W> a:vim
 endif
