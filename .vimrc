@@ -100,30 +100,20 @@ if has('ide')
     map gj <Action>(Forward)
 
     " -- Leader keybinding --
-    " Inline comments in keybinding are not supported, so each comment apply to the line below
-
-    " Attach
     map <leader>a <Action>(XDebugger.AttachToProcess)
-    " deBug
     map <leader>b <Action>(Debug)
     map <leader>c <Action>(CommentByLineComment)
+    map <leader>d <Action>(ShowErrorDescription)
     map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
-    " searcH
     map <leader>h <Action>(Find)
-    " Kill
     map <leader>k <Action>(Stop)
-    " Line breakpoint
     map <leader>l <Action>(ToggleLineBreakpoint)
-    " Next
     map <leader>n <Action>(Resume)
     map <leader>r <Action>(RenameElement)
-    " Start
     map <leader>s <Action>(Run)
-    " consTant 
-    map <leader>t <Action>(IntroduceConstant)
+    map <leader>t <Action>(ActivateTerminalToolWindow)
     map <leader>v <Action>(IntroduceVariable)
-    " evaluate eXpression
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
     map <leader>C <Action>(CheckinProject)
