@@ -31,6 +31,7 @@ colorscheme desert  " Good default colorscheme
 set textwidth=79  " Max textwidth
 
 set number  " Show line numbers
+
 set relativenumber  " Show relative line numbers
 
 set showcmd  " Show cmd while typing
