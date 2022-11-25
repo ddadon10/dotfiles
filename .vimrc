@@ -105,8 +105,8 @@ if has('ide')
     map gu <Action>(FindUsages)
     
     " -- Leader keybinding --
-    map <leader>a <Action>(XDebugger.AttachToProcess)
-    map <leader>b <Action>(Debug)
+    map <leader>a <Action>(Debug)
+    map <leader>b <Action>(ActivateDebugToolWindow)
     map <leader>c <Action>(CommentByLineComment)
     map <leader>d <Action>(ShowErrorDescription)
     map <leader>g <Action>(Generate)
