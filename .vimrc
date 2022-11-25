@@ -67,7 +67,7 @@ nnoremap <space> za
 " ----- Searching -----
 set nohlsearch " Disable search highlighting
 
-set incsearch  " incremental searching
+set noincsearch  " Disable incremental searching
 
 set ignorecase  " Ignore case in search patterns
 
@@ -91,7 +91,6 @@ if has('ide')
     set ReplaceWithRegister
 
     " Standard Vim keybinding delegate to IntelliJ
-    map / <Action>(Find)
     map [m <Action>(MethodUp)
     map ]m <Action>(MethodDown)
     map g; <Action>(JumpToLastChange)
