@@ -123,7 +123,6 @@ if has('ide')
     map <leader>L <Action>(Vcs.UpdateProject)
     map <leader>B <Action>(Git.Branches)
     map <leader>M <Action>(Annotate)
-    map <CR> <Action>(EditorCompleteStatement) i
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
