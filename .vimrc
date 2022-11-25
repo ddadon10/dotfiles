@@ -82,7 +82,7 @@ nnoremap r "_r
 " ----- IDEAvim -----
 if has('ide')
     " -- Settings -- 
-    set ideamarks " Sync IntellIJ bookmarks and Vim marks
+    set ideamarks " Sync IntelliJ bookmarks and Vim marks
     set idearefactormode=keep " Keep the mode that was enabled before refactoring
     
     " -- Emulated Vim Plugins --
@@ -90,23 +90,26 @@ if has('ide')
     set surround
     set ReplaceWithRegister
 
+    " Standard Vim keybinding delegate to IntelliJ
+    map / <Action>(Find)
+    map [m <Action>(MethodUp)
+    map ]m <Action>(MethodDown)
+    map g; <Action>(JumpToLastChange)
+    map g, <Action>(JumpToNextChange)
+
     " -- GoTo keybinding --
     map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTest)
     map gu <Action>(FindUsages)
-    map gk <Action>(Back)
-    map gj <Action>(Forward)
-
+    
     " -- Leader keybinding --
     map <leader>a <Action>(XDebugger.AttachToProcess)
     map <leader>b <Action>(Debug)
     map <leader>c <Action>(CommentByLineComment)
     map <leader>d <Action>(ShowErrorDescription)
-    map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
-    map <leader>h <Action>(Find)
     map <leader>k <Action>(Stop)
     map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
