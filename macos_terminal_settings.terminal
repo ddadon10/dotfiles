@@ -19,8 +19,10 @@
 	</data>
 	<key>FontAntialias</key>
 	<true/>
+	<key>FontHeightSpacing</key>
+	<real>1.0600000000000001</real>
 	<key>FontWidthSpacing</key>
-	<real>1.046</real>
+	<real>1.0600000000000001</real>
 	<key>ProfileCurrentVersion</key>
 	<real>2.0699999999999998</real>
 	<key>ShowActiveProcessArgumentsInTitle</key>
@@ -38,7 +40,7 @@
 	<key>columnCount</key>
 	<integer>100</integer>
 	<key>name</key>
-	<string>Basic</string>
+	<string>macos_terminal_settings</string>
 	<key>rowCount</key>
 	<integer>30</integer>
 	<key>shellExitAction</key>
