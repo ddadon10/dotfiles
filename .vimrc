@@ -103,7 +103,7 @@ if has('ide')
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTest)
-    map gu <Action>(FindUsages)
+    map gu <Action>(GotoDeclaration)
     
     " -- Leader keybinding --
     map <leader>a <Action>(Debug)
