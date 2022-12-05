@@ -32,11 +32,7 @@ set textwidth=79  " Max textwidth
 
 set number  " Show line numbers
 
-set relativenumber  " Show relative line numbers
-
 set showcmd  " Show cmd while typing
-
-set showmode  " Show the current mode, like --INSERT--
 
 " ----- Keys and shortcut config -----
 " Remap shortcut to navigate between splited layouts easily
