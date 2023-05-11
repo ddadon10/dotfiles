@@ -95,7 +95,7 @@ if has('ide')
     map g, <Action>(JumpToNextChange)
 
     " -- GoTo keybinding --
-    map gd <Action>(GotoDeclaration)
+    map gd <Action>(GotoTypeDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTest)
