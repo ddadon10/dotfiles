@@ -95,10 +95,12 @@ if has('ide')
     map g, <Action>(JumpToNextChange)
 
     " -- GoTo keybinding --
-    map gd <Action>(GotoTypeDeclaration)
+    map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
-    map gt <Action>(GotoTest)
+    map gt <Action>(GotoTypeDeclaration)
+    map gT <Action>(GotoTest)
+    " Go to usage and declaration are the same action in IntelliJ
     map gu <Action>(GotoDeclaration)
     
     " -- Leader keybinding --
