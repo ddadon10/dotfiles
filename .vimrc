@@ -81,12 +81,10 @@ nnoremap r "_r
 if has('ide')
     " -- Settings -- 
     set ideamarks " Sync IntelliJ bookmarks and Vim marks
-    set idearefactormode=keep " Keep the mode that was enabled before refactoring
     
     " -- Emulated Vim Plugins --
     set ideajoin
     set surround
-    set ReplaceWithRegister
 
     " Standard Vim keybinding delegate to IntelliJ
     map [m <Action>(MethodUp)
