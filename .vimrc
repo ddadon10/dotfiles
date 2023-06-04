@@ -30,7 +30,9 @@ colorscheme desert  " Good default colorscheme
 
 set textwidth=79  " Max textwidth
 
-set number  " Show line numbers
+set relativenumber " Show show the line number relative to the line with the cursor
+
+set number  " Show the line number
 
 set showcmd  " Show cmd while typing
 
@@ -102,9 +104,9 @@ if has('ide')
     map gu <Action>(GotoDeclaration)
     
     " -- Leader keybinding --
-    map <leader>a <Action>(Debug)
     map <leader>b <Action>(ActivateDebugToolWindow)
     map <leader>c <Action>(CommentByLineComment)
+    map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
     map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
@@ -114,7 +116,7 @@ if has('ide')
     map <leader>p <Action>(ActivateProjectToolWindow)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
-    map <leader>t <Action>(ActivateTerminalToolWindow)
+    map <leader>t :set relativenumber!<CR>
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
