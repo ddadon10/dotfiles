@@ -59,10 +59,6 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
-" Remove jk
-noremap j <NOP>
-noremap k <NOP>
-
 " Enable folding with spacebar
 set foldmethod=indent
 set foldlevel=99
