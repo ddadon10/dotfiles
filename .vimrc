@@ -113,17 +113,20 @@ if has('ide')
     map <leader>k <Action>(Stop)
     map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
-    map <leader>p <Action>(ActivateProjectToolWindow)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
     map <leader>t :set relativenumber!<CR>
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
-    map <leader><CR> <Action>(ShowIntentionActions)
     map <leader>C <Action>(CheckinProject)
     map <leader>L <Action>(Vcs.UpdateProject)
     map <leader>B <Action>(Git.Branches)
     map <leader>M <Action>(Annotate)
+    map <leader>1 <Action>(ActivateProjectToolWindow)
+    map <leader>2 <Action>(ActivateStructureToolWindow)
+    map <leader>3 <Action>(ActivateCommitToolWindow)
+    map <leader>1 <Action>(ActivateTerminalToolWindow)
+    map <leader><CR> <Action>(ShowIntentionActions)
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
