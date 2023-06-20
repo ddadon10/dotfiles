@@ -125,7 +125,7 @@ if has('ide')
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateStructureToolWindow)
     map <leader>3 <Action>(ActivateCommitToolWindow)
-    map <leader>1 <Action>(ActivateTerminalToolWindow)
+    map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
 
     " -- Shortcut conflict config --
