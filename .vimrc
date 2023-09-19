@@ -83,6 +83,7 @@ nnoremap r "_r
 if has('ide')
     " -- Settings -- 
     set ideamarks " Sync IntelliJ bookmarks and Vim marks
+    set idearefactormode=keep
     
     " -- Emulated Vim Plugins --
     set ideajoin
