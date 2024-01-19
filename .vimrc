@@ -126,6 +126,7 @@ if has('ide')
     map <leader>3 <Action>(ActivateCommitToolWindow)
     map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
+    map <leader><Space> <Action>(CodeCompletion)
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
