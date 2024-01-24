@@ -32,6 +32,8 @@ set textwidth=79  " Max textwidth
 
 set number  " Show the line number
 
+set relativenumber " Show relative number
+
 set showcmd  " Show cmd while typing
 
 " ----- Keys and shortcut config -----
@@ -40,6 +42,10 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+
+" Remap j and k to + and - 
+nnoremap j +
+nnoremap k -
 
 " In insert or command mode, move by using Ctrl
 inoremap <C-h> <Left>
