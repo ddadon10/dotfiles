@@ -47,6 +47,9 @@ nnoremap <C-H> <C-W><C-H>
 nnoremap j +
 nnoremap k -
 
+" Remap s to /
+nnoremap s /
+
 " In insert or command mode, move by using Ctrl
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -71,7 +74,7 @@ nnoremap <space> za
 " ----- Searching -----
 set nohlsearch " Disable search highlighting
 
-set noincsearch  " Disable incremental searching
+set incsearch  " Enable incremental searching
 
 set ignorecase  " Ignore case in search patterns
 
