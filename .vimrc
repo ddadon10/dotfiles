@@ -32,8 +32,6 @@ set textwidth=79  " Max textwidth
 
 set number  " Show the line number
 
-set relativenumber " Show relative number
-
 set showcmd  " Show cmd while typing
 
 " ----- Keys and shortcut config -----
@@ -47,8 +45,9 @@ nnoremap <C-H> <C-W><C-H>
 nnoremap j +
 nnoremap k -
 
-" Remap s to /
+" Remap / and ? to s and S
 nnoremap s /
+nnoremap S ?
 
 " In insert or command mode, move by using Ctrl
 inoremap <C-h> <Left>
@@ -107,7 +106,7 @@ if has('ide')
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTypeDeclaration)
-    map gT <Action>(GotoTest)
+
     " Go to usage and declaration are the same action in IntelliJ
     map gu <Action>(GotoDeclaration)
     
@@ -123,7 +122,7 @@ if has('ide')
     map <leader>n <Action>(Resume)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
-    map <leader>t :set relativenumber!<CR>
+    map <leader>t <Action>(GotoTest)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader>C <Action>(CheckinProject)
