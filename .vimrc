@@ -41,14 +41,6 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
-" Remap j and k to + and - 
-nnoremap j +
-nnoremap k -
-
-" Remap / and ? to s and S
-nnoremap s /
-nnoremap S ?
-
 " In insert or command mode, move by using Ctrl
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -88,18 +80,11 @@ nnoremap r "_r
 " ----- IDEAvim -----
 if has('ide')
     " -- Settings -- 
-    set ideamarks " Sync IntelliJ bookmarks and Vim marks
     set idearefactormode=keep
     
-    " -- Emulated Vim Plugins --
-    set ideajoin
-    set surround
-
     " Standard Vim keybinding delegate to IntelliJ
     map [m <Action>(MethodUp)
     map ]m <Action>(MethodDown)
-    map g; <Action>(JumpToLastChange)
-    map g, <Action>(JumpToNextChange)
 
     " -- GoTo keybinding --
     map gd <Action>(GotoDeclaration)
