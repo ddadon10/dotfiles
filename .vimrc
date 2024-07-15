@@ -114,8 +114,6 @@ if has('ide')
     map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
     map <leader>/ <Action>(CommentByLineComment)
-    map <leader>[ <Action>(Back)
-    map <leader>] <Action>(Forward)
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
