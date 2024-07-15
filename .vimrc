@@ -73,10 +73,8 @@ set smartcase  " Override the 'ignorecase' option if the search pattern contains
 " ----- Register config -----
 " Put d/x/r into the black hole register
 nnoremap d "_d
-nnoremap x "_x
 nnoremap r "_r
 vnoremap d "_d
-vnoremap x "_x
 vnoremap r "_r
 
 " ----- IDEAvim -----
@@ -88,16 +86,15 @@ if has('ide')
     map <space> <leader>
     map <S-CR> <Action>(EditorCompleteStatement)
     imap <S-CR> <Action>(EditorCompleteStatement)
-    map <leader>a <Action>(Annotate)
+    map \c <Action>(CheckinProject)
+    map \b <Action>(Git.Branches)
+    map \a <Action>(Annotate)
+    map \u <Action>(Vcs.UpdateProject)
     map <leader>b <Action>(Debug)
-    map <leader>B <Action>(Git.Branches)
     map <leader>c <Action>(CodeCompletion)
-    map <leader>C <Action>(CheckinProject)
     map <leader>d <Action>(GotoDeclaration)
     map <leader>e <Action>(GotoNextError)
-    map <leader>E <Action>(ShowErrorDescription)
     map <leader>f <Action>(ReformatCode)
-    map <leader>g <Action>(Generate)
     map <leader>i <Action>(GotoImplementation)
     map <leader>k <Action>(Stop)
     map <leader>l <Action>(ToggleLineBreakpoint)
@@ -105,17 +102,19 @@ if has('ide')
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
     map <leader>t <Action>(GotoTypeDeclaration)
-    map <leader>T <Action>(GotoTest)
     map <leader>u <Action>(GotoDeclaration)
-    map <leader>U <Action>(Vcs.UpdateProject)
     map <leader>v <Action>(IntroduceVariable)
+    map <leader>w <Action>(ShowErrorDescription)
     map <leader>x <Action>(EvaluateExpression)
+    map <leader>z <Action>(GotoTest)
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateStructureToolWindow)
     map <leader>3 <Action>(ActivateDebugToolWindow)
     map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
     map <leader>/ <Action>(CommentByLineComment)
+    map <leader>[ <Action>(Back)
+    map <leader>] <Action>(Forward)
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
