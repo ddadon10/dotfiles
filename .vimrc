@@ -83,7 +83,8 @@ if has('ide')
     set idearefactormode=keep
 
     " -- Keybinding --
-    map <space> <leader>
+    let mapleader = " "
+    nnoremap <Space> <Nop>
     map <S-CR> <Action>(EditorCompleteStatement)
     imap <S-CR> <Action>(EditorCompleteStatement)
     map \c <Action>(CheckinProject)
