@@ -32,7 +32,7 @@ set textwidth=79  " Max textwidth
 
 set number  " Show the line number
 
-set showcmd  " Show cmd while typing
+set noshowcmd  " Don't show cmd while typing
 
 " ----- Keys and shortcut config -----
 " Remap shortcut to navigate between splited layouts easily
@@ -57,10 +57,9 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
-" Enable folding with spacebar
+" Folding
 set foldmethod=indent
 set foldlevel=99
-nnoremap <space> za
 
 " ----- Searching -----
 set nohlsearch " Disable search highlighting
@@ -76,44 +75,39 @@ set smartcase  " Override the 'ignorecase' option if the search pattern contains
 nnoremap d "_d
 nnoremap x "_x
 nnoremap r "_r
+vnoremap d "_d
+vnoremap x "_x
+vnoremap r "_r
 
 " ----- IDEAvim -----
 if has('ide')
     " -- Settings -- 
     set idearefactormode=keep
-    let mapleader=" "
-    
-    " Standard Vim keybinding delegate to IntelliJ
-    map [m <Action>(MethodUp)
-    map ]m <Action>(MethodDown)
 
-    " -- GoTo keybinding --
-    map gd <Action>(GotoDeclaration)
-    map ge <Action>(GotoNextError)
-    map gi <Action>(GotoImplementation)
-    map gt <Action>(GotoTypeDeclaration)
-    
-    " Go to usage and declaration are the same action in IntelliJ
-    map gu <Action>(GotoDeclaration)
-
-    " -- VCS keybinding --
-    map \c <Action>(CheckinProject)
-    map \u <Action>(Vcs.UpdateProject)
-    map \b <Action>(Git.Branches)
-    map \a <Action>(Annotate)
-    
-    " -- Leader keybinding --
+    " -- Keybinding --
+    map <space> <leader>
+    map <S-CR> <Action>(EditorCompleteStatement)
+    imap <S-CR> <Action>(EditorCompleteStatement)
+    map <leader>a <Action>(Annotate)
+    map <leader>b <Action>(Debug)
+    map <leader>B <Action>(Git.Branches)
     map <leader>c <Action>(CodeCompletion)
-    map <leader>d <Action>(Debug)
-    map <leader>e <Action>(ShowErrorDescription)
+    map <leader>C <Action>(CheckinProject)
+    map <leader>d <Action>(GotoDeclaration)
+    map <leader>e <Action>(GotoNextError)
+    map <leader>E <Action>(ShowErrorDescription)
     map <leader>f <Action>(ReformatCode)
     map <leader>g <Action>(Generate)
+    map <leader>i <Action>(GotoImplementation)
     map <leader>k <Action>(Stop)
     map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
-    map <leader>t <Action>(GotoTest)
+    map <leader>t <Action>(GotoTypeDeclaration)
+    map <leader>T <Action>(GotoTest)
+    map <leader>u <Action>(GotoDeclaration)
+    map <leader>U <Action>(Vcs.UpdateProject)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader>1 <Action>(ActivateProjectToolWindow)
