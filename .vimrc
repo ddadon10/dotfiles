@@ -81,6 +81,7 @@ nnoremap r "_r
 if has('ide')
     " -- Settings -- 
     set idearefactormode=keep
+    let mapleader=" "
     
     " Standard Vim keybinding delegate to IntelliJ
     map [m <Action>(MethodUp)
@@ -91,13 +92,18 @@ if has('ide')
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gt <Action>(GotoTypeDeclaration)
-
+    
     " Go to usage and declaration are the same action in IntelliJ
     map gu <Action>(GotoDeclaration)
+
+    " -- VCS keybinding --
+    map \c <Action>(CheckinProject)
+    map \u <Action>(Vcs.UpdateProject)
+    map \b <Action>(Git.Branches)
+    map \a <Action>(Annotate)
     
     " -- Leader keybinding --
-    map <leader>b <Action>(ActivateDebugToolWindow)
-    map <leader>c <Action>(CommentByLineComment)
+    map <leader>c <Action>(CodeCompletion)
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
     map <leader>f <Action>(ReformatCode)
@@ -110,16 +116,12 @@ if has('ide')
     map <leader>t <Action>(GotoTest)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
-    map <leader>C <Action>(CheckinProject)
-    map <leader>L <Action>(Vcs.UpdateProject)
-    map <leader>B <Action>(Git.Branches)
-    map <leader>M <Action>(Annotate)
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateStructureToolWindow)
-    map <leader>3 <Action>(ActivateCommitToolWindow)
+    map <leader>3 <Action>(ActivateDebugToolWindow)
     map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><Space> <Action>(CodeCompletion)
+    map <leader>/ <Action>(CommentByLineComment)
 
     " -- Shortcut conflict config --
     sethandler <C-2> a:vim
