@@ -57,6 +57,10 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
+" Remap / and ? to s and S
+nnoremap s /
+nnoremap S ?
+
 " Folding
 set foldmethod=indent
 set foldlevel=99
