@@ -117,7 +117,7 @@ if has('ide')
     map <leader>3 <Action>(ActivateDebugToolWindow)
     map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><Space> <Action>(CodeCompletion)
+    map <leader><S-CR> <Action>(CodeCompletion)
     map <leader>[ <Action>(Back)
     map <leader>] <Action>(Forward)
 
