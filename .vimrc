@@ -87,44 +87,39 @@ if has('ide')
     set idearefactormode=keep
 
     " -- Keybinding --
-    let mapleader = " "
-    nnoremap <Space> <Nop>
-    map <S-CR> <Action>(EditorCompleteStatement)
-    imap <S-CR> <Action>(EditorCompleteStatement)
-    map \c <Action>(CheckinProject)
-    map \b <Action>(Git.Branches)
-    map \m <Action>(Annotate)
-    map \l <Action>(Vcs.UpdateProject)
+    " Goto
+    map ge <Action>(GotoNextError)
+    map gd <Action>(GotoDeclaration)
+    map gi <Action>(GotoImplementation)
+    map gu <Action>(GotoDeclaration)
+    map gt <Action>(GotoTypeDeclaration)
+    map gz <Action>(GotoTest)
+    " Navigation
+    map <leader>1 <Action>(ActivateProjectToolWindow)
+    map <leader>2 <Action>(ActivateStructureToolWindow)
+    map <leader>3 <Action>(ActivateDebugToolWindow)
+    map <leader>4 <Action>(ActivateTerminalToolWindow)
+    " VCS
+    map <leader>C <Action>(CheckinProject)
+    map <leader>B <Action>(Git.Branches)
+    map <leader>M <Action>(Annotate)
+    map <leader>L <Action>(Vcs.UpdateProject)
+    " General IDE Action
+    map <leader>e <Action>(ShowErrorDescription)
     map <leader>b <Action>(Debug)
     map <leader>c <Action>(CommentByLineComment)
-    map <leader>d <Action>(GotoDeclaration)
-    map <leader>e <Action>(GotoNextError)
     map <leader>f <Action>(ReformatCode)
-    map <leader>i <Action>(GotoImplementation)
     map <leader>k <Action>(Stop)
     map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
-    map <leader>t <Action>(GotoTypeDeclaration)
-    map <leader>u <Action>(GotoDeclaration)
     map <leader>v <Action>(IntroduceVariable)
-    map <leader>w <Action>(ShowErrorDescription)
     map <leader>x <Action>(EvaluateExpression)
-    map <leader>z <Action>(GotoTest)
-    map <leader>1 <Action>(ActivateProjectToolWindow)
-    map <leader>2 <Action>(ActivateStructureToolWindow)
-    map <leader>3 <Action>(ActivateDebugToolWindow)
-    map <leader>4 <Action>(ActivateTerminalToolWindow)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><S-CR> <Action>(CodeCompletion)
-    map <leader>[ <Action>(Back)
-    map <leader>] <Action>(Forward)
+    map <leader><Space> <Action>(CodeCompletion)
 
     " -- Shortcut conflict config --
-    sethandler <C-2> a:vim
-    sethandler <C-S-2> a:vim
-    sethandler <C-S-6> a:vim
     sethandler <C-A> a:vim
     sethandler <C-B> a:vim
     sethandler <C-D> a:vim
