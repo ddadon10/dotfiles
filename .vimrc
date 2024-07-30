@@ -37,10 +37,9 @@ vnoremap r "_r
 " ----- Vim Settings -----
 if !has('ide')
     colorscheme desert
-    filetype plugin indent on  " Enable filetype detection
-    inoremap <silent> <Esc> <Esc>`^ " Prevent vim from moving back one character after leaving insert mode
+    filetype plugin indent on
     set autoindent
-    set backspace=indent,eol,start " Backspace in insert mode works like normal editor
+    set backspace=indent,eol,start
     set fileformat=unix
     set foldlevel=99
     set foldmethod=indent
