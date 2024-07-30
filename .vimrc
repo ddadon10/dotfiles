@@ -1,14 +1,12 @@
 " A .vimrc that works both with Vim and IntelliJ IDEA
 
 " ----- Global Settings -----
-inoremap <silent> <Esc> <Esc>`^ " Prevent vim from moving back one character after leaving insert mode
-set backspace=indent,eol,start  " Backspace in insert mode works like normal editor
-set ignorecase  " Ignore case in search patterns
-set incsearch  " Enable incremental searching
-set nohlsearch " Disable search highlighting
-set noshowcmd  " Don't show cmd while typing
-set number  " Show the line number
-set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
+set ignorecase 
+set incsearch
+set nohlsearch
+set noshowcmd
+set number
+set smartcase
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
@@ -38,19 +36,21 @@ vnoremap r "_r
 
 " ----- Vim Settings -----
 if !has('ide')
-    colorscheme desert  " Good default colorscheme
+    colorscheme desert
     filetype plugin indent on  " Enable filetype detection
-    set autoindent  " Enable Auto indent
-    set fileformat=unix  " File format 
+    inoremap <silent> <Esc> <Esc>`^ " Prevent vim from moving back one character after leaving insert mode
+    set autoindent
+    set backspace=indent,eol,start " Backspace in insert mode works like normal editor
+    set fileformat=unix
     set foldlevel=99
     set foldmethod=indent
-    set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
-    set shiftwidth=2  " Indent by 2 spaces when auto-indenting
-    set softtabstop=2  " Indent by 2 spaces when hitting tab
-    set splitbelow  " Horizontal splitting a window will put the new window below the current one
-    set splitright  " Vertical splitting a window will put the new window right of the current one
-    set textwidth=120  " Max textwidth
-    syntax on  " Enable syntax highlighting
+    set omnifunc=syntaxcomplete#Complete
+    set shiftwidth=2 
+    set softtabstop=2
+    set splitbelow 
+    set splitright
+    set textwidth=120
+    syntax on
 endif
 
 " ----- IDEAvim Settings -----
