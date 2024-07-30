@@ -1,98 +1,70 @@
 " A .vimrc that works both with Vim and IntelliJ IDEA
 
-" ----- Vim Behavior -----
-filetype plugin indent on  " Enable filetype detection
-
+" ----- Global Settings -----
+inoremap <silent> <Esc> <Esc>`^ " Prevent vim from moving back one character after leaving insert mode
 set backspace=indent,eol,start  " Backspace in insert mode works like normal editor
-
-syntax on  " Enable syntax highlighting
-
-set fileformat=unix  " File format 
-
-set splitbelow  " Horizontal splitting a window will put the new window below the current one
-
-set splitright  " Vertical splitting a window will put the new window right of the current one
-
-set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
-
-" Prevent vim from moving back one character after leaving insert mode
-inoremap <silent> <Esc> <Esc>`^
-
-" ----- Indentation -----
-set autoindent  " Enable Auto indent
-
-set shiftwidth=2  " Indent by 2 spaces when auto-indenting
-
-set softtabstop=2  " Indent by 2 spaces when hitting tab
-
-" ----- UI -----
-colorscheme desert  " Good default colorscheme
-
-set textwidth=79  " Max textwidth
-
-set number  " Show the line number
-
+set ignorecase  " Ignore case in search patterns
+set incsearch  " Enable incremental searching
+set nohlsearch " Disable search highlighting
 set noshowcmd  " Don't show cmd while typing
-
-" ----- Keys and shortcut config -----
-" Remap shortcut to navigate between splited layouts easily
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
+set number  " Show the line number
+set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
 
 " In insert or command mode, move by using Ctrl
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
 cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
 cnoremap <C-k> <Up>
 cnoremap <C-l> <Right>
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
 
 " Remove Arrow key
-noremap <Up> <NOP>
 noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
+noremap <Up> <NOP>
 
 " Remap / and ? to s and S
-nnoremap s /
 nnoremap S ?
+nnoremap s /
 
-" Folding
-set foldmethod=indent
-set foldlevel=99
-
-" ----- Searching -----
-set nohlsearch " Disable search highlighting
-
-set incsearch  " Enable incremental searching
-
-set ignorecase  " Ignore case in search patterns
-
-set smartcase  " Override the 'ignorecase' option if the search pattern contains upper case characters
-
-" ----- Register config -----
 " Put d/x/r into the black hole register
 nnoremap d "_d
 nnoremap r "_r
 vnoremap d "_d
 vnoremap r "_r
 
-" ----- IDEAvim -----
+" ----- Vim Settings -----
+if !has('ide')
+    colorscheme desert  " Good default colorscheme
+    filetype plugin indent on  " Enable filetype detection
+    set autoindent  " Enable Auto indent
+    set fileformat=unix  " File format 
+    set foldlevel=99
+    set foldmethod=indent
+    set omnifunc=syntaxcomplete#Complete  " Enable omni completion (IntelliSense like)
+    set shiftwidth=2  " Indent by 2 spaces when auto-indenting
+    set softtabstop=2  " Indent by 2 spaces when hitting tab
+    set splitbelow  " Horizontal splitting a window will put the new window below the current one
+    set splitright  " Vertical splitting a window will put the new window right of the current one
+    set textwidth=120  " Max textwidth
+    syntax on  " Enable syntax highlighting
+endif
+
+" ----- IDEAvim Settings -----
 if has('ide')
     " -- Settings -- 
     set idearefactormode=keep
 
     " -- Keybinding --
     " Goto
-    map ge <Action>(GotoNextError)
     map gd <Action>(GotoDeclaration)
+    map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
-    map gu <Action>(GotoDeclaration)
     map gt <Action>(GotoTypeDeclaration)
+    map gu <Action>(GotoDeclaration)
     map gz <Action>(GotoTest)
     " Navigation
     map <leader>1 <Action>(ActivateProjectToolWindow)
