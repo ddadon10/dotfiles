@@ -28,11 +28,17 @@ noremap <Up> <NOP>
 nnoremap S ?
 nnoremap s /
 
-" Put d/x/r into the black hole register
+" Put d into the black hole register
 nnoremap d "_d
-nnoremap r "_r
 vnoremap d "_d
+
+" Put r into the black hole register
+nnoremap r "_r
 vnoremap r "_r
+
+" Paste without yanking the deleted text
+nnoremap p P
+vnoremap p P
 
 " ----- Vim -----
 if !has('ide')
