@@ -30,15 +30,14 @@ nnoremap s /
 
 " Put d into the black hole register
 nnoremap d "_d
-vnoremap d "_d
+xnoremap d "_d
 
 " Put r into the black hole register
 nnoremap r "_r
-vnoremap r "_r
+xnoremap r "_r
 
 " Paste without yanking the deleted text
-nnoremap p P
-vnoremap p P
+xnoremap p P
 
 " ----- Vim -----
 if !has('ide')
