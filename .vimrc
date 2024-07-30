@@ -1,6 +1,6 @@
 " A .vimrc that works both with Vim and IntelliJ IDEA
 
-" ----- Global Settings -----
+" ----- Global -----
 set ignorecase 
 set incsearch
 set nohlsearch
@@ -34,7 +34,7 @@ nnoremap r "_r
 vnoremap d "_d
 vnoremap r "_r
 
-" ----- Vim Settings -----
+" ----- Vim -----
 if !has('ide')
     colorscheme desert
     filetype plugin indent on
@@ -52,12 +52,11 @@ if !has('ide')
     syntax on
 endif
 
-" ----- IDEAvim Settings -----
+" ----- IDEAvim -----
 if has('ide')
-    " -- Settings -- 
+    " Settings
     set idearefactormode=keep
 
-    " -- Keybinding --
     " Goto
     map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
@@ -65,16 +64,19 @@ if has('ide')
     map gt <Action>(GotoTypeDeclaration)
     map gu <Action>(GotoDeclaration)
     map gz <Action>(GotoTest)
+
     " Navigation
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateStructureToolWindow)
     map <leader>3 <Action>(ActivateDebugToolWindow)
     map <leader>4 <Action>(ActivateTerminalToolWindow)
+
     " VCS
     map <leader>C <Action>(CheckinProject)
     map <leader>B <Action>(Git.Branches)
     map <leader>M <Action>(Annotate)
     map <leader>L <Action>(Vcs.UpdateProject)
+
     " General IDE Action
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
@@ -90,7 +92,7 @@ if has('ide')
     map <leader><CR> <Action>(ShowIntentionActions)
     map <leader><Space> <Action>(CodeCompletion)
 
-    " -- Shortcut conflict config --
+    " Shortcut conflict
     sethandler <C-A> a:vim
     sethandler <C-B> a:vim
     sethandler <C-D> a:vim
