@@ -27,6 +27,8 @@ noremap <Up> <NOP>
 " Remap / and ? to s and S
 nnoremap S ?
 nnoremap s /
+nnoremap `] `>
+nnoremap `[ `<
 
 " Put d into the black hole register
 nnoremap d "_d
