@@ -1,4 +1,2 @@
 # Some settings change for macOS 
 defaults write -g ApplePressAndHoldEnabled -bool false
-defaults write -g NSWindowResizeTime -float 0.001
-defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
