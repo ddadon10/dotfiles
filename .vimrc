@@ -18,12 +18,6 @@ inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 
-" Remove Arrow key
-noremap <Down> <NOP>
-noremap <Left> <NOP>
-noremap <Right> <NOP>
-noremap <Up> <NOP>
-
 " Remap / and ? to s and S
 nnoremap S ?
 nnoremap s /
