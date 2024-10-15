@@ -9,14 +9,10 @@ set number
 set smartcase
 
 " In insert or command mode, move by using Ctrl
-cnoremap <C-h> <Left>
-cnoremap <C-j> <Down>
-cnoremap <C-k> <Up>
-cnoremap <C-l> <Right>
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
+cnoremap <C-]> <Left>
+inoremap <C-]> <Left>
+cnoremap <C-\> <Right>
+inoremap <C-\> <Right>
 
 " Remap / and ? to s and S
 nnoremap S ?
