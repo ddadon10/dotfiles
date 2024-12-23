@@ -91,7 +91,7 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><Space> l<Action>(CallInlineCompletionAction)i
+    map <leader><Space> <Action>(CodeCompletion)
 
     " Shortcut conflict
     sethandler <C-A> a:vim
