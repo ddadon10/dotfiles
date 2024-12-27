@@ -1,7 +1,7 @@
 " A .vimrc that works both with Vim and IntelliJ IDEA
 
 " ----- Global -----
-set ignorecase 
+set ignorecase
 set incsearch
 set nohlsearch
 set noshowcmd
@@ -18,9 +18,11 @@ inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 
-" Remap / and ? to s and S
-nnoremap S ?
-nnoremap s /
+" Remap search to Space
+nnoremap <Space> s
+nnoremap <S-Space> S
+
+# Remap motions
 nnoremap `] `>
 nnoremap `[ `<
 
@@ -45,9 +47,9 @@ if !has('ide')
     set foldlevel=99
     set foldmethod=indent
     set omnifunc=syntaxcomplete#Complete
-    set shiftwidth=2 
+    set shiftwidth=2
     set softtabstop=2
-    set splitbelow 
+    set splitbelow
     set splitright
     set textwidth=120
     syntax on
@@ -68,9 +70,10 @@ if has('ide')
 
     " Navigation
     map <leader>1 <Action>(ActivateProjectToolWindow)
-    map <leader>2 <Action>(ActivateStructureToolWindow)
+    map <leader>2 <Action>(ActivateAIAssistantToolWindow)
     map <leader>3 <Action>(ActivateDebugToolWindow)
-    map <leader>4 <Action>(ActivateTerminalToolWindow)
+    map <leader>4 <Action>(ActivateProblemsViewToolWindow)
+    map <leader>5 <Action>(ActivateTerminalToolWindow)
 
     " VCS
     map <leader>C <Action>(CheckinProject)
@@ -91,27 +94,4 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><Space> <Action>(CodeCompletion)
-
-    " Shortcut conflict
-    sethandler <C-A> a:vim
-    sethandler <C-B> a:vim
-    sethandler <C-D> a:vim
-    sethandler <C-E> a:vim
-    sethandler <C-F> a:vim
-    sethandler <C-G> a:vim
-    sethandler <C-H> a:vim
-    sethandler <C-I> a:vim
-    sethandler <C-J> a:vim
-    sethandler <C-K> a:vim
-    sethandler <C-L> a:vim
-    sethandler <C-M> a:vim
-    sethandler <C-N> a:vim
-    sethandler <C-O> a:vim
-    sethandler <C-P> a:vim
-    sethandler <C-R> a:vim
-    sethandler <C-S> a:vim
-    sethandler <C-T> a:vim
-    sethandler <C-V> a:vim
-    sethandler <C-W> a:vim
 endif
