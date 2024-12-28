@@ -22,7 +22,7 @@ inoremap <C-l> <Right>
 nnoremap <Space> s
 nnoremap <S-Space> S
 
-# Remap motions
+" Remap motions
 nnoremap `] `>
 nnoremap `[ `<
 
