@@ -19,8 +19,8 @@ inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 
 " Remap search to Space
-nnoremap <Space> s
-nnoremap <S-Space> S
+nnoremap <Space> /
+nnoremap <S-Space> ?
 
 " Remap motions
 nnoremap `] `>
