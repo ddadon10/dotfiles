@@ -81,7 +81,7 @@ if has('ide')
     map <leader>M <Action>(Annotate)
     map <leader>L <Action>(Vcs.UpdateProject)
 
-    " General IDE Action
+    " General IDE Actions
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
     map <leader>c <Action>(CommentByLineComment)
@@ -94,4 +94,7 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
+
+    " Insert mode Actions
+    inoremap . .<C-O>:action CodeCompletion<cr>i
 endif
