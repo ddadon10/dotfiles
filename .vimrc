@@ -95,4 +95,7 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
+    
+    " Insert mode Actions
+    inoremap . .<C-O>:action CodeCompletion<cr>i
 endif
