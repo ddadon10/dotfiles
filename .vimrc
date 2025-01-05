@@ -68,15 +68,12 @@ if has('ide')
     map gu <Action>(GotoDeclaration)
     map gz <Action>(GotoTest)
 
-    " Command key
+    " Movements
     noremap <D-l> <Right>
     cnoremap <D-l> <Right>
     inoremap <D-l> <Right>
-    map <D-i> <Action>(CallInlineCompletionAction)
-    cmap <D-i> <Action>(CallInlineCompletionAction)
-    imap <D-i> <Action>(CallInlineCompletionAction)
 
-    " Navigation
+    " Tool Windows
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateAIAssistantToolWindow)
     map <leader>3 <Action>(ActivateDebugToolWindow)
