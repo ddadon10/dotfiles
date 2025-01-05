@@ -68,6 +68,14 @@ if has('ide')
     map gu <Action>(GotoDeclaration)
     map gz <Action>(GotoTest)
 
+    " Command key
+    noremap <D-l> <Right>
+    cnoremap <D-l> <Right>
+    inoremap <D-l> <Right>
+    map <D-i> <Action>(CallInlineCompletionAction)
+    cmap <D-i> <Action>(CallInlineCompletionAction)
+    imap <D-i> <Action>(CallInlineCompletionAction)
+
     " Navigation
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateAIAssistantToolWindow)
@@ -95,4 +103,5 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
+
 endif
