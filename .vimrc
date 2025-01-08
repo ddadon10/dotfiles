@@ -68,11 +68,6 @@ if has('ide')
     map gu <Action>(GotoDeclaration)
     map gz <Action>(GotoTest)
 
-    " Movements
-    noremap <D-l> <Right>
-    cnoremap <D-l> <Right>
-    inoremap <D-l> <Right>
-
     " Tool Windows
     map <leader>1 <Action>(ActivateProjectToolWindow)
     map <leader>2 <Action>(ActivateAIAssistantToolWindow)
