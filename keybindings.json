@@ -1,0 +1,194 @@
+[
+  // Default Keybinding Removals
+  { "key": "cmd+0", "command": "" },
+  { "key": "cmd+1", "command": "" },
+  { "key": "cmd+2", "command": "" },
+  { "key": "cmd+3", "command": "" },
+  { "key": "cmd+4", "command": "" },
+  { "key": "cmd+5", "command": "" },
+  { "key": "cmd+[", "command": "" },
+  { "key": "cmd+]", "command": "" },
+  { "key": "cmd+escape", "command": "" },
+  { "key": "shift+cmd+g", "command": "" },
+
+  // Editor Focus
+  {
+    "key": "cmd+escape",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "!editorTextFocus"
+  },
+
+  // Left Bar Navigation
+  {
+    "key": "shift+cmd+g",
+    "command": "workbench.view.scm",
+    "when": "workbench.scm.active"
+  },
+
+  // Bottom Bar Navigation
+  {
+    "key": "cmd+0",
+    "command": "workbench.action.togglePanel"
+  },
+  {
+    "key": "cmd+1",
+    "command": "workbench.action.terminal.toggleTerminal",
+    "when": "terminal.active"
+  },
+  {
+    "key": "cmd+2",
+    "command": "workbench.action.output.toggleOutput",
+    "when": "workbench.panel.output.active"
+  },
+  {
+    "key": "cmd+3",
+    "command": "workbench.debug.action.toggleRepl",
+    "when": "workbench.panel.repl.view.active"
+  },
+  {
+    "key": "cmd+4",
+    "command": "workbench.actions.view.problems",
+    "when": "workbench.panel.markers.view.active"
+  },
+  {
+    "key": "cmd+5",
+    "command": "~remote.forwardedPortsContainer"
+  },
+
+  // Insert and Command Line Mode Navigation
+  {
+    "key": "ctrl+h",
+    "command": "vscode-neovim.send",
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
+    "args": "<Left>"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "vscode-neovim.send",
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
+    "args": "<Down>"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "vscode-neovim.send",
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
+    "args": "<Up>"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "vscode-neovim.send",
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
+    "args": "<Right>"
+  },
+
+  // Back and Forward Navigation
+  {
+    "key": "cmd+[",
+    "command": "workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
+  {
+    "key": "cmd+]",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+
+  // Code Navigation
+  {
+    "key": "space d",
+    "command": "editor.action.revealDefinition",
+    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space e",
+    "command": "editor.action.marker.nextInFiles",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space h",
+    "command": "editor.action.showHover",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space i",
+    "command": "editor.action.goToImplementation",
+    "when": "editorHasImplementationProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space p",
+    "command": "editor.action.peekDefinition",
+    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space r",
+    "command": "editor.action.goToReferences",
+    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space s",
+    "command": "workbench.action.gotoSymbol",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space t",
+    "command": "editor.action.goToTypeDefinition",
+    "when": "editorHasTypeDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "space u",
+    "command": "go.toggle.test.file",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+
+  // Actions
+  {
+    "key": "\\ enter",
+    "command": "editor.action.quickFix",
+    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ b",
+    "command": "editor.debug.action.toggleBreakpoint",
+    "when": "debuggersAvailable && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ c",
+    "command": "editor.action.commentLine",
+    "when": "editorTextFocus && (neovim.mode == 'normal' || neovim.mode == 'visual')"
+  },
+  {
+    "key": "\\ d",
+    "command": "workbench.action.debug.start",
+    "when": "debuggersAvailable && debugState == 'inactive' && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ f",
+    "command": "editor.action.formatDocument",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ o",
+    "command": "editor.action.organizeImports",
+    "when": "supportedCodeAction =~ /(\\s|^)source\\.organizeImports\\b/ && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ q",
+    "command": "workbench.action.quickOpen",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ r",
+    "command": "editor.action.rename",
+    "when": "editorHasRenameProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ s",
+    "command": "workbench.action.showAllSymbols",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ x",
+    "command": "editor.action.refactor",
+    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
+  }
+]
