@@ -7,6 +7,7 @@ set nohlsearch
 set noshowcmd
 set number
 set smartcase
+set relativenumber
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
@@ -17,10 +18,6 @@ inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
-
-" Remap search to Space
-nnoremap <Space> /
-nnoremap <S-Space> ?
 
 " Remap motions
 nnoremap `] `>
@@ -61,12 +58,11 @@ if has('ide')
     set idearefactormode=keep
 
     " Goto
-    map gd <Action>(GotoDeclaration)
-    map ge <Action>(GotoNextError)
-    map gi <Action>(GotoImplementation)
-    map gt <Action>(GotoTypeDeclaration)
-    map gu <Action>(GotoDeclaration)
-    map gz <Action>(GotoTest)
+    map <Space>d <Action>(GotoDeclaration)
+    map <Space>e <Action>(GotoNextError)
+    map <Space>i <Action>(GotoImplementation)
+    map <Space>t <Action>(GotoTypeDeclaration)
+    map <Space>u <Action>(GotoTest)
 
     " Tool Windows
     map <leader>1 <Action>(ActivateProjectToolWindow)
