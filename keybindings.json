@@ -1,15 +1,78 @@
 [
   // Default Keybinding Removals
-  { "key": "cmd+0", "command": "" },
   { "key": "cmd+1", "command": "" },
   { "key": "cmd+2", "command": "" },
   { "key": "cmd+3", "command": "" },
   { "key": "cmd+4", "command": "" },
   { "key": "cmd+5", "command": "" },
+  { "key": "cmd+6", "command": "" },
   { "key": "cmd+[", "command": "" },
   { "key": "cmd+]", "command": "" },
   { "key": "cmd+escape", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
+
+  // Resizing Editor
+  {
+    "key": "shift+cmd+left",
+    "command": "workbench.action.increaseViewWidth",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+right",
+    "command": "workbench.action.decreaseViewWidth",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+up",
+    "command": "workbench.action.decreaseViewHeight",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+down",
+    "command": "workbench.action.increaseViewHeight",
+    "when": "editorTextFocus"
+  },
+
+  // Resizing Side Bar
+  {
+    "key": "shift+cmd+left",
+    "command": "workbench.action.increaseViewWidth",
+    "when": "sideBarFocus"
+  },
+  {
+    "key": "shift+cmd+right",
+    "command": "workbench.action.decreaseViewWidth",
+    "when": "sideBarFocus"
+  },
+
+  // Resizing Panel
+  {
+    "key": "shift+cmd+left",
+    "command": "workbench.action.increaseViewWidth",
+    "when": "panelFocus"
+  },
+  {
+    "key": "shift+cmd+right",
+    "command": "workbench.action.decreaseViewWidth",
+    "when": "panelFocus"
+  },
+  {
+    "key": "shift+cmd+up",
+    "command": "workbench.action.decreaseViewHeight",
+    "when": "panelFocus"
+  },
+  {
+    "key": "shift+cmd+down",
+    "command": "workbench.action.increaseViewHeight",
+    "when": "panelFocus"
+  },
+
+  // LLM Autocomplete
+  {
+    "key": "alt+space",
+    "command": "editor.action.inlineSuggest.trigger",
+    "when": "editorTextFocus"
+  },
 
   // Editor Focus
   {
@@ -24,12 +87,19 @@
     "command": "workbench.view.scm",
     "when": "workbench.scm.active"
   },
+  {
+    "key": "shift+cmd+u",
+    "command": "workbench.view.extension.test",
+    "when":"workbench.view.testing.active"
+  },
+
+  // Right Bar Navigation
+  {
+    "key": "shift+cmd+c",
+    "command": "workbench.action.toggleAuxiliaryBar"
+  },
 
   // Bottom Bar Navigation
-  {
-    "key": "cmd+0",
-    "command": "workbench.action.togglePanel"
-  },
   {
     "key": "cmd+1",
     "command": "workbench.action.terminal.toggleTerminal",
@@ -53,6 +123,14 @@
   {
     "key": "cmd+5",
     "command": "~remote.forwardedPortsContainer"
+  },
+  {
+    "key": "cmd+6",
+    "command": "workbench.view.extension.continueConsole"
+  },
+  {
+    "key": "cmd+7",
+    "command": "workbench.panel.testResults.view.focus"
   },
 
   // Insert and Command Line Mode Navigation
@@ -93,7 +171,7 @@
     "when": "canNavigateForward"
   },
 
-  // Code Navigation
+  // GoTo Actions
   {
     "key": "space d",
     "command": "editor.action.revealDefinition",
@@ -126,8 +204,8 @@
   },
   {
     "key": "space s",
-    "command": "workbench.action.gotoSymbol",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
+    "command": "typescript.goToSourceDefinition",
+    "when": "editorLangId == 'typescriptreact' && editorTextFocus && neovim.mode == 'normal'"
   },
   {
     "key": "space t",
@@ -137,7 +215,7 @@
   {
     "key": "space u",
     "command": "go.toggle.test.file",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
+    "when": "editorLangId == 'go' && editorTextFocus && neovim.mode == 'normal'"
   },
 
   // Actions
@@ -167,24 +245,19 @@
     "when": "editorHasDocumentFormattingProvider && editorTextFocus && neovim.mode == 'normal'"
   },
   {
+    "key": "\\ m",
+    "command": "gitlens.toggleFileBlame",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
     "key": "\\ o",
     "command": "editor.action.organizeImports",
     "when": "supportedCodeAction =~ /(\\s|^)source\\.organizeImports\\b/ && editorTextFocus && neovim.mode == 'normal'"
   },
   {
-    "key": "\\ q",
-    "command": "workbench.action.quickOpen",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
     "key": "\\ r",
     "command": "editor.action.rename",
     "when": "editorHasRenameProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ s",
-    "command": "workbench.action.showAllSymbols",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
   },
   {
     "key": "\\ x",
