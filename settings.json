@@ -1,0 +1,46 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "docker.extension.hydockerEngineAvailabilityPrompt": false,
+  "docker.lsp.telemetry": "off",
+  "editor.cursorBlinking": "solid",
+  "editor.fontSize": 14,
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.inlineSuggest.enabled": false,
+  "editor.lightbulb.enabled": "off",
+  "editor.lineNumbers": "relative",
+  "editor.matchBrackets": "never",
+  "editor.renderLineHighlight": "none",
+  "editor.stickyScroll.enabled": false,
+  "files.autoSave": "afterDelay",
+  "gitlens.telemetry.enabled": false,
+  "redhat.telemetry.enabled": false,
+  "scm.diffDecorations": "gutter",
+  "security.workspace.trust.untrustedFiles": "open",
+  "tailwindCSS.colorDecorators": false,
+  "telemetry.feedback.enabled": false,
+  "telemetry.telemetryLevel": "off",
+  "vscode-neovim.afterInitConfig": ["set ignorecase", "set smartcase"],
+  "window.autoDetectColorScheme": true,
+  "window.commandCenter": false,
+  "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
+  "workbench.activityBar.location": "top",
+  "workbench.colorCustomizations": {
+    "[Default Dark Modern][Default Light Modern]": {
+      "editor.symbolHighlightBackground": "#0000",
+      "editor.symbolHighlightBorder": "#0000"
+    }
+  },
+  "workbench.editor.editorActionsLocation": "titleBar",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.layoutControl.enabled": false,
+  "workbench.startupEditor": "none",
+  "editor.autoClosingDelete": "always"
+}
