@@ -67,7 +67,33 @@
     "when": "panelFocus"
   },
 
-  // LLM Autocomplete
+  //  LLM Code Completion
+  {
+    "key": "escape",
+    "command": "-vscode-neovim.escape"
+  },
+  {
+    "key": "escape",
+    "command": "vscode-neovim.escape",
+    "args": "<Esc>",
+    "when": "editorTextFocus && neovim.init && neovim.mode != 'normal' && editorLangId not in 'neovim.editorLangIdExclusions'"
+  },
+  {
+    "key": "escape",
+    "command": "vscode-neovim.escape",
+    "args": "<Esc>",
+    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (editorTextFocus && neovim.init && !dirtyDiffVisible && !findWidgetVisible && !inReferenceSearchEditor && !markersNavigationVisible && !notebookCellFocused && !notificationCenterVisible && !parameterHintsVisible && !referenceSearchVisible && neovim.mode == 'normal' && editorLangId not in 'neovim.editorLangIdExclusions')"
+  },
+  {
+    "key": "tab",
+    "command": "-vscode-neovim.send"
+  },
+  {
+    "key": "tab",
+    "args": "<Tab>",
+    "command": "vscode-neovim.send",
+    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert' && editorLangId not in 'neovim.editorLangIdExclusions')"
+  },
   {
     "key": "alt+space",
     "command": "editor.action.inlineSuggest.trigger",
@@ -90,7 +116,7 @@
   {
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
-    "when":"workbench.view.testing.active"
+    "when": "workbench.view.testing.active"
   },
 
   // Right Bar Navigation
@@ -171,16 +197,11 @@
     "when": "canNavigateForward"
   },
 
-  // GoTo Actions
+  // Caret Relative Actions
   {
     "key": "space d",
     "command": "editor.action.revealDefinition",
     "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space e",
-    "command": "editor.action.marker.nextInFiles",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
   },
   {
     "key": "space h",
@@ -212,11 +233,6 @@
     "command": "editor.action.goToTypeDefinition",
     "when": "editorHasTypeDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
   },
-  {
-    "key": "space u",
-    "command": "go.toggle.test.file",
-    "when": "editorLangId == 'go' && editorTextFocus && neovim.mode == 'normal'"
-  },
 
   // Actions
   {
@@ -233,6 +249,11 @@
     "key": "\\ c",
     "command": "editor.action.commentLine",
     "when": "editorTextFocus && (neovim.mode == 'normal' || neovim.mode == 'visual')"
+  },
+  {
+    "key": "\\ e",
+    "command": "editor.action.marker.next",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
   },
   {
     "key": "\\ d",
@@ -259,6 +280,12 @@
     "command": "editor.action.rename",
     "when": "editorHasRenameProvider && editorTextFocus && neovim.mode == 'normal'"
   },
+  {
+    "key": "\\ u",
+    "command": "go.toggle.test.file",
+    "when": "editorLangId == 'go' && editorTextFocus && neovim.mode == 'normal'"
+  },
+
   {
     "key": "\\ x",
     "command": "editor.action.refactor",
