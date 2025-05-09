@@ -8,19 +8,24 @@
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
-  "docker.extension.hydockerEngineAvailabilityPrompt": false,
-  "docker.lsp.telemetry": "off",
+  "chat.agent.enabled": true,
+  "diffEditor.hideUnchangedRegions.enabled": true,
+  "diffEditor.ignoreTrimWhitespace": true,
+  "editor.autoClosingDelete": "always",
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
+  "editor.occurrencesHighlight": "off",
   "editor.renderLineHighlight": "none",
   "editor.stickyScroll.enabled": false,
   "files.autoSave": "afterDelay",
+  "github.copilot.chat.generateTests.codeLens": true,
+  "github.copilot.nextEditSuggestions.enabled": true,
   "gitlens.telemetry.enabled": false,
+  "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
   "security.workspace.trust.untrustedFiles": "open",
@@ -42,5 +47,14 @@
   "workbench.editor.empty.hint": "hidden",
   "workbench.layoutControl.enabled": false,
   "workbench.startupEditor": "none",
-  "editor.autoClosingDelete": "always"
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.quickSuggestions": {
+    "comments": "inline",
+    "strings": "inline"
+  },
+  "continue.enableConsole": true,
+  "sqltools.highlightQuery": false,
+  "github.copilot.selectedCompletionModel": ""
 }
