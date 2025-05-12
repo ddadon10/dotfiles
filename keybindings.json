@@ -75,14 +75,14 @@
   {
     "key": "escape",
     "command": "vscode-neovim.escape",
-    "args": "<Esc>",
-    "when": "editorTextFocus && neovim.init && neovim.mode != 'normal' && editorLangId not in 'neovim.editorLangIdExclusions'"
+    "when": "editorTextFocus && neovim.init && neovim.mode != 'normal'",
+    "args": "<Esc>"
   },
   {
     "key": "escape",
     "command": "vscode-neovim.escape",
-    "args": "<Esc>",
-    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (editorTextFocus && neovim.init && !dirtyDiffVisible && !findWidgetVisible && !inReferenceSearchEditor && !markersNavigationVisible && !notebookCellFocused && !notificationCenterVisible && !parameterHintsVisible && !referenceSearchVisible && neovim.mode == 'normal' && editorLangId not in 'neovim.editorLangIdExclusions')"
+    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (editorTextFocus && neovim.init && !dirtyDiffVisible && !findWidgetVisible && !inReferenceSearchEditor && !markersNavigationVisible && !notebookCellFocused && !notificationCenterVisible && !parameterHintsVisible && !referenceSearchVisible && neovim.mode == 'normal')",
+    "args": "<Esc>"
   },
   {
     "key": "tab",
@@ -90,9 +90,9 @@
   },
   {
     "key": "tab",
-    "args": "<Tab>",
     "command": "vscode-neovim.send",
-    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert' && editorLangId not in 'neovim.editorLangIdExclusions')"
+    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert')",
+    "args": "<Tab>"
   },
   {
     "key": "alt+space",
@@ -183,6 +183,144 @@
     "command": "vscode-neovim.send",
     "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
     "args": "<Right>"
+  },
+
+  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/58
+  {
+    "key": "cmd+j",
+    "command": "cursorMove",
+    "when": "editorTextFocus && neovim.init && neovim.mode != 'insert'",
+    "args": {
+      "to": "down",
+      "by": "wrappedLine",
+      "value": 1
+    }
+  },
+  {
+    "key": "cmd+k",
+    "command": "cursorMove",
+    "when": "editorTextFocus && neovim.init && neovim.mode != 'insert'",
+    "args": {
+      "to": "up",
+      "by": "wrappedLine",
+      "value": 1
+    }
+  },
+
+  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/2434
+  {
+    "key": "ctrl+d",
+    "command": "vscode-neovim.send",
+    "args": "<C-d>jk", // appending jk centers the cursor when scrolling: https://github.com/vscode-neovim/vscode-neovim/issues/983#issuecomment-1634939702
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+  },
+  {
+    "key": "ctrl+u",
+    "command": "vscode-neovim.send",
+    "args": "<C-u>jk", // appending jk centers the cursor when scrolling: https://github.com/vscode-neovim/vscode-neovim/issues/983#issuecomment-1634939702
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+  },
+  {
+    "key": "ctrl+f",
+    "command": "vscode-neovim.send",
+    "args": "<C-f>zt",
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "vscode-neovim.send",
+    "args": "<C-b>zb",
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+  },
+
+  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/983
+  {
+    "key": "ctrl+d",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "editorScroll",
+          "args": {
+            "to": "down",
+            "by": "halfPage"
+          }
+        },
+        {
+          "command": "cursorMove",
+          "args": {
+            "to": "viewPortCenter"
+          }
+        }
+      ]
+    },
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+  },
+  {
+    "key": "ctrl+u",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "editorScroll",
+          "args": {
+            "to": "up",
+            "by": "halfPage"
+          }
+        },
+        {
+          "command": "cursorMove",
+          "args": {
+            "to": "viewPortCenter"
+          }
+        }
+      ]
+    },
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+  },
+  {
+    "key": "ctrl+f",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "editorScroll",
+          "args": {
+            "to": "down",
+            "by": "page"
+          }
+        },
+        {
+          "command": "cursorMove",
+          "args": {
+            "to": "viewPortTop"
+          }
+        }
+      ]
+    },
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "editorScroll",
+          "args": {
+            "to": "up",
+            "by": "page"
+          }
+        },
+        {
+          "command": "cursorMove",
+          "args": {
+            "to": "viewPortBottom"
+          }
+        }
+      ]
+    },
+    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
   },
 
   // Back and Forward Navigation
