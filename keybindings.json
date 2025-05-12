@@ -10,6 +10,7 @@
   { "key": "cmd+]", "command": "" },
   { "key": "cmd+escape", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
+  { "key": "alt+escape", "command": "" },
 
   // Resizing Editor
   {
@@ -86,18 +87,41 @@
   },
   {
     "key": "tab",
-    "command": "-vscode-neovim.send"
+    "command": "-editor.action.inlineSuggest.commit"
   },
   {
     "key": "tab",
-    "command": "vscode-neovim.send",
-    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert')",
-    "args": "<Tab>"
+    "command": "-editor.action.inlineSuggest.jump"
+  },
+  {
+    "key": "alt+enter",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "inlineEditIsVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+  },
+  {
+    "key": "alt+enter",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "inInlineEditsPreviewEditor"
+  },
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.acceptNextLine",
+    "when": "inlineEditIsVisible || inlineSuggestionVisible"
+  },
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.jump",
+    "when": "inlineEditIsVisible && tabShouldJumpToInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
   },
   {
     "key": "alt+space",
     "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus && !inlineEditIsVisible && !inlineSuggestionVisible "
+  },
+  {
+    "key": "alt+escape",
+    "command": "editor.action.inlineSuggest.hide",
+    "when": "inlineEditIsVisible || inlineSuggestionVisible"
   },
 
   // Editor Focus
