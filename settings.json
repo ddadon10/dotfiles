@@ -18,12 +18,14 @@
   "editor.lightbulb.enabled": "off",
   "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
+  "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.occurrencesHighlight": "off",
   "editor.renderLineHighlight": "none",
   "editor.stickyScroll.enabled": false,
   "files.autoSave": "afterDelay",
   "github.copilot.chat.generateTests.codeLens": true,
   "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.nextEditSuggestions.fixes": true,
   "gitlens.telemetry.enabled": false,
   "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
@@ -55,6 +57,5 @@
     "strings": "inline"
   },
   "continue.enableConsole": true,
-  "sqltools.highlightQuery": false,
-  "github.copilot.selectedCompletionModel": ""
+  "sqltools.highlightQuery": false
 }
