@@ -9,6 +9,7 @@
   { "key": "cmd+[", "command": "" },
   { "key": "cmd+]", "command": "" },
   { "key": "cmd+e", "command": "" },
+  { "key": "cmd+i", "command": "" },
   { "key": "cmd+l", "command": "" },
   { "key": "cmd+escape", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
@@ -135,6 +136,11 @@
     "key": "cmd+l",
     "command": "editor.action.inlineSuggest.hide",
     "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
+  },
+  {
+    "key": "cmd+i",
+    "command": "github.copilot.completions.toggle",
+    "when": "github.copilot.activated"
   },
 
   // Editor Focus
