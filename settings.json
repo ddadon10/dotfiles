@@ -1,4 +1,7 @@
 {
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -9,21 +12,31 @@
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "chat.agent.enabled": true,
+  "continue.enableConsole": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
   "editor.autoClosingDelete": "always",
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
   "editor.hideCursorInOverviewRuler": true,
+  "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.lightbulb.enabled": "off",
   "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
-  "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.occurrencesHighlight": "off",
+  "editor.quickSuggestionsDelay": 1000,
   "editor.renderLineHighlight": "none",
   "editor.stickyScroll.enabled": false,
+  "editor.suggest.showStatusBar": true,
   "files.autoSave": "afterDelay",
+  "files.insertFinalNewline": true,
   "github.copilot.chat.generateTests.codeLens": true,
+  "github.copilot.enable": {
+    "*": true,
+    "markdown": false,
+    "plaintext": false,
+    "scminput": false
+  },
   "github.copilot.nextEditSuggestions.enabled": true,
   "github.copilot.nextEditSuggestions.fixes": true,
   "gitlens.telemetry.enabled": false,
@@ -31,10 +44,14 @@
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
   "security.workspace.trust.untrustedFiles": "open",
+  "sqltools.highlightQuery": false,
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
-  "vscode-neovim.afterInitConfig": ["set ignorecase", "set smartcase"],
+  "vscode-neovim.afterInitConfig": [
+    "set ignorecase",
+    "set smartcase"
+  ],
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
@@ -47,15 +64,7 @@
   },
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
+  "workbench.editor.enablePreview": false,
   "workbench.layoutControl.enabled": false,
-  "workbench.startupEditor": "none",
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.quickSuggestions": {
-    "comments": "inline",
-    "strings": "inline"
-  },
-  "continue.enableConsole": true,
-  "sqltools.highlightQuery": false
+  "workbench.startupEditor": "none"
 }
