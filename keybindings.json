@@ -8,6 +8,8 @@
   { "key": "cmd+6", "command": "" },
   { "key": "cmd+[", "command": "" },
   { "key": "cmd+]", "command": "" },
+  { "key": "cmd+e", "command": "" },
+  { "key": "cmd+l", "command": "" },
   { "key": "cmd+escape", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
   { "key": "alt+escape", "command": "" },
@@ -87,41 +89,52 @@
   },
   {
     "key": "tab",
+    "command": "-vscode-neovim.send"
+  },
+  {
+    "key": "tab",
     "command": "-editor.action.inlineSuggest.commit"
   },
   {
     "key": "tab",
-    "command": "-editor.action.inlineSuggest.jump"
+    "command": "vscode-neovim.send",
+    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert')",
+    "args": "<Tab>"
   },
   {
-    "key": "alt+enter",
-    "command": "editor.action.inlineSuggest.commit",
-    "when": "inlineEditIsVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
-  },
-  {
-    "key": "alt+enter",
-    "command": "editor.action.inlineSuggest.commit",
-    "when": "inInlineEditsPreviewEditor"
-  },
-  {
-    "key": "alt+tab",
+    "key": "tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "inlineEditIsVisible || inlineSuggestionVisible"
+    "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "editorTextFocus && inlineEditIsVisible && tabShouldAcceptInlineEdit"
+  },
+  {
+    "key": "shift+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
   },
   {
     "key": "alt+tab",
-    "command": "editor.action.inlineSuggest.jump",
-    "when": "inlineEditIsVisible && tabShouldJumpToInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+    "command": "editor.action.inlineSuggest.acceptNextWord",
+    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
   },
   {
-    "key": "alt+space",
+    "key": "cmd+e",
+    "command": "editor.action.inlineSuggest.toggleShowCollapsed",
+    "when": "editorTextFocus && (inlineEditIsVisible || inInlineEditsPreviewEditor)"
+  },
+  {
+    "key": "cmd+l",
     "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineEditIsVisible && !inlineSuggestionVisible "
+    "when": "editorTextFocus && !inlineEditIsVisible && !inlineSuggestionVisible"
   },
   {
-    "key": "alt+escape",
+    "key": "cmd+l",
     "command": "editor.action.inlineSuggest.hide",
-    "when": "inlineEditIsVisible || inlineSuggestionVisible"
+    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
   },
 
   // Editor Focus
