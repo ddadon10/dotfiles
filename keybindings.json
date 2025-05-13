@@ -139,8 +139,19 @@
   },
   {
     "key": "cmd+i",
-    "command": "github.copilot.completions.toggle",
-    "when": "github.copilot.activated"
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "editor.action.inlineSuggest.hide",
+          "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
+        },
+        {
+          "command": "github.copilot.completions.toggle",
+          "when": "github.copilot.activated"
+        }
+      ]
+    }
   },
 
   // Editor Focus
