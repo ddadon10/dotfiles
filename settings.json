@@ -1,18 +1,14 @@
 {
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
   "chat.agent.enabled": true,
   "continue.enableConsole": true,
+  "continue.enableTabAutocomplete": true,
+  "continue.showInlineTip": false,
+  "dev.containers.cacheVolume": true,
+  "dev.containers.defaultExtensions": [
+    "asvetliakov.vscode-neovim",
+    "Continue.continue"
+  ],
+  "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
   "editor.autoClosingDelete": "always",
@@ -23,22 +19,21 @@
   "editor.lightbulb.enabled": "off",
   "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
+  "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
-  "editor.quickSuggestionsDelay": 1000,
+  "editor.quickSuggestionsDelay": 500,
   "editor.renderLineHighlight": "none",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showStatusBar": true,
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
-  "github.copilot.chat.generateTests.codeLens": true,
-  "github.copilot.enable": {
-    "*": true,
-    "markdown": false,
-    "plaintext": false,
-    "scminput": false
-  },
-  "github.copilot.nextEditSuggestions.enabled": true,
-  "github.copilot.nextEditSuggestions.fixes": true,
+  "git.blame.editorDecoration.enabled": false,
+  "gitlens.blame.avatars": false,
+  "gitlens.codeLens.enabled": false,
+  "gitlens.currentLine.enabled": false,
   "gitlens.telemetry.enabled": false,
   "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
@@ -48,10 +43,8 @@
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
-  "vscode-neovim.afterInitConfig": [
-    "set ignorecase",
-    "set smartcase"
-  ],
+  "vscode-neovim.afterInitConfig": ["set ignorecase", "set smartcase"],
+  "vscode-neovim.neovimExecutablePaths.linux": "/opt/neovim/bin/nvim",
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
