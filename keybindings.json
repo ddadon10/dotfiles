@@ -6,6 +6,7 @@
   { "key": "cmd+4", "command": "" },
   { "key": "cmd+5", "command": "" },
   { "key": "cmd+6", "command": "" },
+  { "key": "cmd+7", "command": "" },
   { "key": "cmd+[", "command": "" },
   { "key": "cmd+]", "command": "" },
   { "key": "cmd+e", "command": "" },
@@ -128,17 +129,17 @@
     "when": "editorTextFocus && (inlineEditIsVisible || inInlineEditsPreviewEditor)"
   },
   {
-    "key": "cmd+l",
+    "key": "cmd+i",
     "command": "editor.action.inlineSuggest.trigger",
     "when": "editorTextFocus && !inlineEditIsVisible && !inlineSuggestionVisible"
   },
   {
-    "key": "cmd+l",
+    "key": "cmd+i",
     "command": "editor.action.inlineSuggest.hide",
     "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
   },
   {
-    "key": "cmd+i",
+    "key": "cmd+l",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -147,8 +148,8 @@
           "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
         },
         {
-          "command": "github.copilot.completions.toggle",
-          "when": "github.copilot.activated"
+          "command": "continue.toggleTabAutocompleteEnabled",
+          "when": "editorTextFocus"
         }
       ]
     }
@@ -206,11 +207,11 @@
   },
   {
     "key": "cmd+6",
-    "command": "workbench.view.extension.continueConsole"
+    "command": "workbench.panel.testResults.view.focus"
   },
   {
     "key": "cmd+7",
-    "command": "workbench.panel.testResults.view.focus"
+    "command": "workbench.view.extension.continueConsole"
   },
 
   // Insert and Command Line Mode Navigation
