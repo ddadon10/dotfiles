@@ -148,7 +148,7 @@
           "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
         },
         {
-          "command": "continue.toggleTabAutocompleteEnabled",
+          "command": "github.copilot.completions.toggle",
           "when": "editorTextFocus"
         }
       ]
@@ -208,10 +208,6 @@
   {
     "key": "cmd+6",
     "command": "workbench.panel.testResults.view.focus"
-  },
-  {
-    "key": "cmd+7",
-    "command": "workbench.view.extension.continueConsole"
   },
 
   // Insert and Command Line Mode Navigation
