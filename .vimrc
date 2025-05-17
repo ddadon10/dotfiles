@@ -58,11 +58,11 @@ if has('ide')
     set idearefactormode=keep
 
     " Goto
-    map <Space>d <Action>(GotoDeclaration)
-    map <Space>e <Action>(GotoNextError)
-    map <Space>i <Action>(GotoImplementation)
-    map <Space>t <Action>(GotoTypeDeclaration)
-    map <Space>u <Action>(GotoTest)
+    map gd <Action>(GotoDeclaration)
+    map ge <Action>(GotoNextError)
+    map gi <Action>(GotoImplementation)
+    map gt <Action>(GotoTypeDeclaration)
+    map gu <Action>(GotoTest)
 
     " Tool Windows
     map <leader>1 <Action>(ActivateProjectToolWindow)
