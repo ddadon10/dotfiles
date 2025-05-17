@@ -1,12 +1,8 @@
 {
   "chat.agent.enabled": true,
-  "continue.enableConsole": true,
-  "continue.enableTabAutocomplete": true,
-  "continue.showInlineTip": false,
   "dev.containers.cacheVolume": true,
   "dev.containers.defaultExtensions": [
     "asvetliakov.vscode-neovim",
-    "Continue.continue"
   ],
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
@@ -21,6 +17,7 @@
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
+  "editor.parameterHints.enabled": false,
   "editor.renderLineHighlight": "none",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showStatusBar": true,
@@ -30,6 +27,7 @@
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
+  "github.copilot.nextEditSuggestions.enabled": true,
   "gitlens.blame.avatars": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -42,7 +40,6 @@
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
-  "vscode-neovim.afterInitConfig": ["set ignorecase", "set smartcase"],
   "vscode-neovim.neovimExecutablePaths.linux": "/opt/neovim/bin/nvim",
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
