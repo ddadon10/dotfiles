@@ -1,13 +1,12 @@
 " A .vimrc that works both with Vim and IntelliJ IDEA
 
 " ----- Global -----
-set ignorecase
-set incsearch
-set nohlsearch
-set noshowcmd
-set number
-set smartcase
 set relativenumber
+set number
+set ignorecase
+set smartcase
+set incsearch
+set noshowcmd
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
@@ -18,10 +17,6 @@ inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
-
-" Remap motions
-nnoremap `] `>
-nnoremap `[ `<
 
 " Put d into the black hole register
 nnoremap d "_d
@@ -38,6 +33,7 @@ xnoremap p P
 if !has('ide')
     colorscheme desert
     filetype plugin indent on
+    syntax on
     set autoindent
     set backspace=indent,eol,start
     set fileformat=unix
@@ -49,13 +45,20 @@ if !has('ide')
     set splitbelow
     set splitright
     set textwidth=120
-    syntax on
 endif
 
 " ----- IDEAvim -----
 if has('ide')
     " Settings
-    set idearefactormode=keep
+    set idearefactormode=visual
+    set ideajoin
+    set functiontextobj
+    set textobj-indent
+    set quickscope
+    set surround
+
+    " Quickscope
+    let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
     " Goto
     map gd <Action>(GotoDeclaration)
@@ -64,13 +67,6 @@ if has('ide')
     map gt <Action>(GotoTypeDeclaration)
     map gu <Action>(GotoTest)
 
-    " Tool Windows
-    map <leader>1 <Action>(ActivateProjectToolWindow)
-    map <leader>2 <Action>(ActivateAIAssistantToolWindow)
-    map <leader>3 <Action>(ActivateDebugToolWindow)
-    map <leader>4 <Action>(ActivateProblemsViewToolWindow)
-    map <leader>5 <Action>(ActivateTerminalToolWindow)
-
     " VCS
     map <leader>C <Action>(CheckinProject)
     map <leader>B <Action>(Git.Branches)
@@ -78,18 +74,22 @@ if has('ide')
     map <leader>L <Action>(Vcs.UpdateProject)
 
     " General IDE Actions
+    map <leader>b <Action>(ToggleLineBreakpoint)
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
     map <leader>c <Action>(CommentByLineComment)
     map <leader>f <Action>(ReformatCode)
-    map <leader>j <Action>(QuickJavaDoc)
+    map <leader>h <Action>(ShowHoverInfo)
     map <leader>k <Action>(Stop)
-    map <leader>l <Action>(ToggleLineBreakpoint)
+    map <leader>l <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
     map <leader>n <Action>(Resume)
+    map <leader>p <Action>(ParameterInfo)
+    map <leader>q <Action>(QuickImplementations)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
+    map <leader><Space> <Action>(CodeCompletion)
 
 endif
