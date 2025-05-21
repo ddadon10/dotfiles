@@ -52,6 +52,7 @@ if has('ide')
     " Settings
     set idearefactormode=visual
     set ideajoin
+    set argtextobj
     set functiontextobj
     set textobj-indent
     set quickscope
