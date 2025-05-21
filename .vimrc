@@ -66,6 +66,7 @@ if has('ide')
     map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
+    map gs <Action>(GotoSuperMethod)
     map gt <Action>(GotoTypeDeclaration)
     map gu <Action>(GotoTest)
 
