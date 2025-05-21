@@ -84,7 +84,6 @@ if has('ide')
     map <leader>f <Action>(ReformatCode)
     map <leader>h <Action>(ShowHoverInfo)
     map <leader>k <Action>(Stop)
-    map <leader>l <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
     map <leader>n <Action>(Resume)
     map <leader>p <Action>(ParameterInfo)
     map <leader>q <Action>(QuickImplementations)
@@ -94,5 +93,8 @@ if has('ide')
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
     map <leader><Space> <Action>(CodeCompletion)
+
+    " Insert mode Actions
+    imap <C-p> <Action>(ParameterInfo)
 
 endif
