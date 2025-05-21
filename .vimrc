@@ -59,6 +59,8 @@ if has('ide')
 
     " Quickscope
     let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+    let g:qs_primary_color = '#26F0F1'
+    let g:qs_secondary_color = '#F00699'
 
     " Goto
     map gd <Action>(GotoDeclaration)
