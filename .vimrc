@@ -29,6 +29,9 @@ xnoremap r "_r
 " Paste without yanking the deleted text
 xnoremap p P
 
+" Set cursor position at the end of the yanked text
+vnoremap y myy`y
+
 " ----- Vim -----
 if !has('ide')
     colorscheme desert
