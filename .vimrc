@@ -104,9 +104,4 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
-
-    " Cmd Actions
-    map <D-i> <Action>(CallInlineCompletionAction)
-    map <D-o> <Action>(CodeCompletion)
-    map <D-P> <Action>(ParameterInfo)
 endif
