@@ -32,6 +32,13 @@ xnoremap p P
 " Set cursor position at the end of the yanked text
 vnoremap y myy`y
 
+" Remap search
+nnoremap s /
+nnoremap S ?
+
+" Move vertically with Space
+nnoremap <Space> -
+
 " ----- Vim -----
 if !has('ide')
     colorscheme desert
@@ -80,7 +87,7 @@ if has('ide')
     map <leader>M <Action>(Annotate)
     map <leader>L <Action>(Vcs.UpdateProject)
 
-    " General IDE Actions
+    " Leader Actions
     map <leader>b <Action>(ToggleLineBreakpoint)
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
@@ -97,5 +104,9 @@ if has('ide')
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
-    map <leader><Space> <Action>(CodeCompletion)
+
+    " Cmd Actions
+    map <D-i> <Action>(CallInlineCompletionAction)
+    map <D-o> <Action>(CodeCompletion)
+    map <D-P> <Action>(ParameterInfo)
 endif
