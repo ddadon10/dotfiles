@@ -73,13 +73,13 @@ if has('ide')
     let g:qs_primary_color = '#26F0F1'
     let g:qs_secondary_color = '#F00699'
 
-    " Goto
-    map gd <Action>(GotoDeclaration)
+    " G Actions
+    map gd <Action>(GotoDeclarationOnly)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gs <Action>(GotoSuperMethod)
     map gt <Action>(GotoTypeDeclaration)
-    map gu <Action>(GotoTest)
+    map gu <Action>(GotoDeclaration)
 
     " VCS
     map <leader>C <Action>(CheckinProject)
@@ -101,6 +101,7 @@ if has('ide')
     map <leader>q <Action>(QuickImplementations)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
+    map <leader>t <Action>(GotoTest)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
     map <leader><CR> <Action>(ShowIntentionActions)
