@@ -72,12 +72,11 @@ if has('ide')
     let g:qs_secondary_color = '#F00699'
 
     " G Actions
-    map gd <Action>(GotoDeclarationOnly)
+    map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gs <Action>(GotoSuperMethod)
     map gt <Action>(GotoTypeDeclaration)
-    map gu <Action>(GotoDeclaration)
 
     " VCS
     map <leader>C <Action>(CheckinProject)
