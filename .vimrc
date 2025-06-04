@@ -60,7 +60,7 @@ endif
 " ----- IDEAvim -----
 if has('ide')
     " Settings
-    set idearefactormode=visual
+    set idearefactormode=keep
     set ideajoin
     set textobj-indent
     set quickscope
