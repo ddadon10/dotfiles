@@ -77,6 +77,7 @@ if has('ide')
     map gi <Action>(GotoImplementation)
     map gs <Action>(GotoSuperMethod)
     map gt <Action>(GotoTypeDeclaration)
+    map gu <Action>(GotoDeclaration)
 
     " VCS
     map <leader>C <Action>(CheckinProject)
