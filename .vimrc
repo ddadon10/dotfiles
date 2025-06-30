@@ -72,6 +72,9 @@ if has('ide')
     let g:qs_primary_color = '#26F0F1'
     let g:qs_secondary_color = '#F00699'
 
+    " Reject suggested code in insert mode.
+    imap <S-Space> <Esc>a
+
     " G Actions
     map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
