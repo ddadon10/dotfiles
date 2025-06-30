@@ -75,12 +75,13 @@ if has('ide')
     " Reject suggested code in insert mode.
     imap <S-Space> <Esc>a
 
-    " G Actions
+    " Goto Actions
     map gd <Action>(GotoDeclaration)
     map ge <Action>(GotoNextError)
     map gi <Action>(GotoImplementation)
     map gs <Action>(GotoSuperMethod)
     map gt <Action>(GotoTypeDeclaration)
+    map gT <Action>(GotoTest)
     map gu <Action>(GotoDeclaration)
 
     " VCS
@@ -89,22 +90,20 @@ if has('ide')
     map <leader>M <Action>(Annotate)
     map <leader>L <Action>(Vcs.UpdateProject)
 
-    " Leader Actions
-    map <leader>b <Action>(ToggleLineBreakpoint)
+    " General Actions
     map <leader>d <Action>(Debug)
     map <leader>e <Action>(ShowErrorDescription)
     map <leader>c <Action>(CommentByLineComment)
     map <leader>f <Action>(ReformatCode)
-    map <leader>h <Action>(ShowHoverInfo)
+    map <leader>j <Action>(QuickJavaDoc)
     map <leader>k <Action>(Stop)
-    map <leader>l <Action>(HighlightUsagesInFile)
+    map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
-    map <leader>p <Action>(ShowPopupMenu)
-    map <leader>q <Action>(QuickImplementations)
     map <leader>r <Action>(RenameElement)
     map <leader>s <Action>(Run)
-    map <leader>t <Action>(GotoTest)
+    map <leader>u <Action>(HighlightUsagesInFile)
     map <leader>v <Action>(IntroduceVariable)
     map <leader>x <Action>(EvaluateExpression)
+    map <leader><leader> <Action>(ShowPopupMenu)
     map <leader><CR> <Action>(ShowIntentionActions)
 endif
