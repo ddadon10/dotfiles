@@ -61,6 +61,7 @@ endif
 " ----- IDEAvim -----
 if has('ide')
     " Settings
+    set clipboard+=ideaput
     set idearefactormode=keep
     set ideajoin
     set textobj-indent
