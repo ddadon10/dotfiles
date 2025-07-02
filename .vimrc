@@ -7,7 +7,7 @@ set ignorecase
 set smartcase
 set incsearch
 set noshowcmd
-set clipboard=unnamed
+set clipboard+=unnamed
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
