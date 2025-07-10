@@ -1,9 +1,6 @@
 {
   "chat.agent.enabled": true,
   "dev.containers.cacheVolume": true,
-  "dev.containers.defaultExtensions": [
-    "asvetliakov.vscode-neovim",
-  ],
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
@@ -19,6 +16,7 @@
   "editor.occurrencesHighlight": "off",
   "editor.parameterHints.enabled": false,
   "editor.renderLineHighlight": "none",
+  "editor.renderWhitespace": "none",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showStatusBar": true,
   "extensions.experimental.affinity": {
@@ -27,7 +25,6 @@
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
-  "github.copilot.nextEditSuggestions.enabled": true,
   "gitlens.blame.avatars": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -35,12 +32,15 @@
   "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
+  "search.quickOpen.includeSymbols": true,
+  "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "sqltools.highlightQuery": false,
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
-  "vscode-neovim.neovimExecutablePaths.linux": "/opt/neovim/bin/nvim",
+  "terminal.integrated.fontSize": 14,
+  "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/nvim/bin/nvim",
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
@@ -54,6 +54,8 @@
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
-  "workbench.layoutControl.enabled": false,
-  "workbench.startupEditor": "none"
+  "workbench.startupEditor": "none",
+  "workbench.view.showQuietly": {
+    "workbench.panel.output": true
+  }
 }
