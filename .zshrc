@@ -1,5 +1,6 @@
 # Some useful aliases
 alias n='nvim'
+alias vi='nvim'
 alias rm='rm -i'
 alias dpostgres='docker run --name postgrestmp --interactive --tty --env POSTGRES_PASSWORD=postgres -p 127.0.0.1:5434:5432 --rm postgres:16.7-bookworm '
 alias datlas='docker run --interactive --tty --rm --mount type=bind,src="${PWD}",dst=/workspace --mount type=bind,src="${HOME}/.atlas",dst=/root/.atlas --workdir /workspace arigaio/atlas:0.31.0'
