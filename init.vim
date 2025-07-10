@@ -1,3 +1,5 @@
+" --- Neovim and VSCode Neovim config ---
+
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
@@ -38,7 +40,6 @@ if !exists('g:vscode')
     set shortmess+=I " https://neovim.io/doc/user/options.html#shm-I
     set clipboard+=unnamed " https://neovim.io/doc/user/options.html#'clipboard'
     colorscheme sorbet " https://neovim.io/doc/user/syntax.html#%3Acolorscheme
-    filetype plugin indent on " https://neovim.io/doc/user/options.html#'filetype'
     highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://neovim.io/doc/user/syntax.html#hl-EndOfBuffer
 endif
 
@@ -51,18 +52,4 @@ if exists('g:vscode')
     nnoremap gr <Cmd>call VSCodeNotify('editor.action.goToReferences')<CR>
     nnoremap gs <Cmd>call VSCodeNotify('typescript.goToSourceDefinition')<CR>
     nnoremap gt <Cmd>call VSCodeNotify('editor.action.goToTypeDefinition')<CR>
-
-    " Leader Actions
-    nnoremap <leader>b <Cmd>call VSCodeNotify('editor.action.toggleBreakpoint')<CR>
-    nnoremap <leader>c <Cmd>call VSCodeNotify('editor.action.commentLine')<CR>
-    nnoremap <leader>e <Cmd>call VSCodeNotify('editor.action.marker.next')<CR>
-    nnoremap <leader>d <Cmd>call VSCodeNotify('workbench.action.debug.start')<CR>
-    nnoremap <leader>f <Cmd>call VSCodeNotify('editor.action.formatDocument')<CR>
-    nnoremap <leader>m <Cmd>call VSCodeNotify('gitlens.toggleFileBlame')<CR>
-    nnoremap <leader>o <Cmd>call VSCodeNotify('editor.action.organizeImports')<CR>
-    nnoremap <leader>r <Cmd>call VSCodeNotify('editor.action.rename')<CR>
-    nnoremap <leader>t <Cmd>call VSCodeNotify('go.toggle.test.file')<CR> " Todo: Handle case when it's not a go file
-    nnoremap <leader>r <Cmd>call VSCodeNotify('editor.action.refactor')<CR>
-
-    nnoremap <leader><CR> <Cmd>call VSCodeNotify('editor.action.quickFix')<CR>
 endif
