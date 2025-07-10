@@ -14,7 +14,6 @@
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
-  "editor.quickSuggestionsDelay": 250,
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.stickyScroll.enabled": false,
