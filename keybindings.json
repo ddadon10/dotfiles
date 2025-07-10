@@ -210,30 +210,30 @@
     "command": "workbench.panel.testResults.view.focus"
   },
 
-  // Insert and Command Line Mode Navigation
+  // Keybinding Passthroughs
   {
     "key": "ctrl+h",
     "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
-    "args": "<Left>"
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
+    "args": "<C-h>"
   },
   {
     "key": "ctrl+j",
     "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
-    "args": "<Down>"
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
+    "args": "<C-j>"
   },
   {
     "key": "ctrl+k",
     "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
-    "args": "<Up>"
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
+    "args": "<C-k>"
   },
   {
     "key": "ctrl+l",
     "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert'",
-    "args": "<Right>"
+    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
+    "args": "<C-l>"
   },
 
   // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/58
@@ -386,49 +386,7 @@
     "when": "canNavigateForward"
   },
 
-  // Caret Relative Actions
-  {
-    "key": "space d",
-    "command": "editor.action.revealDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space h",
-    "command": "editor.action.showHover",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space i",
-    "command": "editor.action.goToImplementation",
-    "when": "editorHasImplementationProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space p",
-    "command": "editor.action.peekDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space r",
-    "command": "editor.action.goToReferences",
-    "when": "editorHasDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space s",
-    "command": "typescript.goToSourceDefinition",
-    "when": "editorLangId == 'typescriptreact' && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "space t",
-    "command": "editor.action.goToTypeDefinition",
-    "when": "editorHasTypeDefinitionProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-
-  // Actions
-  {
-    "key": "\\ enter",
-    "command": "editor.action.quickFix",
-    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
+  // Leader Actions
   {
     "key": "\\ b",
     "command": "editor.debug.action.toggleBreakpoint",
@@ -440,14 +398,14 @@
     "when": "editorTextFocus && (neovim.mode == 'normal' || neovim.mode == 'visual')"
   },
   {
-    "key": "\\ e",
-    "command": "editor.action.marker.next",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
     "key": "\\ d",
     "command": "workbench.action.debug.start",
     "when": "debuggersAvailable && debugState == 'inactive' && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ e",
+    "command": "editor.action.marker.next",
+    "when": "editorTextFocus && neovim.mode == 'normal'"
   },
   {
     "key": "\\ f",
@@ -478,6 +436,11 @@
   {
     "key": "\\ x",
     "command": "editor.action.refactor",
+    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
+  },
+  {
+    "key": "\\ enter",
+    "command": "editor.action.quickFix",
     "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
   }
 ]
