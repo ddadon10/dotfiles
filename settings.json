@@ -34,7 +34,6 @@
   "search.quickOpen.includeSymbols": true,
   "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
-  "sqltools.highlightQuery": false,
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
