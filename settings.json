@@ -31,7 +31,6 @@
   "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
-  "search.quickOpen.includeSymbols": true,
   "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "tailwindCSS.colorDecorators": false,
