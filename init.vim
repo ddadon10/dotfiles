@@ -1,5 +1,7 @@
 " --- Neovim and VSCode Neovim config ---
 
+set clipboard+=unnamed " https://neovim.io/doc/user/options.html#'clipboard'
+
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
@@ -38,7 +40,6 @@ if !exists('g:vscode')
     set smartcase  " https://neovim.io/doc/user/options.html#'smartcase'
     set noshowcmd " https://neovim.io/doc/user/options.html#'noshowcmd'
     set shortmess+=I " https://neovim.io/doc/user/options.html#shm-I
-    set clipboard+=unnamed " https://neovim.io/doc/user/options.html#'clipboard'
     colorscheme sorbet " https://neovim.io/doc/user/syntax.html#%3Acolorscheme
     highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://neovim.io/doc/user/syntax.html#hl-EndOfBuffer
 endif
