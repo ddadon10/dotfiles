@@ -169,6 +169,11 @@
     "when": "workbench.scm.active"
   },
   {
+    "key": "shift+cmd+s",
+    "command": "pg-objectExplorer.focus",
+    "when": "pg-objectExplorer.active"
+  },
+  {
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
     "when": "workbench.view.testing.active"
