@@ -38,8 +38,6 @@
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontSize": 14,
-  "terminal.integrated.suggest.enabled": true,
-  "terminal.integrated.suggest.showStatusBar": false,
   "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/nvim/bin/nvim",
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
