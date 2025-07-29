@@ -1,4 +1,5 @@
 {
+  "breadcrumbs.symbolPath": "off",
   "chat.agent.enabled": true,
   "dev.containers.cacheVolume": true,
   "dev.containers.experimentalLockfile": true,
