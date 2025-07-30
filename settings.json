@@ -20,6 +20,10 @@
   "editor.renderWhitespace": "none",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
+  "explorer.autoRevealExclude": {
+    "**/bower_components": false,
+    "**/node_modules": false
+  },
   "extensions.autoUpdate": false,
   "extensions.experimental.affinity": {
     "asvetliakov.vscode-neovim": 1
