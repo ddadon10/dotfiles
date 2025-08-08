@@ -1,13 +1,13 @@
-" A .vimrc that works both with Vim and IntelliJ IDEA
+" A .vimrc that works both with Vim and IdeaVim
 
-" ----- Global -----
-set relativenumber
-set number
-set ignorecase
-set smartcase
-set incsearch
-set noshowcmd
-set clipboard+=unnamed
+" --- Vim and IdeaVim ---
+set clipboard+=unnamed " https://vimhelp.org/options.txt.html#clipboard-unnamed
+set relativenumber " https://vimhelp.org/options.txt.html#%27relativenumber%27
+set number " https://vimhelp.org/options.txt.html#%27number%27
+set ignorecase " https://vimhelp.org/options.txt.html#%27ignorecase%27
+set incsearch " https://vimhelp.org/options.txt.html#%27incsearch%27
+set smartcase  " https://vimhelp.org/options.txt.html#%27smartcase%27
+set noshowcmd " https://vimhelp.org/options.txt.html#%27noshowcmd%27
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
@@ -40,25 +40,18 @@ nnoremap S ?
 " Move vertically with Space
 nnoremap <Space> -
 
-" ----- Vim -----
+" --- Vim ---
 if !has('ide')
-    colorscheme desert
-    filetype plugin indent on
-    syntax on
-    set autoindent
-    set backspace=indent,eol,start
-    set fileformat=unix
-    set foldlevel=99
-    set foldmethod=indent
-    set omnifunc=syntaxcomplete#Complete
-    set shiftwidth=2
-    set softtabstop=2
-    set splitbelow
-    set splitright
-    set textwidth=120
+    set shortmess+=I " https://vimhelp.org/options.txt.html#shm-I
+    set laststatus=2 " https://vimhelp.org/options.txt.html#%27laststatus%27
+    set statusline=%<%f%h%m%r%=%b\ 0x%B\ \ %l,%c%V\ %P
+    colorscheme sorbet " https://vimhelp.org/syntax.txt.html#%3Acolorscheme
+    syntax enable " https://vimhelp.org/syntax.txt.html#%3Asyn-on
+    filetype plugin indent on " https://vimhelp.org/filetype.txt.html#%3Afiletype-overview
+    highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://vimhelp.org/syntax.txt.html#highlight-groups
 endif
 
-" ----- IDEAvim -----
+" --- IdeaVim ---
 if has('ide')
     " Settings
     set clipboard+=ideaput
@@ -98,6 +91,7 @@ if has('ide')
     map <leader>f <Action>(ReformatCode)
     map <leader>j <Action>(QuickJavaDoc)
     map <leader>k <Action>(Stop)
+    map <leader>h <Action>(ShowHoverInfo)
     map <leader>l <Action>(ToggleLineBreakpoint)
     map <leader>n <Action>(Resume)
     map <leader>r <Action>(RenameElement)
