@@ -1,4 +1,6 @@
 " A .vimrc that works both with Vim and IdeaVim
+" For compatibility reason, this is a "legacy" script.
+" Latest legacy script user manual can be found here: https://github.com/vim/vim/blob/v8.2.3951/runtime/doc/usr_41.txt
 
 " --- Vim and IdeaVim ---
 set clipboard+=unnamed " https://vimhelp.org/options.txt.html#clipboard-unnamed
@@ -8,6 +10,7 @@ set ignorecase " https://vimhelp.org/options.txt.html#%27ignorecase%27
 set incsearch " https://vimhelp.org/options.txt.html#%27incsearch%27
 set smartcase  " https://vimhelp.org/options.txt.html#%27smartcase%27
 set noshowcmd " https://vimhelp.org/options.txt.html#%27noshowcmd%27
+set fileformats=unix,dos " https://vimhelp.org/options.txt.html#%27fileformats%27
 
 " In insert or command mode, move by using Ctrl
 cnoremap <C-h> <Left>
@@ -40,15 +43,79 @@ nnoremap S ?
 " Move vertically with Space
 nnoremap <Space> -
 
+let g:statusline_mode_map = {
+    \ 'n': 'NORMAL',
+    \ 'i': 'INSERT',
+    \ 'v': 'VISUAL',
+    \ 'V': 'V-LINE',
+    \ "\<C-v>": 'V-BLOCK',
+    \ 'c': 'COMMAND',
+    \ 'R': 'REPLACE',
+    \ 's': 'SELECT',
+    \ 'S': 'S-LINE',
+    \ "\<C-s>": 'S-BLOCK',
+    \ 't': 'TERM'
+    \ }
+
+
+" Setup the statusline
+" See: https://vimhelp.org/options.txt.html#%27statusline%27
+function! SetupStatusline()
+    " Clear any existing statusline
+    set statusline=
+
+    " Left side
+    set statusline+=%F " Full path to the file in the buffer
+    set statusline+=%m " Modified flag
+    set statusline+=%r " Readonly flag
+
+    " Separator
+    set statusline+=\ │
+
+    set statusline+=\ %y " Type of file in the buffer
+    set statusline+=\ [%{&fileencoding}] " Character encoding
+    set statusline+=\ [%{&fileformat}] " File Format
+    set statusline+=\ [%{&expandtab?'spaces:'..&shiftwidth:'tabs:'..&tabstop}] " Spaces vs Tabs
+
+    " Right side
+    set statusline+=%= " Separation point between alignment sections
+
+    " Separator
+    set statusline+=\ │
+
+    " Character info section
+    set statusline+=\ %{&fileencoding=='utf-8'?'U+':''}%04B " Value of character under cursor, in hexadecimal
+    set statusline+=\ %03b " Value of character under cursor, in decimal
+
+    " Separator
+    set statusline+=\ │
+
+    " Position info section
+    set statusline+=\ Ln:%04l/%04L " Line number / Number of lines in buffer
+    set statusline+=\ Col:%03c " Column number (byte index)
+
+    " Separator
+    set statusline+=\ │
+
+    " Mode
+    set statusline+=\ %{printf('%-8s',get(g:statusline_mode_map,mode(),mode()))} " Mode name
+endfunction
+
+
 " --- Vim ---
 if !has('ide')
-    set shortmess+=I " https://vimhelp.org/options.txt.html#shm-I
+    if has('autocmd')
+        autocmd InsertEnter,InsertLeave,CmdlineEnter,CmdlineLeave * redrawstatus!
+    endif
+    set shortmess+=I " https://vimhelp.org/options.txt.html#%27shortmess%27
     set laststatus=2 " https://vimhelp.org/options.txt.html#%27laststatus%27
-    set statusline=%<%f%h%m%r%=%b\ 0x%B\ \ %l,%c%V\ %P
+    set noshowmode " https://vimhelp.org/options.txt.html#%27noshowmode%27
+    set ttimeoutlen=100 " https://vimhelp.org/options.txt.html#%27ttimeoutlen%27
     colorscheme sorbet " https://vimhelp.org/syntax.txt.html#%3Acolorscheme
     syntax enable " https://vimhelp.org/syntax.txt.html#%3Asyn-on
     filetype plugin indent on " https://vimhelp.org/filetype.txt.html#%3Afiletype-overview
     highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://vimhelp.org/syntax.txt.html#highlight-groups
+    call SetupStatusline()
 endif
 
 " --- IdeaVim ---
