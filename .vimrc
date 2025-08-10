@@ -57,10 +57,9 @@ let g:statusline_mode_map = {
     \ 't': 'TERM'
     \ }
 
-
 " Setup the statusline
 " See: https://vimhelp.org/options.txt.html#%27statusline%27
-function! SetupStatusline()
+function! s:SetupStatusline()
     " Clear any existing statusline
     set statusline=
 
@@ -115,7 +114,7 @@ if !has('ide')
     syntax enable " https://vimhelp.org/syntax.txt.html#%3Asyn-on
     filetype plugin indent on " https://vimhelp.org/filetype.txt.html#%3Afiletype-overview
     highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://vimhelp.org/syntax.txt.html#highlight-groups
-    call SetupStatusline()
+    call s:SetupStatusline()
 endif
 
 " --- IdeaVim ---
