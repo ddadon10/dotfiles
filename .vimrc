@@ -29,10 +29,16 @@
 
 " Configuration
 let g:qs_enable = 1
-let g:qs_accepted_chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 let g:qs_max_line_length = 1000
 let g:qs_highlight_priority = 1
 let g:qs_cursor_priority = 2
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+let g:qs_accepted_chars = [
+\ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p',
+\ 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F',
+\ 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+\ 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+\ ]
 
 " Define highlight groups
 augroup qs_colors
@@ -250,10 +256,10 @@ function! s:QSAim(motion) abort
   return a:motion . target
 endfunction
 
-" QSSetupMappings creates mappings for f/F/t/T
+" QSSetupMappings creates the mappings
 function! s:QSSetupMappings() abort
   for mode in ['n', 'x', 'o']
-    for motion in ['f', 'F', 't', 'T']
+    for motion in g:qs_highlight_on_keys
       execute printf('%snoremap <expr> %s <SID>QSAim(''%s'')', mode, motion, motion)
     endfor
   endfor
@@ -397,7 +403,6 @@ if has('ide')
     set surround
 
     " Quickscope
-    let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
     let g:qs_primary_color = '#26F0F1'
     let g:qs_secondary_color = '#F00699'
 
