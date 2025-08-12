@@ -238,7 +238,7 @@ function! s:QSGetTargetCharacter() abort
   return char_code ==# "\<S-lt>" ? '<' : nr2char(char_code)
 endfunction
 
-" QSAim handles the main f/F/t/T motion logic
+" QSAim handles the main motion logic
 " Returns: motion + target character
 function! s:QSAim(motion) abort
   if !g:qs_enable
