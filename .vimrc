@@ -125,11 +125,6 @@ function! s:QSGetPatterns(line, cursor, end, targets) abort
       continue
     endif
 
-    if is_first_word
-      let [i, c] = s:QSUpdatePosition(i, c, char, is_forward)
-      continue
-    endif
-
     if index(a:targets, char) == -1
       let [i, c] = s:QSUpdatePosition(i, c, char, is_forward)
       continue
@@ -137,6 +132,12 @@ function! s:QSGetPatterns(line, cursor, end, targets) abort
 
     let char_count = get(occurrences, char, 0) + 1
     let occurrences[char] = char_count
+
+    if is_first_word
+      let [i, c] = s:QSUpdatePosition(i, c, char, is_forward)
+      continue
+    endif
+
 
     let char_offset = is_forward ? 0 : len(char) - 1
 
