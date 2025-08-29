@@ -72,7 +72,7 @@
     "when": "panelFocus"
   },
 
-  //  LLM Code Completion
+  //  TODO: LLM Code Completion
   {
     "key": "escape",
     "command": "-vscode-neovim.escape"
@@ -162,6 +162,18 @@
     "when": "!editorTextFocus"
   },
 
+  // Back and Forward Navigation
+  {
+    "key": "cmd+[",
+    "command": "workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
+  {
+    "key": "cmd+]",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+
   // Left Bar Navigation
   {
     "key": "shift+cmd+g",
@@ -210,37 +222,11 @@
     "command": "workbench.panel.testResults.view.focus"
   },
 
-  // Keybinding Passthroughs
-  {
-    "key": "ctrl+h",
-    "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
-    "args": "<C-h>"
-  },
-  {
-    "key": "ctrl+j",
-    "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
-    "args": "<C-j>"
-  },
-  {
-    "key": "ctrl+k",
-    "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
-    "args": "<C-k>"
-  },
-  {
-    "key": "ctrl+l",
-    "command": "vscode-neovim.send",
-    "when": "neovim.init && editorTextFocus && neovim.mode == 'insert' || neovim.mode == 'cmdline'",
-    "args": "<C-l>"
-  },
-
-  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/58
+  // Workaround: https://github.com/VSCodeVim/Vim/issues/1004
   {
     "key": "cmd+j",
     "command": "cursorMove",
-    "when": "editorTextFocus && neovim.init && neovim.mode != 'insert'",
+    "when": "editorTextFocus && vim.mode == 'Normal'",
     "args": {
       "to": "down",
       "by": "wrappedLine",
@@ -250,7 +236,7 @@
   {
     "key": "cmd+k",
     "command": "cursorMove",
-    "when": "editorTextFocus && neovim.init && neovim.mode != 'insert'",
+    "when": "editorTextFocus && vim.mode == 'Normal'",
     "args": {
       "to": "up",
       "by": "wrappedLine",
@@ -258,33 +244,19 @@
     }
   },
 
-  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/2434
+  // Workaround: https://github.com/VSCodeVim/Vim/issues/2007
   {
-    "key": "ctrl+d",
-    "command": "vscode-neovim.send",
-    "args": "<C-d>jk", // appending jk centers the cursor when scrolling: https://github.com/vscode-neovim/vscode-neovim/issues/983#issuecomment-1634939702
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+    "key": "u",
+    "command": "undo",
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
   {
-    "key": "ctrl+u",
-    "command": "vscode-neovim.send",
-    "args": "<C-u>jk", // appending jk centers the cursor when scrolling: https://github.com/vscode-neovim/vscode-neovim/issues/983#issuecomment-1634939702
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
-  },
-  {
-    "key": "ctrl+f",
-    "command": "vscode-neovim.send",
-    "args": "<C-f>zt",
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
-  },
-  {
-    "key": "ctrl+b",
-    "command": "vscode-neovim.send",
-    "args": "<C-b>zb",
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'visual'"
+    "key": "ctrl+r",
+    "command": "redo",
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
 
-  // Workaround: https://github.com/vscode-neovim/vscode-neovim/issues/983
+  // Workaround: https://github.com/VSCodeVim/Vim/issues/5303
   {
     "key": "ctrl+d",
     "command": "runCommands",
@@ -305,7 +277,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
   {
     "key": "ctrl+u",
@@ -327,7 +299,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
   {
     "key": "ctrl+f",
@@ -349,7 +321,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
   {
     "key": "ctrl+b",
@@ -371,76 +343,6 @@
         }
       ]
     },
-    "when": "editorTextFocus && neovim.init && neovim.mode == 'normal'"
-  },
-
-  // Back and Forward Navigation
-  {
-    "key": "cmd+[",
-    "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
-  },
-  {
-    "key": "cmd+]",
-    "command": "workbench.action.navigateForward",
-    "when": "canNavigateForward"
-  },
-
-  // Leader Actions
-  {
-    "key": "\\ b",
-    "command": "editor.debug.action.toggleBreakpoint",
-    "when": "debuggersAvailable && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ c",
-    "command": "editor.action.commentLine",
-    "when": "editorTextFocus && (neovim.mode == 'normal' || neovim.mode == 'visual')"
-  },
-  {
-    "key": "\\ d",
-    "command": "workbench.action.debug.start",
-    "when": "debuggersAvailable && debugState == 'inactive' && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ e",
-    "command": "editor.action.marker.next",
-    "when": "editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ f",
-    "command": "editor.action.formatDocument",
-    "when": "editorHasDocumentFormattingProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ m",
-    "command": "gitlens.toggleFileBlame",
-    "when": "editorHasDocumentFormattingProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ o",
-    "command": "editor.action.organizeImports",
-    "when": "supportedCodeAction =~ /(\\s|^)source\\.organizeImports\\b/ && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ r",
-    "command": "editor.action.rename",
-    "when": "editorHasRenameProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ u",
-    "command": "go.toggle.test.file",
-    "when": "editorLangId == 'go' && editorTextFocus && neovim.mode == 'normal'"
-  },
-
-  {
-    "key": "\\ x",
-    "command": "editor.action.refactor",
-    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
-  },
-  {
-    "key": "\\ enter",
-    "command": "editor.action.quickFix",
-    "when": "editorHasCodeActionsProvider && editorTextFocus && neovim.mode == 'normal'"
+    "when": "editorTextFocus && vim.mode == 'Normal'"
   }
 ]
