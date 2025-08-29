@@ -2,6 +2,9 @@
   "breadcrumbs.symbolPath": "off",
   "dev.containers.cacheVolume": true,
   "dev.containers.experimentalLockfile": true,
+  "continue.enableConsole": true,
+  "continue.telemetryEnabled": false,
+  "continue.showInlineTip": false,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
   "editor.autoClosingDelete": "always",
@@ -9,6 +12,7 @@
   "editor.fontSize": 14,
   "editor.hideCursorInOverviewRuler": true,
   "editor.inlineSuggest.edits.showCollapsed": true,
+  "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
@@ -83,7 +87,7 @@
       "after": ["<Right>"]
     }
   ],
-  "vim.normalModeKeyBindings": [
+  "vim.normalModeKeyBindingsNonRecursive": [
     // Go To Actions
     {
       "before": ["g", "d"],
@@ -190,9 +194,8 @@
       "before": ["<leader>", "<CR>"],
       "commands": ["editor.action.quickFix"],
       "silent": "true"
-    }
-  ],
-  "vim.normalModeKeyBindingsNonRecursive": [
+    },
+    // Other Keybindings
     {
       "before": ["d"],
       "after": ["\"", "_", "d"]
@@ -204,16 +207,25 @@
     {
       "before": ["<Space>"],
       "after": ["-"]
+    },
+    // Workaround: https://github.com/VSCodeVim/Vim/issues/2007
+    {
+      "before": ["u"],
+      "commands": ["undo"],
+      "silent": true
+    },
+    {
+      "before": ["<C-r>"],
+      "commands": ["redo"],
+      "silent": true
     }
   ],
-  "vim.visualModeKeyBindings": [
+  "vim.visualModeKeyBindingsNonRecursive": [
     {
       "before": ["<leader>", "c"],
       "commands": ["editor.action.commentLine"],
       "silent": "true"
-    }
-  ],
-  "vim.visualModeKeyBindingsNonRecursive": [
+    },
     {
       "before": ["d"],
       "after": ["\"", "_", "d"]
@@ -246,5 +258,10 @@
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
-  "workbench.startupEditor": "none"
+  "workbench.startupEditor": "none",
+  "yaml.schemas": {
+    "/Users/david/.vscode/extensions/continue.continue-1.0.21-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
+  }
 }
