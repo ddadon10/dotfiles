@@ -1,6 +1,5 @@
 {
   "breadcrumbs.symbolPath": "off",
-  "chat.agent.enabled": true,
   "dev.containers.cacheVolume": true,
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
@@ -26,7 +25,7 @@
   },
   "extensions.autoUpdate": false,
   "extensions.experimental.affinity": {
-    "asvetliakov.vscode-neovim": 1
+    "vscodevim.vim": 1
   },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
@@ -44,7 +43,196 @@
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontSize": 14,
-  "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/nvim/bin/nvim",
+  "vim.commandLineModeKeyBindingsNonRecursive": [
+    {
+      "after": ["<Left>"],
+      "before": ["<C-h>"]
+    },
+    {
+      "after": ["<Down>"],
+      "before": ["<C-j>"]
+    },
+    {
+      "after": ["<Up>"],
+      "before": ["<C-k>"]
+    },
+    {
+      "after": ["<Right>"],
+      "before": ["<C-l>"]
+    }
+  ],
+  "vim.insertModeKeyBindingsNonRecursive": [
+    {
+      "after": ["<Left>"],
+      "before": ["<C-h>"]
+    },
+    {
+      "after": ["<Down>"],
+      "before": ["<C-j>"]
+    },
+    {
+      "after": ["<Up>"],
+      "before": ["<C-k>"]
+    },
+    {
+      "after": ["<Right>"],
+      "before": ["<C-l>"]
+    }
+  ],
+  "vim.normalModeKeyBindings": [
+    // Go To Actions
+    {
+      "before": ["g", "d"],
+      "commands": ["editor.action.revealDefinition"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "e"],
+      "commands": ["editor.action.marker.next"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "h"],
+      "commands": ["editor.action.showHover"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "i"],
+      "commands": ["editor.action.goToImplementation"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "p"],
+      "commands": ["editor.action.peekDefinition"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "r"],
+      "commands": ["editor.action.goToReferences"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "s"],
+      "commands": ["typescript.goToSourceDefinition"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "r"],
+      "commands": ["editor.action.goToTypeDefinition"],
+      "silent": "true"
+    },
+    {
+      "before": ["g", "s"],
+      "commands": ["typescript.goToSourceDefinition"],
+      "silent": "true"
+    },
+    // Leader Actions
+    {
+      "before": ["<leader>", "c"],
+      "commands": ["editor.action.commentLine"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "d"],
+      "commands": ["workbench.action.debug.start"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "f"],
+      "commands": ["editor.action.formatDocument"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "k"],
+      "commands": ["workbench.action.debug.stop"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "l"],
+      "commands": ["editor.debug.action.toggleBreakpoint"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "n"],
+      "commands": ["workbench.action.debug.continue"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "r"],
+      "commands": ["editor.action.rename"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "s"],
+      "commands": ["workbench.action.debug.run"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "t", "g"],
+      "commands": ["go.toggle.test.file"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "x"],
+      "commands": ["editor.action.refactor"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "<leader>"],
+      "commands": ["editor.action.showContextMenu"],
+      "silent": "true"
+    },
+    {
+      "before": ["<leader>", "<CR>"],
+      "commands": ["editor.action.quickFix"],
+      "silent": "true"
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "after": ["\"", "_", "d"],
+      "before": ["d"]
+    },
+    {
+      "after": ["\"", "_", "r"],
+      "before": ["r"]
+    },
+    {
+      "after": ["-"],
+      "before": ["<Space>"]
+    }
+  ],
+  "vim.showMarksInGutter": true,
+  "vim.sneak": true,
+  "vim.surround": true,
+  "vim.useSystemClipboard": true,
+  "vim.visualModeKeyBindings": [
+    {
+      "before": ["<leader>", "c"],
+      "commands": ["editor.action.commentLine"],
+      "silent": "true"
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "after": ["\"", "_", "d"],
+      "before": ["d"]
+    },
+    {
+      "after": ["P"],
+      "before": ["p"]
+    },
+    {
+      "after": ["\"", "_", "r"],
+      "before": ["r"]
+    },
+    // Set cursor position at the last character of the yanked selction
+    // See: https://stackoverflow.com/a/38983784/5384400
+    {
+      "after": ["y", "`", ">"],
+      "before": ["y"]
+    }
+  ],
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
@@ -58,8 +246,5 @@
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
-  "workbench.startupEditor": "none",
-  "workbench.view.showQuietly": {
-    "workbench.panel.output": true
-  }
+  "workbench.startupEditor": "none"
 }
