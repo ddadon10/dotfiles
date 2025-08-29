@@ -43,40 +43,44 @@
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontSize": 14,
+  "vim.showMarksInGutter": true,
+  "vim.sneak": true,
+  "vim.surround": true,
+  "vim.useSystemClipboard": true,
   "vim.commandLineModeKeyBindingsNonRecursive": [
     {
-      "after": ["<Left>"],
-      "before": ["<C-h>"]
+      "before": ["<C-h>"],
+      "after": ["<Left>"]
     },
     {
-      "after": ["<Down>"],
-      "before": ["<C-j>"]
+      "before": ["<C-j>"],
+      "after": ["<Down>"]
     },
     {
-      "after": ["<Up>"],
-      "before": ["<C-k>"]
+      "before": ["<C-k>"],
+      "after": ["<Up>"]
     },
     {
-      "after": ["<Right>"],
-      "before": ["<C-l>"]
+      "before": ["<C-l>"],
+      "after": ["<Right>"]
     }
   ],
   "vim.insertModeKeyBindingsNonRecursive": [
     {
-      "after": ["<Left>"],
-      "before": ["<C-h>"]
+      "before": ["<C-h>"],
+      "after": ["<Left>"]
     },
     {
-      "after": ["<Down>"],
-      "before": ["<C-j>"]
+      "before": ["<C-j>"],
+      "after": ["<Down>"]
     },
     {
-      "after": ["<Up>"],
-      "before": ["<C-k>"]
+      "before": ["<C-k>"],
+      "after": ["<Up>"]
     },
     {
-      "after": ["<Right>"],
-      "before": ["<C-l>"]
+      "before": ["<C-l>"],
+      "after": ["<Right>"]
     }
   ],
   "vim.normalModeKeyBindings": [
@@ -190,22 +194,18 @@
   ],
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "after": ["\"", "_", "d"],
-      "before": ["d"]
+      "before": ["d"],
+      "after": ["\"", "_", "d"]
     },
     {
-      "after": ["\"", "_", "r"],
-      "before": ["r"]
+      "before": ["r"],
+      "after": ["\"", "_", "r"]
     },
     {
-      "after": ["-"],
-      "before": ["<Space>"]
+      "before": ["<Space>"],
+      "after": ["-"]
     }
   ],
-  "vim.showMarksInGutter": true,
-  "vim.sneak": true,
-  "vim.surround": true,
-  "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindings": [
     {
       "before": ["<leader>", "c"],
@@ -215,22 +215,22 @@
   ],
   "vim.visualModeKeyBindingsNonRecursive": [
     {
-      "after": ["\"", "_", "d"],
-      "before": ["d"]
+      "before": ["d"],
+      "after": ["\"", "_", "d"]
     },
     {
-      "after": ["P"],
-      "before": ["p"]
+      "before": ["p"],
+      "after": ["P"]
     },
     {
-      "after": ["\"", "_", "r"],
-      "before": ["r"]
+      "before": ["r"],
+      "after": ["\"", "_", "r"]
     },
     // Set cursor position at the last character of the yanked selction
     // See: https://stackoverflow.com/a/38983784/5384400
     {
-      "after": ["y", "`", ">"],
-      "before": ["y"]
+      "before": ["y"],
+      "after": ["y", "`", ">"]
     }
   ],
   "window.autoDetectColorScheme": true,
