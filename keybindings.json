@@ -14,7 +14,6 @@
   { "key": "cmd+l", "command": "" },
   { "key": "cmd+escape", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
-  { "key": "alt+escape", "command": "" },
 
   // Resizing Editor
   {
@@ -72,41 +71,11 @@
     "when": "panelFocus"
   },
 
-  //  TODO: LLM Code Completion
-  {
-    "key": "escape",
-    "command": "-vscode-neovim.escape"
-  },
-  {
-    "key": "escape",
-    "command": "vscode-neovim.escape",
-    "when": "editorTextFocus && neovim.init && neovim.mode != 'normal'",
-    "args": "<Esc>"
-  },
-  {
-    "key": "escape",
-    "command": "vscode-neovim.escape",
-    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (editorTextFocus && neovim.init && !dirtyDiffVisible && !findWidgetVisible && !inReferenceSearchEditor && !markersNavigationVisible && !notebookCellFocused && !notificationCenterVisible && !parameterHintsVisible && !referenceSearchVisible && neovim.mode == 'normal')",
-    "args": "<Esc>"
-  },
-  {
-    "key": "tab",
-    "command": "-vscode-neovim.send"
-  },
-  {
-    "key": "tab",
-    "command": "-editor.action.inlineSuggest.commit"
-  },
-  {
-    "key": "tab",
-    "command": "vscode-neovim.send",
-    "when": "(!inlineEditIsVisible && !inlineSuggestionVisible) && (neovim.init && neovim.recording || editorTextFocus && neovim.init && neovim.mode != 'insert')",
-    "args": "<Tab>"
-  },
+  // LLM Code Completion
   {
     "key": "tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "editorTextFocus && inlineSuggestionVisible"
+    "when": "editorTextFocus && !editorReadOnly && inlineSuggestionVisible"
   },
   {
     "key": "tab",
@@ -137,22 +106,6 @@
     "key": "cmd+i",
     "command": "editor.action.inlineSuggest.hide",
     "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
-  },
-  {
-    "key": "cmd+l",
-    "command": "runCommands",
-    "args": {
-      "commands": [
-        {
-          "command": "editor.action.inlineSuggest.hide",
-          "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
-        },
-        {
-          "command": "github.copilot.completions.toggle",
-          "when": "editorTextFocus"
-        }
-      ]
-    }
   },
 
   // Editor Focus
@@ -242,18 +195,6 @@
       "by": "wrappedLine",
       "value": 1
     }
-  },
-
-  // Workaround: https://github.com/VSCodeVim/Vim/issues/2007
-  {
-    "key": "u",
-    "command": "undo",
-    "when": "editorTextFocus && vim.mode == 'Normal'"
-  },
-  {
-    "key": "ctrl+r",
-    "command": "redo",
-    "when": "editorTextFocus && vim.mode == 'Normal'"
   },
 
   // Workaround: https://github.com/VSCodeVim/Vim/issues/5303
