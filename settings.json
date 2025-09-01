@@ -260,7 +260,7 @@
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
   "yaml.schemas": {
-    "/Users/david/.vscode/extensions/continue.continue-1.0.21-darwin-arm64/config-yaml-schema.json": [
+    "/home/vscode/.vscode-server/extensions/continue.continue-1.0.21-linux-arm64/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
   }
