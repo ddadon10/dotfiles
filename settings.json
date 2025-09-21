@@ -1,5 +1,6 @@
 {
   "breadcrumbs.symbolPath": "off",
+  "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
   "dev.containers.cacheVolume": true,
   "dev.containers.experimentalLockfile": true,
   "continue.enableConsole": true,
