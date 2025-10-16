@@ -370,6 +370,12 @@ nnoremap S ?
 " Move vertically with Space
 nnoremap <Space> -
 
+" Scrolling
+nnoremap J <C-e>
+nnoremap K <C-y>
+nnoremap D <C-d>
+nnoremap U <C-u>
+
 " ============================================================================
 " Vim Only Configuration
 " ============================================================================
