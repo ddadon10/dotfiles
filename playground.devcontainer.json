@@ -11,6 +11,6 @@
     "ghcr.io/devcontainers/features/ruby:1": {},
     "ghcr.io/devcontainers/features/rust:1": {}
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/sandbox,type=bind",
-  "workspaceFolder": "/workspace/sandbox"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/playground,type=bind",
+  "workspaceFolder": "/workspace/playground"
 }
