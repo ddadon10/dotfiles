@@ -1,4 +1,4 @@
-<!-- Map Right Cmd to Right Ctrl -->
+<!-- Map Right Cmd to F1 -->
 <!-- See: https://developer.apple.com/library/archive/technotes/tn2450 -->
 <!-- See: https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html -->
 <?xml version="1.0" encoding="UTF-8"?>
@@ -16,7 +16,7 @@
             "UserKeyMapping": [
                 {
                     "HIDKeyboardModifierMappingSrc":0x7000000E7,
-                    "HIDKeyboardModifierMappingDst":0x7000000E4,
+                    "HIDKeyboardModifierMappingDst":0x70000003A,
                 }
             ]       
         }</string>
