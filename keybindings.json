@@ -13,7 +13,13 @@
   { "key": "cmd+i", "command": "" },
   { "key": "cmd+l", "command": "" },
   { "key": "cmd+escape", "command": "" },
+  { "key": "cmd+p", "command": "" },
+  { "key": "cmd+shift+p", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
+  { "key": "f1", "command": "" },
+  { "key": "shift+f1", "command": "" },
+  { "key": "alt+f1", "command": "" },
+
 
   // Resizing Editor
   {
@@ -71,41 +77,81 @@
     "when": "panelFocus"
   },
 
+  // Autocomplete
+  {
+    "key": "shift+enter",
+    "command": "editor.action.triggerSuggest",
+    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode == 'Insert'"
+  },
+  {
+    "key": "shift+enter",
+    "command": "hideSuggestWidget",
+    "when": "editorTextFocus && suggestWidgetVisible && vim.mode == 'Insert'"
+  },
+
+  // Parameters Completion
+  {
+    "key": "shift+space",
+    "command": "editor.action.triggerParameterHints",
+    "when": "editorTextFocus && !parameterHintsVisible && vim.mode == 'Insert'"
+  },
+  {
+    "key": "shift+space",
+    "command": "closeParameterHints",
+    "when": "editorTextFocus && parameterHintsVisible && vim.mode == 'Insert'"
+  },
+
   // LLM Code Completion
+  {
+    "key": "f1",
+    "command": "editor.action.inlineSuggest.trigger",
+    "when": "editorTextFocus && !inlineSuggestionVisible && vim.mode == 'Insert'"
+  },
+  {
+    "key": "f1",
+    "command": "editor.action.inlineSuggest.hide",
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+  },
   {
     "key": "tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "editorTextFocus && !editorReadOnly && inlineSuggestionVisible"
-  },
-  {
-    "key": "tab",
-    "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && inlineEditIsVisible && tabShouldAcceptInlineEdit"
-  },
-  {
-    "key": "shift+tab",
-    "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
   },
   {
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
-    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
   },
   {
-    "key": "cmd+e",
-    "command": "editor.action.inlineSuggest.toggleShowCollapsed",
-    "when": "editorTextFocus && (inlineEditIsVisible || inInlineEditsPreviewEditor)"
+    "key": "shift+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+  },
+
+  // LLM Inline Chat
+  {
+    "key": "f1",
+    "command": "inlineChat.start",
+    "when": "editorTextFocus && !inlineChatVisible && vim.mode != 'Insert'"
+  },
+
+  // LLM Side Chat
+  {
+    "key": "shift+f1",
+    "command": "workbench.panel.chat",
+    "when": "workbench.panel.chat.view.copilot.active && vim.mode != 'Insert'"
+  },
+
+  // Quick Open
+  {
+    "key": "space",
+    "command": "workbench.action.quickOpen",
+    "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
   },
   {
-    "key": "cmd+i",
-    "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineEditIsVisible && !inlineSuggestionVisible"
-  },
-  {
-    "key": "cmd+i",
-    "command": "editor.action.inlineSuggest.hide",
-    "when": "editorTextFocus && (inlineEditIsVisible || inlineSuggestionVisible)"
+    "key": "shift+space",
+    "command": "workbench.action.showCommands",
+    "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
   },
 
   // Editor Focus
@@ -137,12 +183,6 @@
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
     "when": "workbench.view.testing.active"
-  },
-
-  // Right Bar Navigation
-  {
-    "key": "shift+cmd+c",
-    "command": "workbench.action.toggleAuxiliaryBar"
   },
 
   // Bottom Bar Navigation
