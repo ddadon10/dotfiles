@@ -13,10 +13,8 @@
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
-  "editor.lineNumbers": "relative",
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
@@ -40,7 +38,6 @@
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
   "gitlens.telemetry.enabled": false,
-  "inlineChat.lineNaturalLanguageHint": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
   "search.smartCase": true,
@@ -265,5 +262,19 @@
     "/home/vscode/.vscode-server/extensions/continue.continue-1.0.21-linux-arm64/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
-  }
+  },
+  "problems.visibility": false,
+  "editor.quickSuggestions": {
+    "other": "off"
+  },
+  "github.copilot.selectedCompletionModel": "",
+  "editor.tabCompletion": "on",
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": false,
+  "inlineChat.enableV2": true,
+  "editor.accessibilitySupport": "off",
+  "editor.lineNumbers": "relative",
+  "inlineChat.lineNaturalLanguageHint": false,
+  "editor.parameterHints.enabled": false,
+  "chat.useCloudButtonV2": false
 }
