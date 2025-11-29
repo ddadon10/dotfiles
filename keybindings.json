@@ -20,7 +20,6 @@
   { "key": "shift+f1", "command": "" },
   { "key": "alt+f1", "command": "" },
 
-
   // Resizing Editor
   {
     "key": "shift+cmd+left",
@@ -145,7 +144,14 @@
   // Quick Open
   {
     "key": "space",
-    "command": "workbench.action.quickOpen",
+    "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
+    "args": {
+      "commands": [
+        {
+          "command": "workbench.action.quickOpen"
+        }
+      ]
+    },
     "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
   },
   {
