@@ -249,7 +249,7 @@
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
   "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
-    "[Default Dark Modern][Default Light Modern]": {
+    "[Visual Studio Dark][Visual Studio Light]": {
       "editor.symbolHighlightBackground": "#0000",
       "editor.symbolHighlightBorder": "#0000"
     }
@@ -273,8 +273,10 @@
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
   "inlineChat.enableV2": true,
   "editor.accessibilitySupport": "off",
-  "editor.lineNumbers": "relative",
   "inlineChat.lineNaturalLanguageHint": false,
   "editor.parameterHints.enabled": false,
-  "chat.useCloudButtonV2": false
+  "chat.useCloudButtonV2": false,
+  "workbench.preferredDarkColorTheme": "Visual Studio Dark",
+  "workbench.preferredLightColorTheme": "Visual Studio Light",
+  "editor.bracketPairColorization.enabled": false,
 }
