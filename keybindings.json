@@ -78,24 +78,24 @@
 
   // Autocomplete
   {
-    "key": "shift+enter",
+    "key": "shift+space",
     "command": "editor.action.triggerSuggest",
     "when": "editorTextFocus && !suggestWidgetVisible && vim.mode == 'Insert'"
   },
   {
-    "key": "shift+enter",
+    "key": "shift+space",
     "command": "hideSuggestWidget",
     "when": "editorTextFocus && suggestWidgetVisible && vim.mode == 'Insert'"
   },
 
   // Parameters Completion
   {
-    "key": "shift+space",
+    "key": "shift+enter",
     "command": "editor.action.triggerParameterHints",
     "when": "editorTextFocus && !parameterHintsVisible && vim.mode == 'Insert'"
   },
   {
-    "key": "shift+space",
+    "key": "shift+enter",
     "command": "closeParameterHints",
     "when": "editorTextFocus && parameterHintsVisible && vim.mode == 'Insert'"
   },
