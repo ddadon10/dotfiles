@@ -4,25 +4,32 @@
   "chat.commandCenter.enabled": false,
   "chat.extensionTools.enabled": false,
   "chat.mcp.access": "none",
+  "chat.useCloudButtonV2": false,
   "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
   "dev.containers.cacheVolume": true,
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": true,
   "editor.autoClosingDelete": "always",
+  "editor.bracketPairColorization.enabled": false,
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
   "editor.hideCursorInOverviewRuler": true,
   "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
+  "editor.links": false,
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
+  "editor.parameterHints.enabled": false,
+  "editor.quickSuggestions": { "other": "off" },
   "editor.quickSuggestionsDelay": 250,
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.tabCompletion": "on",
   "explorer.autoRevealExclude": {
     "**/bower_components": false,
     "**/node_modules": false
@@ -38,6 +45,11 @@
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
   "gitlens.telemetry.enabled": false,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": false,
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "inlineChat.enableV2": true,
+  "inlineChat.lineNaturalLanguageHint": false,
+  "problems.visibility": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "gutter",
   "search.smartCase": true,
@@ -249,7 +261,7 @@
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
   "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
-    "[Visual Studio Dark][Visual Studio Light]": {
+    "[Default Dark Modern][Default Light Modern]": {
       "editor.symbolHighlightBackground": "#0000",
       "editor.symbolHighlightBorder": "#0000"
     }
@@ -262,21 +274,5 @@
     "/home/vscode/.vscode-server/extensions/continue.continue-1.0.21-linux-arm64/config-yaml-schema.json": [
       ".continue/**/*.yaml"
     ]
-  },
-  "problems.visibility": false,
-  "editor.quickSuggestions": {
-    "other": "off"
-  },
-  "github.copilot.selectedCompletionModel": "",
-  "editor.tabCompletion": "on",
-  "github.copilot.nextEditSuggestions.enabled": false,
-  "github.copilot.chat.codeGeneration.useInstructionFiles": false,
-  "inlineChat.enableV2": true,
-  "editor.accessibilitySupport": "off",
-  "inlineChat.lineNaturalLanguageHint": false,
-  "editor.parameterHints.enabled": false,
-  "chat.useCloudButtonV2": false,
-  "workbench.preferredDarkColorTheme": "Visual Studio Dark",
-  "workbench.preferredLightColorTheme": "Visual Studio Light",
-  "editor.bracketPairColorization.enabled": false,
+  }
 }
