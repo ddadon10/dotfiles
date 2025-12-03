@@ -267,8 +267,14 @@
     "[Default Dark Modern][Default Light Modern]": {
       "editor.symbolHighlightBackground": "#0000",
       "editor.symbolHighlightBorder": "#0000",
-      "editorLineNumber.activeForeground":"#6E7681",
-      "statusBarItem.remoteBackground":"#181818",
+      "editorLineNumber.activeForeground": "#6E7681"
+    },
+    "[Default Dark Modern]": {
+      "statusBarItem.remoteBackground": "#181818"
+    },
+    "[Default Light Modern]": {
+      "statusBarItem.remoteBackground": "#f8f8f8",
+      "statusBarItem.remoteForeground": "#3b3b3b"
     }
   },
   "workbench.editor.editorActionsLocation": "titleBar",
