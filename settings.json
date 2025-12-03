@@ -17,7 +17,7 @@
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
   "editor.hover.enabled": false,
-  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.enabled": true,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.matchBrackets": "never",
@@ -48,7 +48,13 @@
   "gitlens.currentLine.enabled": false,
   "gitlens.telemetry.enabled": false,
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
-  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
   "inlineChat.enableV2": true,
   "inlineChat.lineNaturalLanguageHint": false,
   "problems.visibility": false,
