@@ -14,7 +14,9 @@
   "editor.bracketPairColorization.enabled": false,
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
+  "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
+  "editor.hover.enabled": false,
   "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
@@ -23,12 +25,11 @@
   "editor.occurrencesHighlight": "off",
   "editor.parameterHints.enabled": false,
   "editor.quickSuggestions": { "other": "off" },
-  "editor.quickSuggestionsDelay": 250,
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.stickyScroll.enabled": false,
+  "editor.showFoldingControls": "never",
   "editor.suggest.showSnippets": false,
-  "editor.suggestOnTriggerCharacters": false,
   "editor.tabCompletion": "on",
   "explorer.autoRevealExclude": {
     "**/bower_components": false,
@@ -41,6 +42,7 @@
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
+  "git.decorations.enabled": false,
   "gitlens.blame.avatars": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -51,7 +53,7 @@
   "inlineChat.lineNaturalLanguageHint": false,
   "problems.visibility": false,
   "redhat.telemetry.enabled": false,
-  "scm.diffDecorations": "gutter",
+  "scm.diffDecorations": "none",
   "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "tailwindCSS.colorDecorators": false,
@@ -62,6 +64,7 @@
   "vim.sneak": true,
   "vim.surround": true,
   "vim.useSystemClipboard": true,
+  "vim.showmodename": false,
   "vim.commandLineModeKeyBindingsNonRecursive": [
     {
       "before": ["<C-h>"],
@@ -263,13 +266,16 @@
   "workbench.colorCustomizations": {
     "[Default Dark Modern][Default Light Modern]": {
       "editor.symbolHighlightBackground": "#0000",
-      "editor.symbolHighlightBorder": "#0000"
+      "editor.symbolHighlightBorder": "#0000",
+      "editorLineNumber.activeForeground":"#6E7681",
+      "statusBarItem.remoteBackground":"#181818",
     }
   },
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
+  "workbench.tree.renderIndentGuides": "none",
   "yaml.schemas": {
     "/home/vscode/.vscode-server/extensions/continue.continue-1.0.21-linux-arm64/config-yaml-schema.json": [
       ".continue/**/*.yaml"
