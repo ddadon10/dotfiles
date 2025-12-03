@@ -78,38 +78,44 @@
 
   // Autocomplete
   {
-    "key": "shift+space",
+    "key": "f1",
     "command": "editor.action.triggerSuggest",
     "when": "editorTextFocus && !suggestWidgetVisible && vim.mode == 'Insert'"
   },
   {
-    "key": "shift+space",
+    "key": "f1",
     "command": "hideSuggestWidget",
     "when": "editorTextFocus && suggestWidgetVisible && vim.mode == 'Insert'"
   },
 
   // Parameters Completion
   {
-    "key": "shift+enter",
+    "key": "shift+space",
     "command": "editor.action.triggerParameterHints",
     "when": "editorTextFocus && !parameterHintsVisible && vim.mode == 'Insert'"
   },
   {
-    "key": "shift+enter",
+    "key": "shift+space",
     "command": "closeParameterHints",
     "when": "editorTextFocus && parameterHintsVisible && vim.mode == 'Insert'"
   },
 
   // LLM Code Completion
   {
-    "key": "f1",
-    "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineSuggestionVisible && vim.mode == 'Insert'"
+    "key": "shift+f1",
+    "command": "github.copilot.completions.toggle",
+    "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated && vim.mode == 'Insert'"
   },
   {
-    "key": "f1",
-    "command": "editor.action.inlineSuggest.hide",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+    "key": "shift+f1",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {"command": "editor.action.inlineSuggest.hide"},
+        {"command": "github.copilot.completions.toggle"}
+      ]
+    },
+    "when": "editorTextFocus && inlineSuggestionVisible && github.copilot.activated && vim.mode == 'Insert'"
   },
   {
     "key": "tab",
@@ -146,11 +152,7 @@
     "key": "space",
     "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
     "args": {
-      "commands": [
-        {
-          "command": "workbench.action.quickOpen"
-        }
-      ]
+      "commands": [{"command": "workbench.action.quickOpen"}]
     },
     "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
   },
