@@ -80,31 +80,31 @@
   {
     "key": "f1",
     "command": "editor.action.triggerSuggest",
-    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode === 'Insert'"
   },
   {
     "key": "f1",
     "command": "hideSuggestWidget",
-    "when": "editorTextFocus && suggestWidgetVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'"
   },
 
   // Parameters Completion
   {
     "key": "shift+space",
     "command": "editor.action.triggerParameterHints",
-    "when": "editorTextFocus && !parameterHintsVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'"
   },
   {
     "key": "shift+space",
     "command": "closeParameterHints",
-    "when": "editorTextFocus && parameterHintsVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'"
   },
 
   // LLM Code Completion
   {
     "key": "shift+f1",
     "command": "github.copilot.completions.toggle",
-    "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated && vim.mode == 'Insert'"
+    "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated"
   },
   {
     "key": "shift+f1",
@@ -115,51 +115,46 @@
         {"command": "github.copilot.completions.toggle"}
       ]
     },
-    "when": "editorTextFocus && inlineSuggestionVisible && github.copilot.activated && vim.mode == 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && github.copilot.activated"
   },
   {
     "key": "tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
   {
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
   {
     "key": "shift+tab",
     "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode == 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
 
   // LLM Inline Chat
   {
-    "key": "f1",
+    "key": "alt+f1",
     "command": "inlineChat.start",
-    "when": "editorTextFocus && !inlineChatVisible && vim.mode != 'Insert'"
+    "when": "editorTextFocus && !inlineChatVisible && vim.mode !== 'Insert'"
   },
 
   // LLM Side Chat
   {
-    "key": "shift+f1",
+    "key": "shift+cmd+c",
     "command": "workbench.panel.chat",
-    "when": "workbench.panel.chat.view.copilot.active && vim.mode != 'Insert'"
+    "when": "workbench.panel.chat.view.copilot.active && vim.mode !== 'Insert'"
   },
 
   // Quick Open
   {
-    "key": "space",
+    "key": "f1",
     "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
     "args": {
       "commands": [{"command": "workbench.action.quickOpen"}]
     },
-    "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
-  },
-  {
-    "key": "shift+space",
-    "command": "workbench.action.showCommands",
-    "when": "editorTextFocus && !inQuickOpen && vim.mode != 'Insert'"
+    "when": "!inQuickOpen && vim.mode !== 'Insert'"
   },
 
   // Editor Focus
@@ -227,7 +222,7 @@
   {
     "key": "cmd+j",
     "command": "cursorMove",
-    "when": "editorTextFocus && vim.mode == 'Normal'",
+    "when": "editorTextFocus && vim.mode === 'Normal'",
     "args": {
       "to": "down",
       "by": "wrappedLine",
@@ -237,7 +232,7 @@
   {
     "key": "cmd+k",
     "command": "cursorMove",
-    "when": "editorTextFocus && vim.mode == 'Normal'",
+    "when": "editorTextFocus && vim.mode === 'Normal'",
     "args": {
       "to": "up",
       "by": "wrappedLine",
@@ -266,7 +261,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && vim.mode == 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'"
   },
   {
     "key": "ctrl+u",
@@ -288,7 +283,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && vim.mode == 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'"
   },
   {
     "key": "ctrl+f",
@@ -310,7 +305,7 @@
         }
       ]
     },
-    "when": "editorTextFocus && vim.mode == 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'"
   },
   {
     "key": "ctrl+b",
@@ -332,6 +327,6 @@
         }
       ]
     },
-    "when": "editorTextFocus && vim.mode == 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'"
   }
 ]
