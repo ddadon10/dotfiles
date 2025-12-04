@@ -62,6 +62,8 @@
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
+  "search.useParentIgnoreFiles": true,
+  "search.quickOpen.includeSymbols": true,
   "security.workspace.trust.untrustedFiles": "open",
   "tailwindCSS.colorDecorators": false,
   "telemetry.feedback.enabled": false,
@@ -146,7 +148,7 @@
       "silent": "true"
     },
     {
-      "before": ["g", "r"],
+      "before": ["g", "t"],
       "commands": ["editor.action.goToTypeDefinition"],
       "silent": "true"
     },
