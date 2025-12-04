@@ -18,6 +18,7 @@
   "editor.hideCursorInOverviewRuler": true,
   "editor.hover.enabled": false,
   "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.minShowDelay": 100,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.matchBrackets": "never",
