@@ -45,15 +45,11 @@
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
   "git.decorations.enabled": false,
-  "gitlens.blame.avatars": false,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.currentLine.enabled": false,
-  "gitlens.telemetry.enabled": false,
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
   "github.copilot.enable": {
-    "*": false,
+    "*": true,
     "plaintext": false,
-    "markdown": false,
+    "markdown": true,
     "scminput": false
   },
   "github.copilot.nextEditSuggestions.enabled": true,
