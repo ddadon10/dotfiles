@@ -31,7 +31,6 @@
   "editor.stickyScroll.enabled": false,
   "editor.showFoldingControls": "never",
   "editor.suggest.showSnippets": false,
-  "editor.suggestOnTriggerCharacters": false,
   "editor.tabCompletion": "on",
   "explorer.autoRevealExclude": {
     "**/bower_components": false,
@@ -47,7 +46,7 @@
   "git.decorations.enabled": false,
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
   "github.copilot.enable": {
-    "*": true,
+    "*": false,
     "plaintext": false,
     "markdown": true,
     "scminput": false
