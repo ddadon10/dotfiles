@@ -181,6 +181,11 @@
       "silent": "true"
     },
     {
+      "before": ["<leader>", "m"],
+      "commands": ["git.blame.toggleEditorDecoration"],
+      "silent": "true"
+    },
+    {
       "before": ["<leader>", "n"],
       "commands": ["workbench.action.debug.continue"],
       "silent": "true"
