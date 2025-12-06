@@ -51,7 +51,7 @@
     "markdown": true,
     "scminput": false
   },
-  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.nextEditSuggestions.enabled": false,
   "inlineChat.enableV2": true,
   "inlineChat.lineNaturalLanguageHint": false,
   "problems.visibility": false,
