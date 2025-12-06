@@ -17,8 +17,7 @@
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
   "editor.hover.enabled": false,
-  "editor.inlineSuggest.enabled": true,
-  "editor.inlineSuggest.minShowDelay": 100,
+  "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.matchBrackets": "never",
@@ -31,6 +30,7 @@
   "editor.stickyScroll.enabled": false,
   "editor.showFoldingControls": "never",
   "editor.suggest.showSnippets": false,
+  "editor.suggest.showWords": false,
   "editor.tabCompletion": "on",
   "explorer.autoRevealExclude": {
     "**/bower_components": false,
@@ -46,7 +46,7 @@
   "git.decorations.enabled": false,
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
   "github.copilot.enable": {
-    "*": false,
+    "*": true,
     "plaintext": false,
     "markdown": true,
     "scminput": false
