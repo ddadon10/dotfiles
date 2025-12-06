@@ -5,12 +5,11 @@
   "chat.extensionTools.enabled": false,
   "chat.mcp.access": "none",
   "chat.useCloudButtonV2": false,
-  "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
   "dev.containers.cacheVolume": true,
+  "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
-  "editor.autoClosingDelete": "always",
   "editor.bracketPairColorization.enabled": false,
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
@@ -27,8 +26,8 @@
   "editor.quickSuggestions": { "other": "off" },
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
-  "editor.stickyScroll.enabled": false,
   "editor.showFoldingControls": "never",
+  "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
   "editor.suggest.showWords": false,
   "editor.tabCompletion": "on",
@@ -52,6 +51,9 @@
     "scminput": false
   },
   "github.copilot.nextEditSuggestions.enabled": false,
+  "gopls": {
+    "ui.completion.completeFunctionCalls": false
+  },
   "inlineChat.enableV2": true,
   "inlineChat.lineNaturalLanguageHint": false,
   "problems.visibility": false,
@@ -65,10 +67,10 @@
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontSize": 14,
   "vim.showMarksInGutter": true,
+  "vim.showmodename": false,
   "vim.sneak": true,
   "vim.surround": true,
   "vim.useSystemClipboard": true,
-  "vim.showmodename": false,
   "vim.commandLineModeKeyBindingsNonRecursive": [
     {
       "before": ["<C-h>"],
