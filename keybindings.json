@@ -129,7 +129,7 @@
 
   // LLM Inline Chat
   {
-    "key": "alt+f1",
+    "key": "shift+f1",
     "command": "inlineChat.start",
     "when": "editorTextFocus && !inlineChatVisible && vim.mode !== 'Insert'"
   },
