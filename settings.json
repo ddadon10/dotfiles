@@ -23,7 +23,7 @@
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
   "editor.parameterHints.enabled": false,
-  "editor.quickSuggestionsDelay": 200,
+  "editor.quickSuggestionsDelay": 150,
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.showFoldingControls": "never",
