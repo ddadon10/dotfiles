@@ -88,7 +88,6 @@
     "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'"
   },
 
-
   // Parameters Completion
   {
     "key": "shift+enter",
@@ -114,17 +113,17 @@
   },
   {
     "key": "tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+  },
+  {
+    "key": "shift+tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
   {
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
-  },
-  {
-    "key": "shift+tab",
-    "command": "editor.action.inlineSuggest.commit",
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
 
