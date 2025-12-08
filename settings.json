@@ -56,7 +56,6 @@
   },
   "inlineChat.enableV2": true,
   "inlineChat.lineNaturalLanguageHint": false,
-  "problems.visibility": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
