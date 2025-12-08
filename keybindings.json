@@ -102,12 +102,12 @@
 
   // LLM Code Completion
   {
-    "key": "shift+f1",
+    "key": "f1",
     "command": "github.copilot.completions.toggle",
     "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated"
   },
   {
-    "key": "shift+f1",
+    "key": "f1",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -142,19 +142,19 @@
 
   // LLM Side Chat
   {
-    "key": "shift+cmd+c",
+    "key": "shift+f1",
     "command": "workbench.panel.chat",
     "when": "workbench.panel.chat.view.copilot.active && vim.mode !== 'Insert'"
   },
 
   // Quick Open
   {
-    "key": "f1",
+    "key": "space",
     "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
     "args": {
       "commands": [{ "command": "workbench.action.quickOpen" }]
     },
-    "when": "!inQuickOpen && vim.mode !== 'Insert'"
+    "when": "editorTextFocus && !inQuickOpen && vim.mode !== 'Insert'"
   },
 
   // Editor Focus
