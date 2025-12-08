@@ -16,7 +16,7 @@
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
   "editor.hover.enabled": false,
-  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.enabled": true,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.matchBrackets": "never",
