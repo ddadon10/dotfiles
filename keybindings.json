@@ -102,22 +102,23 @@
 
   // LLM Code Completion
   {
-    "key": "f1",
-    "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineSuggestionVisible && vim.mode === 'Insert'"
+    "key": "shift+f1",
+    "command": "github.copilot.completions.toggle",
+    "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated"
   },
   {
-    "key": "f1",
-    "command": "editor.action.inlineSuggest.hide",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "key": "shift+f1",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        { "command": "editor.action.inlineSuggest.hide" },
+        { "command": "github.copilot.completions.toggle" }
+      ]
+    },
+    "when": "editorTextFocus && inlineSuggestionVisible && github.copilot.activated"
   },
   {
     "key": "tab",
-    "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
-  },
-  {
-    "key": "shift+tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
@@ -126,10 +127,15 @@
     "command": "editor.action.inlineSuggest.acceptNextWord",
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
+  {
+    "key": "shift+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+  },
 
   // LLM Inline Chat
   {
-    "key": "shift+f1",
+    "key": "alt+f1",
     "command": "inlineChat.start",
     "when": "editorTextFocus && !inlineChatVisible && vim.mode !== 'Insert'"
   },
