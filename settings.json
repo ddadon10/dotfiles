@@ -10,6 +10,7 @@
   "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
+  "editor.autoClosingDelete": "always",
   "editor.bracketPairColorization.enabled": false,
   "editor.cursorBlinking": "solid",
   "editor.fontSize": 14,
