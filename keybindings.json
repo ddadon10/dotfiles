@@ -103,19 +103,13 @@
   // LLM Code Completion
   {
     "key": "f1",
-    "command": "github.copilot.completions.toggle",
-    "when": "editorTextFocus && !inlineSuggestionVisible && github.copilot.activated"
+    "command": "editor.action.inlineSuggest.trigger",
+    "when": "editorTextFocus && !inlineSuggestionVisible"
   },
   {
     "key": "f1",
-    "command": "runCommands",
-    "args": {
-      "commands": [
-        { "command": "editor.action.inlineSuggest.hide" },
-        { "command": "github.copilot.completions.toggle" }
-      ]
-    },
-    "when": "editorTextFocus && inlineSuggestionVisible && github.copilot.activated"
+    "command": "editor.action.inlineSuggest.hide",
+    "when": "editorTextFocus && inlineSuggestionVisible"
   },
   {
     "key": "tab",
@@ -133,18 +127,17 @@
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
   },
 
-  // LLM Inline Chat
-  {
-    "key": "alt+f1",
-    "command": "inlineChat.start",
-    "when": "editorTextFocus && !inlineChatVisible && vim.mode !== 'Insert'"
-  },
-
-  // LLM Side Chat
+  // LLM Inline Actions
   {
     "key": "shift+f1",
-    "command": "workbench.panel.chat",
-    "when": "workbench.panel.chat.view.copilot.active && vim.mode !== 'Insert'"
+    "command": "jetbrains.ai.rewriteCode",
+    "when": "editorTextFocus && vim.mode !== 'Insert'"
+  },
+
+  {
+    "key": "alt+f1",
+    "command": "jetbrains.ai.askAI",
+    "when": "editorTextFocus && vim.mode !== 'Insert'"
   },
 
   // Quick Open
@@ -186,6 +179,12 @@
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
     "when": "workbench.view.testing.active"
+  },
+
+  // Right Bar Navigation
+  {
+    "key": "shift+cmd+c",
+    "command": "workbench.action.toggleAuxiliaryBar"
   },
 
   // Bottom Bar Navigation
