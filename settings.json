@@ -5,6 +5,7 @@
   "chat.extensionTools.enabled": false,
   "chat.mcp.access": "none",
   "chat.useCloudButtonV2": false,
+  "claudeCode.preferredLocation": "panel",
   "dev.containers.cacheVolume": true,
   "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
   "dev.containers.experimentalLockfile": true,
@@ -16,7 +17,7 @@
   "editor.fontSize": 14,
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.hover.enabled": false,
+  "editor.hover.enabled": "off",
   "editor.inlineSuggest.enabled": true,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
@@ -27,6 +28,7 @@
   "editor.quickSuggestionsDelay": 150,
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
+  "editor.selectionHighlight": false,
   "editor.showFoldingControls": "never",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
@@ -45,7 +47,7 @@
   "git.decorations.enabled": false,
   "github.copilot.chat.codeGeneration.useInstructionFiles": false,
   "github.copilot.enable": {
-    "*": true,
+    "*": false,
     "plaintext": false,
     "markdown": true,
     "scminput": false
@@ -57,6 +59,7 @@
   },
   "inlineChat.enableV2": true,
   "inlineChat.lineNaturalLanguageHint": false,
+  "problems.decorations.enabled": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
