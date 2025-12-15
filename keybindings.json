@@ -210,10 +210,6 @@
   },
   {
     "key": "cmd+5",
-    "command": "~remote.forwardedPortsContainer"
-  },
-  {
-    "key": "cmd+6",
     "command": "workbench.panel.testResults.view.focus"
   },
 
