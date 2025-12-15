@@ -183,7 +183,7 @@
 
   // Right Bar Navigation
   {
-    "key": "shift+cmd+c",
+    "key": "shift+cmd+j",
     "command": "workbench.action.toggleAuxiliaryBar"
   },
 
