@@ -4,10 +4,6 @@
   "chat.commandCenter.enabled": false,
   "chat.extensionTools.enabled": false,
   "chat.mcp.access": "none",
-  "claudeCode.preferredLocation": "panel",
-  "dev.containers.cacheVolume": true,
-  "dev.containers.copyGitConfig": false, // Valid even if greyed out. See: https://github.com/microsoft/vscode-remote-release/issues/5500
-  "dev.containers.experimentalLockfile": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.autoClosingDelete": "always",
@@ -16,7 +12,7 @@
   "editor.fontSize": 14,
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.hover.enabled": "off",
+  "editor.hover.enabled": false,
   "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
@@ -40,10 +36,14 @@
   "extensions.experimental.affinity": {
     "vscodevim.vim": 1
   },
+  "extensions.ignoreRecommendations": true,
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
   "git.decorations.enabled": false,
+  "go.coverOnSingleTest": true,
+  "go.coverOnSingleTestFile": true,
+  "go.coverOnTestPackage": true,
   "gopls": {
     "ui.completion.completeFunctionCalls": false,
     "ui.completion.matcher": "CaseSensitive"
@@ -68,7 +68,6 @@
   "vim.showmodename": false,
   "vim.sneak": true,
   "vim.surround": true,
-  "vim.useSystemClipboard": true,
   "vim.commandLineModeKeyBindingsNonRecursive": [
     {
       "before": ["<C-h>"],
@@ -290,10 +289,5 @@
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
-  "workbench.tree.renderIndentGuides": "none",
-  "yaml.schemas": {
-    "/home/vscode/.vscode-server/extensions/continue.continue-1.0.21-linux-arm64/config-yaml-schema.json": [
-      ".continue/**/*.yaml"
-    ]
-  }
+  "workbench.tree.renderIndentGuides": "none"
 }
