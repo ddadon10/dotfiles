@@ -10,7 +10,6 @@
   { "key": "cmd+[", "command": "" },
   { "key": "cmd+]", "command": "" },
   { "key": "cmd+e", "command": "" },
-  { "key": "cmd+i", "command": "" },
   { "key": "cmd+l", "command": "" },
   { "key": "cmd+o", "command": "" },
   { "key": "cmd+p", "command": "" },
@@ -115,19 +114,14 @@
 
   // LLM
   {
-    "key": "cmd+i",
+    "key": "cmd+l",
     "command": "editor.action.inlineSuggest.trigger",
     "when": "editorTextFocus && !inlineSuggestionVisible"
   },
   {
-    "key": "cmd+i",
+    "key": "cmd+l",
     "command": "editor.action.inlineSuggest.hide",
     "when": "editorTextFocus && inlineSuggestionVisible"
-  },
-  {
-    "key": "cmd+l",
-    "command": "jetbrains.ai.rewriteCode",
-    "when": "editorTextFocus && vim.mode !== 'Insert'"
   },
   {
     "key": "tab",
