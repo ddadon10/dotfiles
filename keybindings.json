@@ -12,8 +12,9 @@
   { "key": "cmd+e", "command": "" },
   { "key": "cmd+i", "command": "" },
   { "key": "cmd+l", "command": "" },
-  { "key": "cmd+escape", "command": "" },
+  { "key": "cmd+o", "command": "" },
   { "key": "cmd+p", "command": "" },
+  { "key": "cmd+escape", "command": "" },
   { "key": "cmd+shift+p", "command": "" },
   { "key": "shift+cmd+g", "command": "" },
   { "key": "f1", "command": "" },
@@ -76,40 +77,57 @@
     "when": "panelFocus"
   },
 
+  // Problems
+  {
+    "key": "f1",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        { "command": "workbench.action.tasks.toggleProblems" },
+        { "command": "workbench.action.focusActiveEditorGroup" }
+      ]
+    }
+  },
+
   // Autocomplete
   {
-    "key": "shift+tab",
+    "key": "cmd+o",
     "command": "editor.action.triggerSuggest",
     "when": "editorTextFocus && !suggestWidgetVisible && vim.mode === 'Insert'"
   },
   {
-    "key": "shift+tab",
+    "key": "cmd+o",
     "command": "hideSuggestWidget",
     "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'"
   },
 
   // Parameters Completion
   {
-    "key": "shift+enter",
+    "key": "cmd+p",
     "command": "editor.action.triggerParameterHints",
     "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'"
   },
   {
-    "key": "shift+enter",
+    "key": "cmd+p",
     "command": "closeParameterHints",
     "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'"
   },
 
-  // LLM Code Completion
+  // LLM
   {
-    "key": "f1",
+    "key": "cmd+i",
     "command": "editor.action.inlineSuggest.trigger",
     "when": "editorTextFocus && !inlineSuggestionVisible"
   },
   {
-    "key": "f1",
+    "key": "cmd+i",
     "command": "editor.action.inlineSuggest.hide",
     "when": "editorTextFocus && inlineSuggestionVisible"
+  },
+  {
+    "key": "cmd+l",
+    "command": "jetbrains.ai.rewriteCode",
+    "when": "editorTextFocus && vim.mode !== 'Insert'"
   },
   {
     "key": "tab",
@@ -125,19 +143,6 @@
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
     "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
-  },
-
-  // LLM Inline Actions
-  {
-    "key": "shift+f1",
-    "command": "jetbrains.ai.rewriteCode",
-    "when": "editorTextFocus && vim.mode !== 'Insert'"
-  },
-
-  {
-    "key": "alt+f1",
-    "command": "jetbrains.ai.askAI",
-    "when": "editorTextFocus && vim.mode !== 'Insert'"
   },
 
   // Quick Open
@@ -202,15 +207,6 @@
     "key": "cmd+3",
     "command": "workbench.debug.action.toggleRepl",
     "when": "workbench.panel.repl.view.active"
-  },
-  {
-    "key": "cmd+4",
-    "command": "workbench.actions.view.problems",
-    "when": "workbench.panel.markers.view.active"
-  },
-  {
-    "key": "cmd+5",
-    "command": "workbench.panel.testResults.view.focus"
   },
 
   // Workaround: https://github.com/VSCodeVim/Vim/issues/1004
