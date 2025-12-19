@@ -20,7 +20,7 @@
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
   "editor.parameterHints.enabled": false,
-  "editor.quickSuggestionsDelay": 150,
+  "editor.quickSuggestions": { "other": "off" },
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.selectionHighlight": false,
@@ -48,7 +48,7 @@
     "ui.completion.completeFunctionCalls": false,
     "ui.completion.matcher": "CaseSensitive"
   },
-  "problems.decorations.enabled": false,
+  "problems.visibility": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
@@ -272,11 +272,14 @@
       "editorLineNumber.activeForeground": "#6E7681"
     },
     "[Default Dark Modern]": {
-      "statusBarItem.remoteBackground": "#181818"
+      "statusBarItem.remoteBackground": "#181818",
+      "statusBarItem.warningBackground": "#181818"
     },
     "[Default Light Modern]": {
       "statusBarItem.remoteBackground": "#f8f8f8",
-      "statusBarItem.remoteForeground": "#3b3b3b"
+      "statusBarItem.remoteForeground": "#3b3b3b",
+      "statusBarItem.warningBackground": "#f8f8f8",
+      "statusBarItem.warningForeground": "#3b3b3b"
     }
   },
   "workbench.editor.editorActionsLocation": "titleBar",
