@@ -392,6 +392,7 @@ if !has('ide')
     syntax enable " https://vimhelp.org/syntax.txt.html#%3Asyn-on
     filetype plugin indent on " https://vimhelp.org/filetype.txt.html#%3Afiletype-overview
     highlight EndOfBuffer ctermfg=bg ctermfg=bg " https://vimhelp.org/syntax.txt.html#highlight-groups
+    packadd comment " https://vimhelp.org/usr_05.txt.html#comment-install
     call s:SetupStatusline()
     call s:QSSetupMappings()
 endif
