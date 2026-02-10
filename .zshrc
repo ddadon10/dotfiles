@@ -7,7 +7,7 @@ alias dev='docker run \
   --tty \
   --mount type=bind,src="${PWD}",dst=/workspace \
   --mount type=bind,src="${HOME}/.claude",dst=/root/.claude \
-  --mount type=bind,src="${HOME}/.config/github-copilot",dst=/root/.config/github-copilot \
+  --mount type=bind,src="${HOME}/.claude.json",dst=/root/.claude.json \
   --workdir /workspace \
   dev'
 
@@ -35,3 +35,4 @@ compinit
 
 # Kubectl completion
 source <(kubectl completion zsh)
+
