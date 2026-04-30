@@ -24,56 +24,56 @@
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+up",
     "command": "workbench.action.decreaseViewHeight",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+down",
     "command": "workbench.action.increaseViewHeight",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
 
   // Resizing Side Bar
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "sideBarFocus"
+    "when": "sideBarFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "sideBarFocus"
+    "when": "sideBarFocus",
   },
 
   // Resizing Panel
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+up",
     "command": "workbench.action.decreaseViewHeight",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+down",
     "command": "workbench.action.increaseViewHeight",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
 
   // Problems
@@ -83,60 +83,60 @@
     "args": {
       "commands": [
         { "command": "workbench.action.tasks.toggleProblems" },
-        { "command": "workbench.action.focusActiveEditorGroup" }
-      ]
-    }
+        { "command": "workbench.action.focusActiveEditorGroup" },
+      ],
+    },
   },
 
   // Autocomplete
   {
     "key": "cmd+o",
     "command": "editor.action.triggerSuggest",
-    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode === 'Insert'",
   },
   {
     "key": "cmd+o",
     "command": "hideSuggestWidget",
-    "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'",
   },
 
   // Parameters Completion
   {
     "key": "cmd+p",
     "command": "editor.action.triggerParameterHints",
-    "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'",
   },
   {
     "key": "cmd+p",
     "command": "closeParameterHints",
-    "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'",
   },
 
   // LLM
   {
     "key": "cmd+l",
     "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineSuggestionVisible"
+    "when": "editorTextFocus && !inlineSuggestionVisible",
   },
   {
     "key": "cmd+l",
     "command": "editor.action.inlineSuggest.hide",
-    "when": "editorTextFocus && inlineSuggestionVisible"
+    "when": "editorTextFocus && inlineSuggestionVisible",
   },
   {
     "key": "tab",
     "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
   {
     "key": "shift+tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
   {
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
 
   // Quick Open
@@ -144,63 +144,63 @@
     "key": "space",
     "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
     "args": {
-      "commands": [{ "command": "workbench.action.quickOpen" }]
+      "commands": [{ "command": "workbench.action.quickOpen" }],
     },
-    "when": "editorTextFocus && !inQuickOpen && vim.mode !== 'Insert' && vim.mode !== 'CommandlineInProgress'"
+    "when": "editorTextFocus && !inQuickOpen && vim.mode !== 'Insert' && vim.mode !== 'CommandlineInProgress'",
   },
 
   // Editor Focus
   {
     "key": "cmd+escape",
     "command": "workbench.action.focusActiveEditorGroup",
-    "when": "!editorTextFocus"
+    "when": "!editorTextFocus",
   },
 
   // Back and Forward Navigation
   {
     "key": "cmd+[",
     "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
+    "when": "canNavigateBack",
   },
   {
     "key": "cmd+]",
     "command": "workbench.action.navigateForward",
-    "when": "canNavigateForward"
+    "when": "canNavigateForward",
   },
 
   // Left Bar Navigation
   {
     "key": "shift+cmd+g",
     "command": "workbench.view.scm",
-    "when": "workbench.scm.active"
+    "when": "workbench.scm.active",
   },
   {
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
-    "when": "workbench.view.testing.active"
+    "when": "workbench.view.testing.active",
   },
 
   // Right Bar Navigation
   {
     "key": "shift+cmd+j",
-    "command": "workbench.action.toggleAuxiliaryBar"
+    "command": "workbench.action.toggleAuxiliaryBar",
   },
 
   // Bottom Bar Navigation
   {
     "key": "cmd+1",
     "command": "workbench.action.terminal.toggleTerminal",
-    "when": "terminal.active"
+    "when": "terminal.active",
   },
   {
     "key": "cmd+2",
     "command": "workbench.action.output.toggleOutput",
-    "when": "workbench.panel.output.active"
+    "when": "workbench.panel.output.active",
   },
   {
     "key": "cmd+3",
     "command": "workbench.debug.action.toggleRepl",
-    "when": "workbench.panel.repl.view.active"
+    "when": "workbench.panel.repl.view.active",
   },
 
   // Workaround: https://github.com/VSCodeVim/Vim/issues/1004
@@ -211,8 +211,8 @@
     "args": {
       "to": "down",
       "by": "wrappedLine",
-      "value": 1
-    }
+      "value": 1,
+    },
   },
   {
     "key": "cmd+k",
@@ -221,8 +221,8 @@
     "args": {
       "to": "up",
       "by": "wrappedLine",
-      "value": 1
-    }
+      "value": 1,
+    },
   },
 
   // Workaround: https://github.com/VSCodeVim/Vim/issues/5303
@@ -235,18 +235,18 @@
           "command": "editorScroll",
           "args": {
             "to": "down",
-            "by": "halfPage"
-          }
+            "by": "halfPage",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortCenter"
-          }
-        }
-      ]
+            "to": "viewPortCenter",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
   {
     "key": "ctrl+u",
@@ -257,18 +257,18 @@
           "command": "editorScroll",
           "args": {
             "to": "up",
-            "by": "halfPage"
-          }
+            "by": "halfPage",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortCenter"
-          }
-        }
-      ]
+            "to": "viewPortCenter",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
   {
     "key": "ctrl+f",
@@ -279,18 +279,18 @@
           "command": "editorScroll",
           "args": {
             "to": "down",
-            "by": "page"
-          }
+            "by": "page",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortTop"
-          }
-        }
-      ]
+            "to": "viewPortTop",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
   {
     "key": "ctrl+b",
@@ -301,17 +301,17 @@
           "command": "editorScroll",
           "args": {
             "to": "up",
-            "by": "page"
-          }
+            "by": "page",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortBottom"
-          }
-        }
-      ]
+            "to": "viewPortBottom",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
-  }
+    "when": "editorTextFocus && vim.mode === 'Normal'",
+  },
 ]
