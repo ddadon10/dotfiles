@@ -1,9 +1,6 @@
 {
   "breadcrumbs.symbolPath": "off",
-  "chat.agent.enabled": false,
-  "chat.commandCenter.enabled": false,
-  "chat.extensionTools.enabled": false,
-  "chat.mcp.access": "none",
+  "chat.disableAIFeatures": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.autoClosingDelete": "always",
@@ -18,12 +15,9 @@
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
-  "editor.parameterHints.enabled": false,
-  "editor.quickSuggestions": { "other": "off" },
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.selectionHighlight": false,
-  "editor.showFoldingControls": "never",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
   "editor.suggest.showWords": false,
@@ -49,7 +43,6 @@
   "go.coverOnSingleTestFile": true,
   "go.coverOnTestPackage": true,
   "gopls": {
-    "ui.completion.completeFunctionCalls": false,
     "ui.completion.matcher": "CaseSensitive",
   },
   "redhat.telemetry.enabled": false,
@@ -104,6 +97,16 @@
   "vim.normalModeKeyBindingsNonRecursive": [
     // Go To Actions
     {
+      "before": ["g", "c"],
+      "commands": ["editor.showCallHierarchy"],
+      "silent": "true",
+    },
+    {
+      "before": ["g", "C"],
+      "commands": ["references-view.showCallHierarchy"],
+      "silent": "true",
+    },
+    {
       "before": ["g", "d"],
       "commands": ["editor.action.revealDefinition"],
       "silent": "true",
@@ -124,6 +127,11 @@
       "silent": "true",
     },
     {
+      "before": ["g", "I"],
+      "commands": ["references-view.findImplementations"],
+      "silent": "true",
+    },
+    {
       "before": ["g", "p"],
       "commands": ["editor.action.peekDefinition"],
       "silent": "true",
@@ -134,6 +142,11 @@
       "silent": "true",
     },
     {
+      "before": ["g", "R"],
+      "commands": ["references-view.findReferences"],
+      "silent": "true",
+    },
+    {
       "before": ["g", "s"],
       "commands": ["typescript.goToSourceDefinition"],
       "silent": "true",
@@ -141,11 +154,6 @@
     {
       "before": ["g", "t"],
       "commands": ["editor.action.goToTypeDefinition"],
-      "silent": "true",
-    },
-    {
-      "before": ["g", "s"],
-      "commands": ["typescript.goToSourceDefinition"],
       "silent": "true",
     },
     // Leader Actions
@@ -267,22 +275,20 @@
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
+  "workbench.editor.useModal": "off",
   "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
     "[Dark 2026][Light 2026]": {
       "editor.symbolHighlightBackground": "#0000",
       "editor.symbolHighlightBorder": "#0000",
-      "editorLineNumber.activeForeground": "#6E7681",
+      "editorLineNumber.activeForeground": "#858889",
     },
     "[Dark 2026]": {
-      "statusBarItem.remoteBackground": "#181818",
-      "statusBarItem.warningBackground": "#181818",
+      "statusBarItem.remoteBackground": "#191A1B",
     },
     "[Light 2026]": {
-      "statusBarItem.remoteBackground": "#f8f8f8",
-      "statusBarItem.remoteForeground": "#3b3b3b",
-      "statusBarItem.warningBackground": "#f8f8f8",
-      "statusBarItem.warningForeground": "#3b3b3b",
+      "statusBarItem.remoteBackground": "#FAFAFD",
+      "statusBarItem.remoteForeground": "#606060",
     },
   },
   "workbench.editor.editorActionsLocation": "titleBar",
@@ -290,4 +296,5 @@
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
   "workbench.tree.renderIndentGuides": "none",
+  "terminal.integrated.initialHint": false,
 }
