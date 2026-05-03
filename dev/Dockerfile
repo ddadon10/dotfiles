@@ -2,7 +2,8 @@ FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH="/root/go/bin:${PATH}"
+ENV NVM_DIR=/root/.nvm
+ENV PATH="/root/.nvm/versions/node/v24.15.0/bin:/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     apt-transport-https \
@@ -33,7 +34,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
-    nodejs \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     tree \
     unzip \
     vim \
+    xz-utils \
     yq \
     zip \
     && rm -rf /var/lib/apt/lists/*
@@ -73,8 +74,16 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
-RUN corepack install -g npm@11.13.0
-RUN npm --version && npm install -g typescript
+RUN <<EOF
+    curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+    . "${NVM_DIR}/nvm.sh"
+    nvm install 24.15.0
+    nvm alias default 24.15.0
+    node -v
+    npm -v
+EOF
+
+RUN npm install -g typescript
 
 RUN <<EOF
     machine=$(uname -m)
