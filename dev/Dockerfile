@@ -2,7 +2,6 @@ FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NVM_DIR=/root/.nvm
 ENV PATH="/root/.nvm/versions/node/v24.15.0/bin:/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
@@ -76,7 +75,7 @@ RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
 RUN <<EOF
     curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-    . "${NVM_DIR}/nvm.sh"
+    . /root/.nvm/nvm.sh
     nvm install 24.15.0
     nvm alias default 24.15.0
     node -v
