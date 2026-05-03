@@ -165,8 +165,7 @@ RUN <<EOF
         ms-azuretools.vscode-containers \
         ms-ossdata.vscode-pgsql \
         r3inbowari.gomodexplorer \
-        redhat.vscode-yaml \
-        vscodevim.vim
+        redhat.vscode-yaml
     do
         "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
             --user-data-dir /opt/vscode-server/data \
@@ -177,7 +176,6 @@ RUN <<EOF
 EOF
 
 COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
-COPY vscode/settings.json /opt/vscode-server/data/Machine/settings.json
 COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
