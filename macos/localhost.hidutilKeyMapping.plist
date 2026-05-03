@@ -1,4 +1,5 @@
 <!-- Map Right Cmd to F1 -->
+<!-- To save in ~/Library/LaunchAgents for persistence across reboot  -->
 <!-- See: https://developer.apple.com/library/archive/technotes/tn2450 -->
 <!-- See: https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html -->
 <?xml version="1.0" encoding="UTF-8"?>

@@ -1,0 +1,71 @@
+# Locale
+export LANG=C.UTF-8
+
+# Terminal
+export TERM=xterm-ghostty
+export COLORTERM=truecolor
+
+# Path
+export PATH="/root/go/bin:$PATH"
+
+# Environment
+java_arch=$(dpkg --print-architecture 2>/dev/null || true)
+if [ -n "$java_arch" ] && [ -d "/usr/lib/jvm/java-21-openjdk-${java_arch}" ]; then
+  export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${java_arch}"
+fi
+export NODE_ENV=production
+export CGO_ENABLED=0
+export EDITOR=vim
+export VSCODE_USER_DATA_DIR=/opt/vscode-user-data
+export VSCODE_EXTENSIONS_DIR=/opt/vscode-extensions
+export VSCODE_SERVER_DATA_DIR=/opt/vscode-server
+export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
+
+# Shell Options
+shopt -s checkwinsize
+shopt -s histappend
+shopt -s extglob
+
+# History
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTCONTROL=ignoreboth:erasedups
+HISTTIMEFORMAT="%F %T  "
+
+# Aliases
+alias ls='ls -l --all --classify --color=auto'
+alias grep='grep --color=auto'
+alias gd='git diff'
+alias gdh='git diff HEAD~1'
+alias gdt='git diff trunk...'
+
+# Clipboard (OSC-52)
+pbcopy() {
+  local b64
+  b64=$(base64 | tr -d '\n')
+  printf '\033]52;c;%s\a' "$b64" >/dev/tty
+}
+pbpaste() {
+  local saved_tty response
+  saved_tty=$(stty -g </dev/tty)
+  stty raw -echo </dev/tty
+  printf '\e]52;c;?\a' >/dev/tty
+  IFS= read -rd $'\a' -t10 response </dev/tty || true
+  stty "$saved_tty" </dev/tty
+  printf '%s' "${response##*;}" | base64 -d
+}
+
+# Codex
+export IS_SANDBOX=1
+alias cdx='codex'
+alias cfix='codex --profile fix'
+
+# Bash Completion
+#
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi

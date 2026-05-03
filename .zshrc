@@ -1,38 +1,14 @@
 # Some useful aliases
+alias ci='code-insiders'
 alias rm='rm -i'
-alias ls='ls -aF'
-alias dev='docker run \
-  --rm \
-  --interactive \
-  --tty \
-  --mount type=bind,src="${PWD}",dst=/workspace \
-  --mount type=bind,src="${HOME}/.claude",dst=/root/.claude \
-  --mount type=bind,src="${HOME}/.claude.json",dst=/root/.claude.json \
-  --workdir /workspace \
-  dev'
+alias dpostgres='docker run --name postgrestmp --interactive --tty --env POSTGRES_PASSWORD=postgres -p 127.0.0.1:5434:5432 --rm postgres:16.7-bookworm '
+alias datlas='docker run --interactive --tty --rm --mount type=bind,src="${PWD}",dst=/workspace --mount type=bind,src="${HOME}/.atlas",dst=/root/.atlas --workdir /workspace arigaio/atlas:0.31.0'
+alias dgo='docker run --interactive --tty --rm --mount type=bind,src="${PWD}",dst=/workspace --workdir /workspace golang:1.23.6-bookworm go'
+alias dnode='docker run --interactive --tty --rm --mount type=bind,src="${PWD}",dst=/workspace --workdir /workspace node:22.14.0-bookworm node'
+alias dnpm='docker run --interactive --tty --rm --mount type=bind,src="${PWD}",dst=/workspace --workdir /workspace node:22.14.0-bookworm npm'
 
 # Shell customization
 export PS1="%n@mbp %~ %% "
 
-# Java
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
-
-# Azure
-alias azuredev='docker run \
-  --rm \
-  --interactive \
-  --tty \
-  --mount type=bind,src=${HOME}/.azure,dst=/root/.azure \
-  --mount type=bind,src=${HOME}/.kube,dst=/root/.kube \
-  azuredev'
-
-
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/david/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
-
-# Kubectl completion
-source <(kubectl completion zsh)
-
+# MacOS Terminal Support 256 Colors
+export COLORTERM=256 # $ tput colors

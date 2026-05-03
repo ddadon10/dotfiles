@@ -384,12 +384,9 @@ if !has('ide')
     if has('autocmd')
         autocmd InsertEnter,InsertLeave,CmdlineEnter,CmdlineLeave * redrawstatus!
     endif
-    set expandtab " https://vimhelp.org/options.txt.html#%27expandtab%27
+    set shortmess+=I " https://vimhelp.org/options.txt.html#%27shortmess%27
     set laststatus=2 " https://vimhelp.org/options.txt.html#%27laststatus%27
     set noshowmode " https://vimhelp.org/options.txt.html#%27noshowmode%27
-    set shiftwidth=4 " https://vimhelp.org/options.txt.html#%27shiftwidth%27
-    set shortmess+=I " https://vimhelp.org/options.txt.html#%27shortmess%27
-    set tabstop=4 " https://vimhelp.org/options.txt.html#%27tabstop%27
     set ttimeoutlen=100 " https://vimhelp.org/options.txt.html#%27ttimeoutlen%27
     colorscheme sorbet " https://vimhelp.org/syntax.txt.html#%3Acolorscheme
     syntax enable " https://vimhelp.org/syntax.txt.html#%3Asyn-on
