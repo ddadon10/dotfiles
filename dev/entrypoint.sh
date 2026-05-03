@@ -19,5 +19,4 @@ exec code \
   --without-connection-token \
   --accept-server-license-terms \
   --server-data-dir /opt/vscode-server \
-  --disable-telemetry \
-  --default-folder /workspace
+  --disable-telemetry
