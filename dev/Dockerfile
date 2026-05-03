@@ -183,7 +183,6 @@ EOF
 
 COPY vscode/settings.json /opt/vscode-user-data/User/settings.json
 COPY vscode/keybindings.json /opt/vscode-user-data/User/keybindings.json
-COPY dev/scratches/ /opt/scratches/
 COPY dev/bashrc /root/.bashrc
 COPY dev/bash_profile /root/.bash_profile
 COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh

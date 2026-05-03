@@ -1,6 +1,0 @@
-@tailwind base;
-
-.hello {
-    @apply text-lg font-bold;
-    content: "Hello, 世界";
-}
