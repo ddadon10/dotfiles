@@ -41,7 +41,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     ripgrep \
     rsync \
     shellcheck \
-    socat \
     strace \
     sudo \
     tree \
@@ -108,6 +107,15 @@ EOF
 RUN npm install -g firebase-tools
 
 RUN go install github.com/sosedoff/pgweb@latest
+
+RUN <<EOF
+    go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.5
+    xcaddy build v2.11.2 \
+        --with github.com/caddyserver/replace-response@v0.0.0-20250618171559-80962887e4c6 \
+        --output /usr/local/bin/caddy
+    caddy list-modules | grep -q '^http.handlers.replace_response$'
+    rm -f /root/go/bin/xcaddy
+EOF
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat

@@ -12,6 +12,7 @@ url="$1"
 listen_port=18080
 pid_file="/tmp/gopls-web-forward.pid"
 log_file="/tmp/gopls-web-forward.log"
+caddy_file="/tmp/gopls-web-forward.Caddyfile"
 
 case "$url" in
     http://127.0.0.1:*/* | http://localhost:*/*) ;;
@@ -31,6 +32,11 @@ if [[ "$path" != /gopls/* ]]; then
     usage
 fi
 
+if ! command -v caddy >/dev/null; then
+    echo "caddy is required" >&2
+    exit 1
+fi
+
 if [[ -f "$pid_file" ]]; then
     old_pid="$(<"$pid_file")"
     if [[ "$old_pid" =~ ^[0-9]+$ ]] && kill -0 "$old_pid" 2>/dev/null; then
@@ -40,17 +46,37 @@ if [[ -f "$pid_file" ]]; then
     rm -f "$pid_file"
 fi
 
-socat "TCP-LISTEN:${listen_port},bind=0.0.0.0,reuseaddr,fork" "TCP:127.0.0.1:${target_port}" >"$log_file" 2>&1 &
+cat > "$caddy_file" <<EOF
+{
+    admin off
+    auto_https off
+    order replace before reverse_proxy
+}
+
+:${listen_port} {
+    replace {
+        "http://127.0.0.1:${target_port}" "http://127.0.0.1:${listen_port}"
+        "http://localhost:${target_port}" "http://127.0.0.1:${listen_port}"
+    }
+
+    reverse_proxy 127.0.0.1:${target_port} {
+        header_up Accept-Encoding identity
+    }
+}
+EOF
+
+caddy validate --config "$caddy_file" --adapter caddyfile >"$log_file" 2>&1
+caddy run --config "$caddy_file" --adapter caddyfile >>"$log_file" 2>&1 &
 pid="$!"
 echo "$pid" > "$pid_file"
 
-sleep 0.1
+sleep 0.2
 
 if ! kill -0 "$pid" 2>/dev/null; then
     rm -f "$pid_file"
-    echo "failed to start socat; see $log_file" >&2
+    echo "failed to start caddy; see $log_file" >&2
     exit 1
 fi
 
-echo "forwarding http://127.0.0.1:${listen_port} -> http://127.0.0.1:${target_port}"
+echo "forwarding and rewriting http://127.0.0.1:${listen_port} -> http://127.0.0.1:${target_port}"
 echo "http://127.0.0.1:${listen_port}${path}"
