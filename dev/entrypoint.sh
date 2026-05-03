@@ -16,7 +16,6 @@ exec code \
   --host 0.0.0.0 \
   --port 8000 \
   --commit-id "$(< /opt/vscode-cli/serve-web/commit-id)" \
-  --enable-proposed-api local.gopls-proxy \
   --without-connection-token \
   --accept-server-license-terms \
   --server-data-dir /opt/vscode-server \

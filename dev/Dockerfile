@@ -57,6 +57,13 @@ RUN <<EOF
     echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
     apt-get update
     apt-get install --yes --no-install-recommends code
+    tmp="$(mktemp)"
+    jq '
+      .extensionsEnabledWithApiProposalVersion = ((.extensionsEnabledWithApiProposalVersion // []) + ["local.gopls-proxy"] | unique)
+      | .extensionEnabledApiProposals = ((.extensionEnabledApiProposals // {}) + {"local.gopls-proxy": ["externalUriOpener"]})
+    ' /usr/share/code/resources/app/product.json > "${tmp}"
+    cat "${tmp}" > /usr/share/code/resources/app/product.json
+    rm "${tmp}"
     rm microsoft.gpg
     rm -rf /var/lib/apt/lists/*
 EOF
