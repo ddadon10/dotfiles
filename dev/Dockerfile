@@ -76,40 +76,6 @@ RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
 RUN npm --version && npm install -g typescript
 
-RUN npm install -g \
-    @tailwindcss/language-server \
-    bash-language-server \
-    dockerfile-language-server-nodejs \
-    typescript-language-server \
-    vscode-langservers-extracted \
-    yaml-language-server
-
-RUN <<EOF
-    machine=$(uname -m)
-    case "${machine}" in
-        x86_64) arch="linux-x64" ;;
-        aarch64) arch="linux-arm64" ;;
-        *) exit 1 ;;
-    esac
-    curl -sSfL -o /usr/local/bin/marksman \
-        "https://github.com/artempyanykh/marksman/releases/latest/download/marksman-${arch}"
-    chmod +x /usr/local/bin/marksman
-EOF
-
-RUN <<EOF
-    machine=$(uname -m)
-    case "${machine}" in
-        x86_64) arch="amd64" ;;
-        aarch64) arch="arm64" ;;
-        *) exit 1 ;;
-    esac
-    ver=$(curl -sSf "https://api.github.com/repos/hashicorp/terraform-ls/releases/latest" | jq -r '.tag_name' | sed 's/^v//')
-    curl -sSfL -o /tmp/terraform-ls.zip \
-        "https://releases.hashicorp.com/terraform-ls/${ver}/terraform-ls_${ver}_linux_${arch}.zip"
-    unzip -qo /tmp/terraform-ls.zip -d /usr/local/bin/
-    rm /tmp/terraform-ls.zip
-EOF
-
 RUN <<EOF
     machine=$(uname -m)
     case "${machine}" in
