@@ -1,142 +1,102 @@
 [
-  // Default Keybinding Removals
-  { "key": "cmd+1", "command": "" },
-  { "key": "cmd+2", "command": "" },
-  { "key": "cmd+3", "command": "" },
-  { "key": "cmd+4", "command": "" },
-  { "key": "cmd+5", "command": "" },
-  { "key": "cmd+6", "command": "" },
-  { "key": "cmd+7", "command": "" },
-  { "key": "cmd+[", "command": "" },
-  { "key": "cmd+]", "command": "" },
-  { "key": "cmd+e", "command": "" },
-  { "key": "cmd+l", "command": "" },
-  { "key": "cmd+o", "command": "" },
-  { "key": "cmd+p", "command": "" },
-  { "key": "cmd+escape", "command": "" },
-  { "key": "cmd+shift+p", "command": "" },
-  { "key": "shift+cmd+g", "command": "" },
-  { "key": "f1", "command": "" },
-  { "key": "shift+f1", "command": "" },
-  { "key": "alt+f1", "command": "" },
-
+  // Close Active Editor
+  {
+    "key": "cmd+shift+\\",
+    "command": "workbench.action.closeActiveEditor",
+  },
   // Resizing Editor
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+up",
     "command": "workbench.action.decreaseViewHeight",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
   {
     "key": "shift+cmd+down",
     "command": "workbench.action.increaseViewHeight",
-    "when": "editorTextFocus"
+    "when": "editorTextFocus",
   },
 
   // Resizing Side Bar
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "sideBarFocus"
+    "when": "sideBarFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "sideBarFocus"
+    "when": "sideBarFocus",
   },
 
   // Resizing Panel
   {
     "key": "shift+cmd+left",
     "command": "workbench.action.increaseViewWidth",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+right",
     "command": "workbench.action.decreaseViewWidth",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+up",
     "command": "workbench.action.decreaseViewHeight",
-    "when": "panelFocus"
+    "when": "panelFocus",
   },
   {
     "key": "shift+cmd+down",
     "command": "workbench.action.increaseViewHeight",
-    "when": "panelFocus"
-  },
-
-  // Problems
-  {
-    "key": "f1",
-    "command": "runCommands",
-    "args": {
-      "commands": [
-        { "command": "workbench.action.tasks.toggleProblems" },
-        { "command": "workbench.action.focusActiveEditorGroup" }
-      ]
-    }
-  },
-
-  // Autocomplete
-  {
-    "key": "cmd+o",
-    "command": "editor.action.triggerSuggest",
-    "when": "editorTextFocus && !suggestWidgetVisible && vim.mode === 'Insert'"
-  },
-  {
-    "key": "cmd+o",
-    "command": "hideSuggestWidget",
-    "when": "editorTextFocus && suggestWidgetVisible && vim.mode === 'Insert'"
+    "when": "panelFocus",
   },
 
   // Parameters Completion
   {
     "key": "cmd+p",
     "command": "editor.action.triggerParameterHints",
-    "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && !parameterHintsVisible && vim.mode === 'Insert'",
   },
   {
     "key": "cmd+p",
     "command": "closeParameterHints",
-    "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && parameterHintsVisible && vim.mode === 'Insert'",
   },
 
   // LLM
   {
     "key": "cmd+l",
     "command": "editor.action.inlineSuggest.trigger",
-    "when": "editorTextFocus && !inlineSuggestionVisible"
+    "when": "editorTextFocus && !inlineSuggestionVisible",
   },
   {
     "key": "cmd+l",
     "command": "editor.action.inlineSuggest.hide",
-    "when": "editorTextFocus && inlineSuggestionVisible"
+    "when": "editorTextFocus && inlineSuggestionVisible",
   },
   {
     "key": "tab",
     "command": "editor.action.inlineSuggest.commit",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
   {
     "key": "shift+tab",
     "command": "editor.action.inlineSuggest.acceptNextLine",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
   {
     "key": "alt+tab",
     "command": "editor.action.inlineSuggest.acceptNextWord",
-    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'"
+    "when": "editorTextFocus && inlineSuggestionVisible && vim.mode === 'Insert'",
   },
 
   // Quick Open
@@ -144,63 +104,63 @@
     "key": "space",
     "command": "runCommands", // Using run commands to avoid having the macOS menu bar "Go" menu blinking when hitting space in insert mode
     "args": {
-      "commands": [{ "command": "workbench.action.quickOpen" }]
+      "commands": [{ "command": "workbench.action.quickOpen" }],
     },
-    "when": "editorTextFocus && !inQuickOpen && vim.mode !== 'Insert' && vim.mode !== 'CommandlineInProgress'"
+    "when": "editorTextFocus && !inQuickOpen && vim.mode !== 'Insert' && vim.mode !== 'CommandlineInProgress'",
   },
 
   // Editor Focus
   {
-    "key": "cmd+escape",
+    "key": "cmd+enter",
     "command": "workbench.action.focusActiveEditorGroup",
-    "when": "!editorTextFocus"
+    "when": "!editorTextFocus",
   },
 
   // Back and Forward Navigation
   {
-    "key": "cmd+[",
+    "key": "cmd+o",
     "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
+    "when": "canNavigateBack",
   },
   {
-    "key": "cmd+]",
+    "key": "cmd+i",
     "command": "workbench.action.navigateForward",
-    "when": "canNavigateForward"
+    "when": "canNavigateForward",
   },
 
   // Left Bar Navigation
   {
     "key": "shift+cmd+g",
     "command": "workbench.view.scm",
-    "when": "workbench.scm.active"
+    "when": "workbench.scm.active",
   },
   {
     "key": "shift+cmd+u",
     "command": "workbench.view.extension.test",
-    "when": "workbench.view.testing.active"
+    "when": "workbench.view.testing.active",
   },
 
-  // Right Bar Navigation
+  // Codex Bar Navigation
   {
-    "key": "shift+cmd+j",
-    "command": "workbench.action.toggleAuxiliaryBar"
+    "key": "shift+cmd+c",
+    "command": "workbench.action.toggleAuxiliaryBar",
   },
 
   // Bottom Bar Navigation
   {
     "key": "cmd+1",
     "command": "workbench.action.terminal.toggleTerminal",
-    "when": "terminal.active"
+    "when": "terminal.active",
   },
   {
     "key": "cmd+2",
     "command": "workbench.action.output.toggleOutput",
-    "when": "workbench.panel.output.active"
+    "when": "workbench.panel.output.active",
   },
   {
     "key": "cmd+3",
     "command": "workbench.debug.action.toggleRepl",
-    "when": "workbench.panel.repl.view.active"
+    "when": "workbench.panel.repl.view.active",
   },
 
   // Workaround: https://github.com/VSCodeVim/Vim/issues/1004
@@ -211,8 +171,8 @@
     "args": {
       "to": "down",
       "by": "wrappedLine",
-      "value": 1
-    }
+      "value": 1,
+    },
   },
   {
     "key": "cmd+k",
@@ -221,13 +181,25 @@
     "args": {
       "to": "up",
       "by": "wrappedLine",
-      "value": 1
-    }
+      "value": 1,
+    },
   },
 
-  // Workaround: https://github.com/VSCodeVim/Vim/issues/5303
+  // Map cmd+e to ctrl+e and cmd+y to ctrl+y in vim
   {
-    "key": "ctrl+d",
+    "key": "cmd+e",
+    "command": "extension.vim_ctrl+e",
+    "when": "editorTextFocus && vim.active && vim.use<C-e> && !inDebugRepl",
+  },
+  {
+    "key": "cmd+y",
+    "command": "extension.vim_ctrl+y",
+    "when": "editorTextFocus && vim.active && vim.use<C-y> && !inDebugRepl",
+  },
+
+  // Workaround of https://github.com/VSCodeVim/Vim/issues/5303 and map cmd to ctrl
+  {
+    "key": "cmd+d",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -235,21 +207,21 @@
           "command": "editorScroll",
           "args": {
             "to": "down",
-            "by": "halfPage"
-          }
+            "by": "halfPage",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortCenter"
-          }
-        }
-      ]
+            "to": "viewPortCenter",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
   {
-    "key": "ctrl+u",
+    "key": "cmd+u",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -257,19 +229,21 @@
           "command": "editorScroll",
           "args": {
             "to": "up",
-            "by": "halfPage"
-          }
+            "by": "halfPage",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortCenter"
-          }
-        }
-      ]
+            "to": "viewPortCenter",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
+
+  // Workaround: https://github.com/VSCodeVim/Vim/issues/5303
   {
     "key": "ctrl+f",
     "command": "runCommands",
@@ -279,18 +253,18 @@
           "command": "editorScroll",
           "args": {
             "to": "down",
-            "by": "page"
-          }
+            "by": "page",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortTop"
-          }
-        }
-      ]
+            "to": "viewPortTop",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
+    "when": "editorTextFocus && vim.mode === 'Normal'",
   },
   {
     "key": "ctrl+b",
@@ -301,17 +275,88 @@
           "command": "editorScroll",
           "args": {
             "to": "up",
-            "by": "page"
-          }
+            "by": "page",
+          },
         },
         {
           "command": "cursorMove",
           "args": {
-            "to": "viewPortBottom"
-          }
-        }
-      ]
+            "to": "viewPortBottom",
+          },
+        },
+      ],
     },
-    "when": "editorTextFocus && vim.mode === 'Normal'"
-  }
+    "when": "editorTextFocus && vim.mode === 'Normal'",
+  },
+  // Map cmd+n to ctrl+n commands and cmd+p to ctrl+p commands
+  {
+    "key": "cmd+n",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen",
+  },
+  {
+    "key": "cmd+n",
+    "command": "cursorDown",
+    "when": "textInputFocus",
+  },
+  {
+    "key": "cmd+n",
+    "command": "extension.vim_ctrl+n",
+    "when": "editorTextFocus && vim.active && vim.use<C-n> && !inDebugRepl || vim.active && vim.use<C-n> && !inDebugRepl && vim.mode == 'CommandlineInProgress' || vim.active && vim.use<C-n> && !inDebugRepl && vim.mode == 'SearchInProgressMode'",
+  },
+  {
+    "key": "cmd+n",
+    "command": "list.focusDown",
+    "when": "listFocus && !inputFocus && !treestickyScrollFocused",
+  },
+  {
+    "key": "cmd+n",
+    "command": "selectNextCodeAction",
+    "when": "codeActionMenuVisible",
+  },
+  {
+    "key": "cmd+n",
+    "command": "selectNextSuggestion",
+    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion",
+  },
+  {
+    "key": "cmd+n",
+    "command": "showNextParameterHint",
+    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible",
+  },
+  {
+    "key": "cmd+p",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen",
+  },
+  {
+    "key": "cmd+p",
+    "command": "cursorUp",
+    "when": "textInputFocus",
+  },
+  {
+    "key": "cmd+p",
+    "command": "extension.vim_ctrl+p",
+    "when": "editorTextFocus && vim.active && vim.use<C-p> && !inDebugRepl || vim.active && vim.use<C-p> && !inDebugRepl && vim.mode == 'CommandlineInProgress' || vim.active && vim.use<C-p> && !inDebugRepl && vim.mode == 'SearchInProgressMode'",
+  },
+  {
+    "key": "cmd+p",
+    "command": "list.focusUp",
+    "when": "listFocus && !inputFocus && !treestickyScrollFocused",
+  },
+  {
+    "key": "cmd+p",
+    "command": "selectPrevCodeAction",
+    "when": "codeActionMenuVisible",
+  },
+  {
+    "key": "cmd+p",
+    "command": "selectPrevSuggestion",
+    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion",
+  },
+  {
+    "key": "cmd+p",
+    "command": "showPrevParameterHint",
+    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible",
+  },
 ]

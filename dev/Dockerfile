@@ -177,6 +177,7 @@ EOF
 
 COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
 COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
+COPY vscode-defaults /opt/vscode-server/extensions/local.vscode-defaults-0.0.1
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

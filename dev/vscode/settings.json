@@ -1,9 +1,6 @@
 {
   "breadcrumbs.symbolPath": "off",
-  "chat.agent.enabled": false,
-  "chat.commandCenter.enabled": false,
-  "chat.extensionTools.enabled": false,
-  "chat.mcp.access": "none",
+  "chat.disableAIFeatures": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.autoClosingDelete": "always",
@@ -12,29 +9,30 @@
   "editor.fontSize": 14,
   "editor.guides.indentation": false,
   "editor.hideCursorInOverviewRuler": true,
-  "editor.hover.enabled": false,
-  "editor.inlineSuggest.enabled": false,
+  "editor.hover.enabled": "off",
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.matchBrackets": "never",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
-  "editor.parameterHints.enabled": false,
-  "editor.quickSuggestions": { "other": "off" },
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
   "editor.selectionHighlight": false,
-  "editor.showFoldingControls": "never",
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
   "editor.suggest.showWords": false,
   "explorer.autoRevealExclude": {
     "**/bower_components": false,
-    "**/node_modules": false
+    "**/node_modules": false,
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.go": "${capture}_test.go",
   },
   "extensions.autoUpdate": false,
   "extensions.experimental.affinity": {
-    "vscodevim.vim": 1
+    "vscodevim.vim": 1,
   },
   "extensions.ignoreRecommendations": true,
   "files.autoSave": "afterDelay",
@@ -51,10 +49,8 @@
   "go.coverOnSingleTestFile": true,
   "go.coverOnTestPackage": true,
   "gopls": {
-    "ui.completion.completeFunctionCalls": false,
-    "ui.completion.matcher": "CaseSensitive"
+    "ui.completion.matcher": "CaseSensitive",
   },
-  "problems.visibility": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
@@ -71,226 +67,240 @@
   "vim.commandLineModeKeyBindingsNonRecursive": [
     {
       "before": ["<C-h>"],
-      "after": ["<Left>"]
+      "after": ["<Left>"],
     },
     {
       "before": ["<C-j>"],
-      "after": ["<Down>"]
+      "after": ["<Down>"],
     },
     {
       "before": ["<C-k>"],
-      "after": ["<Up>"]
+      "after": ["<Up>"],
     },
     {
       "before": ["<C-l>"],
-      "after": ["<Right>"]
-    }
+      "after": ["<Right>"],
+    },
   ],
   "vim.insertModeKeyBindingsNonRecursive": [
     {
       "before": ["<C-h>"],
-      "after": ["<Left>"]
+      "after": ["<Left>"],
     },
     {
       "before": ["<C-j>"],
-      "after": ["<Down>"]
+      "after": ["<Down>"],
     },
     {
       "before": ["<C-k>"],
-      "after": ["<Up>"]
+      "after": ["<Up>"],
     },
     {
       "before": ["<C-l>"],
-      "after": ["<Right>"]
-    }
+      "after": ["<Right>"],
+    },
   ],
   "vim.normalModeKeyBindingsNonRecursive": [
     // Go To Actions
     {
+      "before": ["g", "c"],
+      "commands": ["editor.showCallHierarchy"],
+      "silent": "true",
+    },
+    {
+      "before": ["g", "C"],
+      "commands": ["references-view.showCallHierarchy"],
+      "silent": "true",
+    },
+    {
       "before": ["g", "d"],
       "commands": ["editor.action.revealDefinition"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["g", "e"],
       "commands": ["editor.action.marker.next"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["g", "h"],
       "commands": ["editor.action.showHover"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["g", "i"],
       "commands": ["editor.action.goToImplementation"],
-      "silent": "true"
+      "silent": "true",
+    },
+    {
+      "before": ["g", "I"],
+      "commands": ["references-view.findImplementations"],
+      "silent": "true",
     },
     {
       "before": ["g", "p"],
       "commands": ["editor.action.peekDefinition"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["g", "r"],
       "commands": ["editor.action.goToReferences"],
-      "silent": "true"
+      "silent": "true",
+    },
+    {
+      "before": ["g", "R"],
+      "commands": ["references-view.findReferences"],
+      "silent": "true",
     },
     {
       "before": ["g", "s"],
       "commands": ["typescript.goToSourceDefinition"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["g", "t"],
       "commands": ["editor.action.goToTypeDefinition"],
-      "silent": "true"
-    },
-    {
-      "before": ["g", "s"],
-      "commands": ["typescript.goToSourceDefinition"],
-      "silent": "true"
+      "silent": "true",
     },
     // Leader Actions
     {
       "before": ["<leader>", "c"],
       "commands": ["editor.action.commentLine"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "d"],
       "commands": ["workbench.action.debug.start"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "f"],
       "commands": ["editor.action.formatDocument"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "k"],
       "commands": ["workbench.action.debug.stop"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "l"],
       "commands": ["editor.debug.action.toggleBreakpoint"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "m"],
       "commands": ["gitlens.toggleFileBlame"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "n"],
       "commands": ["workbench.action.debug.continue"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "r"],
       "commands": ["editor.action.rename"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "s"],
       "commands": ["workbench.action.debug.run"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "t", "g"],
       "commands": ["go.toggle.test.file"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "x"],
       "commands": ["editor.action.refactor"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "<leader>"],
       "commands": ["editor.action.showContextMenu"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["<leader>", "<CR>"],
       "commands": ["editor.action.quickFix"],
-      "silent": "true"
+      "silent": "true",
     },
     // Other Keybindings
     {
       "before": ["d"],
-      "after": ["\"", "_", "d"]
+      "after": ["\"", "_", "d"],
     },
     {
       "before": ["r"],
-      "after": ["\"", "_", "r"]
+      "after": ["\"", "_", "r"],
     },
     {
       "before": ["<Space>"],
-      "after": ["-"]
+      "after": ["-"],
     },
     // Workaround: https://github.com/VSCodeVim/Vim/issues/2007
     {
       "before": ["u"],
       "commands": ["undo"],
-      "silent": true
+      "silent": true,
     },
     {
       "before": ["<C-r>"],
       "commands": ["redo"],
-      "silent": true
-    }
+      "silent": true,
+    },
   ],
   "vim.visualModeKeyBindingsNonRecursive": [
     {
       "before": ["<leader>", "c"],
       "commands": ["editor.action.commentLine"],
-      "silent": "true"
+      "silent": "true",
     },
     {
       "before": ["d"],
-      "after": ["\"", "_", "d"]
+      "after": ["\"", "_", "d"],
     },
     {
       "before": ["p"],
-      "after": ["P"]
+      "after": ["P"],
     },
     {
       "before": ["r"],
-      "after": ["\"", "_", "r"]
+      "after": ["\"", "_", "r"],
     },
     // Set cursor position at the last character of the yanked selction
     // See: https://stackoverflow.com/a/38983784/5384400
     {
       "before": ["y"],
-      "after": ["y", "`", ">"]
-    }
+      "after": ["y", "`", ">"],
+    },
   ],
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
   "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
+  "workbench.editor.useModal": "off",
   "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
-    "[Default Dark Modern][Default Light Modern]": {
+    "[Dark 2026][Light 2026]": {
       "editor.symbolHighlightBackground": "#0000",
       "editor.symbolHighlightBorder": "#0000",
-      "editorLineNumber.activeForeground": "#6E7681"
+      "editorLineNumber.activeForeground": "#858889",
     },
-    "[Default Dark Modern]": {
-      "statusBarItem.remoteBackground": "#181818",
-      "statusBarItem.warningBackground": "#181818"
+    "[Dark 2026]": {
+      "statusBarItem.remoteBackground": "#191A1B",
     },
-    "[Default Light Modern]": {
-      "statusBarItem.remoteBackground": "#f8f8f8",
-      "statusBarItem.remoteForeground": "#3b3b3b",
-      "statusBarItem.warningBackground": "#f8f8f8",
-      "statusBarItem.warningForeground": "#3b3b3b"
-    }
+    "[Light 2026]": {
+      "statusBarItem.remoteBackground": "#FAFAFD",
+      "statusBarItem.remoteForeground": "#606060",
+    },
   },
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
-  "workbench.tree.renderIndentGuides": "none"
+  "workbench.tree.renderIndentGuides": "none",
+  "terminal.integrated.initialHint": false,
 }
