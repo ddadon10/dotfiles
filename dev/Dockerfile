@@ -55,12 +55,12 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN <<EOF
-    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg
-    install -D -o root -g root -m 644 /tmp/microsoft.gpg /etc/apt/keyrings/microsoft-archive-keyring.gpg
-    rm /tmp/microsoft.gpg
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    install -D -o root -g root -m 644 microsoft.gpg /etc/apt/keyrings/microsoft-archive-keyring.gpg
     echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
     apt-get update
     apt-get install --yes --no-install-recommends code
+    rm microsoft.gpg
     rm -rf /var/lib/apt/lists/*
 EOF
 
