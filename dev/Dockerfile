@@ -33,6 +33,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
+    nodejs \
+    npm \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -48,7 +50,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     tree \
     unzip \
     vim \
-    xz-utils \
     yq \
     zip \
     && rm -rf /var/lib/apt/lists/*
@@ -61,18 +62,6 @@ RUN <<EOF
     apt-get install --yes --no-install-recommends code
     rm microsoft.gpg
     rm -rf /var/lib/apt/lists/*
-EOF
-
-RUN <<EOF
-    machine=$(uname -m)
-    case "${machine}" in
-        x86_64) arch="x64" ;;
-        aarch64) arch="arm64" ;;
-        *) exit 1 ;;
-    esac
-    curl -fsSL -o node.tar.xz "https://nodejs.org/dist/v24.15.0/node-v24.15.0-linux-${arch}.tar.xz"
-    tar -xJf node.tar.xz -C /usr/local --strip-components=1
-    rm node.tar.xz
 EOF
 
 RUN <<EOF
