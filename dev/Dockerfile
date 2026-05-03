@@ -34,7 +34,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     ncdu \
     ncurses-term \
     nodejs \
-    npm \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -74,6 +73,7 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
+RUN corepack install -g npm@11.13.0
 RUN npm --version && npm install -g typescript
 
 RUN <<EOF
