@@ -116,6 +116,7 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.
 RUN npm install -g @openai/codex@0.124.0
 
 RUN mkdir -p \
+    /opt/vscode-server/data/Machine \
     /opt/vscode-server/data/User \
     /opt/vscode-server/extensions \
     /opt/vscode-cli \
@@ -176,6 +177,7 @@ RUN <<EOF
 EOF
 
 COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
+COPY vscode/settings.json /opt/vscode-server/data/Machine/settings.json
 COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
