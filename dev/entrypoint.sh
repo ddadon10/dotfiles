@@ -8,23 +8,18 @@ if [[ "$#" -gt 0 ]]; then
   exec "$@"
 fi
 
-user_data_dir="${VSCODE_USER_DATA_DIR:-/opt/vscode-user-data}"
-extensions_dir="${VSCODE_EXTENSIONS_DIR:-/opt/vscode-extensions}"
-server_data_dir="${VSCODE_SERVER_DATA_DIR:-/opt/vscode-server}"
-cli_data_dir="${VSCODE_CLI_DATA_DIR:-/opt/vscode-cli}"
-
-mkdir -p /workspace "$user_data_dir" "$extensions_dir" "$server_data_dir" "$cli_data_dir"
-export VSCODE_CLI_DATA_DIR="$cli_data_dir"
+mkdir -p /workspace /opt/vscode-user-data /opt/vscode-extensions /opt/vscode-server /opt/vscode-cli
+export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
 
 exec code \
   --no-sandbox \
-  --user-data-dir "$user_data_dir" \
-  --extensions-dir "$extensions_dir" \
+  --user-data-dir /opt/vscode-user-data \
+  --extensions-dir /opt/vscode-extensions \
   serve-web \
   --host 0.0.0.0 \
   --port 8000 \
   --without-connection-token \
   --accept-server-license-terms \
-  --server-data-dir "$server_data_dir" \
+  --server-data-dir /opt/vscode-server \
   --disable-telemetry \
   --default-folder /workspace

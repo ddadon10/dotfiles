@@ -2,10 +2,6 @@ FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV VSCODE_USER_DATA_DIR=/opt/vscode-user-data
-ENV VSCODE_EXTENSIONS_DIR=/opt/vscode-extensions
-ENV VSCODE_SERVER_DATA_DIR=/opt/vscode-server
-ENV VSCODE_CLI_DATA_DIR=/opt/vscode-cli
 ENV PATH="/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
@@ -60,16 +56,9 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 
 RUN <<EOF
     curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/microsoft.gpg
-    install -D -o root -g root -m 644 /tmp/microsoft.gpg /usr/share/keyrings/microsoft.gpg
+    install -D -o root -g root -m 644 /tmp/microsoft.gpg /etc/apt/keyrings/microsoft-archive-keyring.gpg
     rm /tmp/microsoft.gpg
-    cat > /etc/apt/sources.list.d/vscode.sources <<'SOURCES'
-Types: deb
-URIs: https://packages.microsoft.com/repos/code
-Suites: stable
-Components: main
-Architectures: amd64,arm64
-Signed-By: /usr/share/keyrings/microsoft.gpg
-SOURCES
+    echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
     apt-get update
     apt-get install --yes --no-install-recommends code
     rm -rf /var/lib/apt/lists/*
@@ -154,10 +143,10 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.
 RUN npm install -g @openai/codex@0.124.0
 
 RUN mkdir -p \
-    "${VSCODE_USER_DATA_DIR}/User" \
-    "${VSCODE_EXTENSIONS_DIR}" \
-    "${VSCODE_SERVER_DATA_DIR}" \
-    "${VSCODE_CLI_DATA_DIR}" \
+    /opt/vscode-user-data/User \
+    /opt/vscode-extensions \
+    /opt/vscode-server \
+    /opt/vscode-cli \
     /workspace
 
 RUN <<EOF
@@ -175,8 +164,8 @@ RUN <<EOF
         redhat.vscode-yaml
     do
         code --no-sandbox \
-            --user-data-dir "${VSCODE_USER_DATA_DIR}" \
-            --extensions-dir "${VSCODE_EXTENSIONS_DIR}" \
+            --user-data-dir /opt/vscode-user-data \
+            --extensions-dir /opt/vscode-extensions \
             --install-extension "${extension}" \
             --force
     done
