@@ -173,11 +173,11 @@ EOF
 
 COPY vscode/settings.json /opt/vscode-user-data/User/settings.json
 COPY vscode/keybindings.json /opt/vscode-user-data/User/keybindings.json
-COPY dev/bashrc /root/.bashrc
-COPY dev/bash_profile /root/.bash_profile
-COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY dev/gopls-web-forward /usr/local/bin/gopls-web-forward
-COPY dev/config.toml /etc/codex/config.toml
+COPY bashrc /root/.bashrc
+COPY bash_profile /root/.bash_profile
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY gopls-web-forward /usr/local/bin/gopls-web-forward
+COPY config.toml /etc/codex/config.toml
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
 
