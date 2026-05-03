@@ -48,6 +48,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     ripgrep \
     rsync \
     shellcheck \
+    socat \
     strace \
     sudo \
     tree \
@@ -186,8 +187,9 @@ COPY vscode/keybindings.json /opt/vscode-user-data/User/keybindings.json
 COPY dev/bashrc /root/.bashrc
 COPY dev/bash_profile /root/.bash_profile
 COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY dev/gopls-web-forward /usr/local/bin/gopls-web-forward
 COPY dev/config.toml /etc/codex/config.toml
 
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
