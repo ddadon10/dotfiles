@@ -175,8 +175,6 @@ RUN <<EOF
     done
 EOF
 
-COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
-COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
