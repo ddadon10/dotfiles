@@ -32,7 +32,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
-    nginx \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -152,6 +151,7 @@ RUN <<EOF
 EOF
 
 COPY vscode-defaults /tmp/vscode-defaults
+COPY gopls-proxy /tmp/gopls-proxy
 
 RUN <<EOF
     server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
@@ -176,21 +176,34 @@ RUN <<EOF
             --force
     done
 
-    mkdir -p /tmp/vscode-defaults-vsix/extension
-    cp /tmp/vscode-defaults/package.json /tmp/vscode-defaults-vsix/extension/package.json
+    package_extension() {
+        source_dir="$1"
+        name="$2"
+        display_name="$3"
+        description="$4"
+        enabled_api_proposals="${5:-}"
+        vsix="/tmp/${name}.vsix"
+        work_dir="/tmp/${name}-vsix"
 
-    cat > /tmp/vscode-defaults-vsix/extension.vsixmanifest <<'VSIX_MANIFEST'
+        mkdir -p "${work_dir}/extension"
+        cp "${source_dir}/package.json" "${work_dir}/extension/package.json"
+        if [[ -f "${source_dir}/extension.js" ]]; then
+            cp "${source_dir}/extension.js" "${work_dir}/extension/extension.js"
+        fi
+
+        cat > "${work_dir}/extension.vsixmanifest" <<VSIX_MANIFEST
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Language="en-US" Id="vscode-defaults" Version="0.0.1" Publisher="local" />
-    <DisplayName>VS Code Defaults</DisplayName>
-    <Description xml:space="preserve">Container defaults that must be available before extension host startup.</Description>
+    <Identity Language="en-US" Id="${name}" Version="0.0.1" Publisher="local" />
+    <DisplayName>${display_name}</DisplayName>
+    <Description xml:space="preserve">${description}</Description>
     <Tags>Other</Tags>
     <Categories>Other</Categories>
     <GalleryFlags>Private</GalleryFlags>
     <Properties>
       <Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.90.0" />
+$(if [[ -n "${enabled_api_proposals}" ]]; then echo "      <Property Id=\"Microsoft.VisualStudio.Code.EnabledApiProposals\" Value=\"${enabled_api_proposals}\" />"; fi)
     </Properties>
   </Metadata>
   <Installation>
@@ -203,23 +216,40 @@ RUN <<EOF
 </PackageManifest>
 VSIX_MANIFEST
 
-    cat > /tmp/vscode-defaults-vsix/'[Content_Types].xml' <<'CONTENT_TYPES'
+        cat > "${work_dir}/[Content_Types].xml" <<'CONTENT_TYPES'
 <?xml version="1.0" encoding="utf-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="js" ContentType="application/javascript" />
   <Default Extension="json" ContentType="application/json" />
   <Default Extension="vsixmanifest" ContentType="text/xml" />
   <Default Extension="xml" ContentType="text/xml" />
 </Types>
 CONTENT_TYPES
 
-    (cd /tmp/vscode-defaults-vsix && zip -qr /tmp/vscode-defaults.vsix .)
-    "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
-        --user-data-dir /opt/vscode-server/data \
-        --extensions-dir /opt/vscode-server/extensions \
-        --install-extension /tmp/vscode-defaults.vsix \
-        --force
+        (cd "${work_dir}" && zip -qr "${vsix}" .)
+        "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
+            --user-data-dir /opt/vscode-server/data \
+            --extensions-dir /opt/vscode-server/extensions \
+            --install-extension "${vsix}" \
+            --force
 
-    rm -rf /tmp/vscode-defaults /tmp/vscode-defaults-vsix /tmp/vscode-defaults.vsix
+        rm -rf "${work_dir}" "${vsix}"
+    }
+
+    package_extension \
+        /tmp/vscode-defaults \
+        vscode-defaults \
+        "VS Code Defaults" \
+        "Container defaults that must be available before extension host startup."
+
+    package_extension \
+        /tmp/gopls-proxy \
+        gopls-proxy \
+        "gopls Proxy" \
+        "Opens gopls web views through a container-friendly local proxy." \
+        externalUriOpener
+
+    rm -rf /tmp/vscode-defaults /tmp/gopls-proxy
 EOF
 
 COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
@@ -227,9 +257,8 @@ COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY gopls-web-forward /usr/local/bin/gopls-web-forward
 COPY config.toml /etc/codex/config.toml
 
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
