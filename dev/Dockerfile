@@ -165,7 +165,8 @@ RUN <<EOF
         ms-azuretools.vscode-containers \
         ms-ossdata.vscode-pgsql \
         r3inbowari.gomodexplorer \
-        redhat.vscode-yaml
+        redhat.vscode-yaml \
+        vscodevim.vim
     do
         "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
             --user-data-dir /opt/vscode-server/data \

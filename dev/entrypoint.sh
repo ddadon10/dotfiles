@@ -14,7 +14,7 @@ export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
 exec code \
   serve-web \
   --host 0.0.0.0 \
-  --port 8000 \
+  --port 8080 \
   --commit-id "$(< /opt/vscode-cli/serve-web/commit-id)" \
   --without-connection-token \
   --accept-server-license-terms \

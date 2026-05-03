@@ -9,7 +9,7 @@ usage() {
 [[ "$#" -eq 1 ]] || usage
 
 url="$1"
-listen_port=18080
+listen_port=8081
 pid_file="/tmp/gopls-web-forward.pid"
 log_file="/tmp/gopls-web-forward.log"
 nginx_file="/tmp/gopls-web-forward.nginx.conf"

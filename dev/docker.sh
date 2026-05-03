@@ -16,8 +16,8 @@ docker_args=(
     --name "${name}"
     --env "GIT_USER_NAME=${git_name}"
     --env "GIT_USER_EMAIL=${git_email}"
-    --publish "127.0.0.1:8000:8000"
-    --publish "127.0.0.1:18080:18080"
+    --publish "127.0.0.1:8080:8080"
+    --publish "127.0.0.1:8081:8081"
     --mount "type=bind,src=${PWD%/*},dst=/workspace"
     --mount "type=bind,src=${HOME}/.codex,dst=/root/.codex"
     --workdir /workspace
