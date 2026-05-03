@@ -151,6 +151,8 @@ RUN <<EOF
     test -s /opt/vscode-cli/serve-web/commit-id
 EOF
 
+COPY vscode-defaults /tmp/vscode-defaults
+
 RUN <<EOF
     server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
     for extension in \
@@ -173,11 +175,55 @@ RUN <<EOF
             --install-extension "${extension}" \
             --force
     done
+
+    mkdir -p /tmp/vscode-defaults-vsix/extension
+    cp /tmp/vscode-defaults/package.json /tmp/vscode-defaults-vsix/extension/package.json
+
+    cat > /tmp/vscode-defaults-vsix/extension.vsixmanifest <<'VSIX_MANIFEST'
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Language="en-US" Id="vscode-defaults" Version="0.0.1" Publisher="local" />
+    <DisplayName>VS Code Defaults</DisplayName>
+    <Description xml:space="preserve">Container defaults that must be available before extension host startup.</Description>
+    <Tags>Other</Tags>
+    <Categories>Other</Categories>
+    <GalleryFlags>Private</GalleryFlags>
+    <Properties>
+      <Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.90.0" />
+    </Properties>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Code" />
+  </Installation>
+  <Dependencies />
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+  </Assets>
+</PackageManifest>
+VSIX_MANIFEST
+
+    cat > /tmp/vscode-defaults-vsix/'[Content_Types].xml' <<'CONTENT_TYPES'
+<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="json" ContentType="application/json" />
+  <Default Extension="vsixmanifest" ContentType="text/xml" />
+  <Default Extension="xml" ContentType="text/xml" />
+</Types>
+CONTENT_TYPES
+
+    (cd /tmp/vscode-defaults-vsix && zip -qr /tmp/vscode-defaults.vsix .)
+    "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
+        --user-data-dir /opt/vscode-server/data \
+        --extensions-dir /opt/vscode-server/extensions \
+        --install-extension /tmp/vscode-defaults.vsix \
+        --force
+
+    rm -rf /tmp/vscode-defaults /tmp/vscode-defaults-vsix /tmp/vscode-defaults.vsix
 EOF
 
 COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
 COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
-COPY vscode-defaults /opt/vscode-server/extensions/local.vscode-defaults-0.0.1
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
