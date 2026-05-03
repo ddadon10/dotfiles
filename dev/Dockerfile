@@ -117,13 +117,43 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.
 RUN npm install -g @openai/codex@0.124.0
 
 RUN mkdir -p \
-    /opt/vscode-user-data/User \
-    /opt/vscode-extensions \
-    /opt/vscode-server \
+    /opt/vscode-server/data/User \
+    /opt/vscode-server/extensions \
     /opt/vscode-cli \
     /workspace
 
 RUN <<EOF
+    export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
+    code serve-web \
+        --host 127.0.0.1 \
+        --port 8123 \
+        --without-connection-token \
+        --accept-server-license-terms \
+        --server-data-dir /opt/vscode-server \
+        --disable-telemetry \
+        --default-folder /workspace &
+    pid="$!"
+    trap 'kill "$pid" 2>/dev/null || true' EXIT
+    ready=0
+    for _ in {1..180}; do
+        if curl -fsS http://127.0.0.1:8123/ 2>/dev/null | grep -q 'vscode-workbench-web-configuration'; then
+            ready=1
+            break
+        fi
+        sleep 1
+    done
+    if [[ "$ready" -ne 1 ]]; then
+        exit 1
+    fi
+    kill "$pid"
+    wait "$pid" || true
+    trap - EXIT
+    find /opt/vscode-cli/serve-web -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort | tail -n 1 > /opt/vscode-cli/serve-web/commit-id
+    test -s /opt/vscode-cli/serve-web/commit-id
+EOF
+
+RUN <<EOF
+    server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
     for extension in \
         bradlc.vscode-tailwindcss \
         openai.chatgpt \
@@ -137,16 +167,16 @@ RUN <<EOF
         r3inbowari.gomodexplorer \
         redhat.vscode-yaml
     do
-        code --no-sandbox \
-            --user-data-dir /opt/vscode-user-data \
-            --extensions-dir /opt/vscode-extensions \
+        "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
+            --user-data-dir /opt/vscode-server/data \
+            --extensions-dir /opt/vscode-server/extensions \
             --install-extension "${extension}" \
             --force
     done
 EOF
 
-COPY vscode/settings.json /opt/vscode-user-data/User/settings.json
-COPY vscode/keybindings.json /opt/vscode-user-data/User/keybindings.json
+COPY vscode/settings.json /opt/vscode-server/data/User/settings.json
+COPY vscode/keybindings.json /opt/vscode-server/data/User/keybindings.json
 COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
