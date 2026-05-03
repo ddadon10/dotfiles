@@ -5,7 +5,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/root/.nvm/versions/node/v24.15.0/bin:/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
-    apt-transport-https \
     bash-completion \
     bat \
     bind9-dnsutils \
