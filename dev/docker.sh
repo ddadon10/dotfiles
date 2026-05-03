@@ -3,17 +3,17 @@ set -euo pipefail
 
 git_name=$(git config --global user.name 2>/dev/null || true)
 git_email=$(git config --global user.email 2>/dev/null || true)
+container_name="${DEV_CONTAINER_NAME:-dev}"
 
 mkdir -p "${HOME}/.codex"
 
-if ! docker image inspect dev >/dev/null 2>&1; then
-    docker build --file dev/Dockerfile --tag dev .
-fi
+docker build --file dev/Dockerfile --tag dev .
 
 docker_args=(
     --rm
     --interactive
     --tty
+    --name "${container_name}"
     --env "GIT_USER_NAME=${git_name}"
     --env "GIT_USER_EMAIL=${git_email}"
     --env "CODE_HOST=0.0.0.0"
