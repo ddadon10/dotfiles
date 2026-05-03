@@ -74,7 +74,7 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
-RUN npm install -g typescript
+RUN npm --version && npm install -g typescript
 
 RUN npm install -g \
     @tailwindcss/language-server \
