@@ -41,6 +41,12 @@
   "files.insertFinalNewline": true,
   "git.blame.editorDecoration.enabled": false,
   "git.decorations.enabled": false,
+  "gitlens.blame.format": "${id|8}${author|4}${agoOrDate|11-}",
+  "gitlens.defaultDateFormat": "YYYY-MM-DD",
+  "gitlens.defaultDateSource": "committed",
+  "gitlens.defaultDateStyle": "absolute",
+  "gitlens.integrations.enabled": false,
+  "gitlens.plusFeatures.enabled": false,
   "go.coverOnSingleTest": true,
   "go.coverOnSingleTestFile": true,
   "go.coverOnTestPackage": true,
@@ -173,7 +179,7 @@
     },
     {
       "before": ["<leader>", "m"],
-      "commands": ["git.blame.toggleEditorDecoration"],
+      "commands": ["gitlens.toggleFileBlame"],
       "silent": "true"
     },
     {
