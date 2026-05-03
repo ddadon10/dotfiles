@@ -12,7 +12,7 @@ url="$1"
 listen_port=18080
 pid_file="/tmp/gopls-web-forward.pid"
 log_file="/tmp/gopls-web-forward.log"
-caddy_file="/tmp/gopls-web-forward.Caddyfile"
+nginx_file="/tmp/gopls-web-forward.nginx.conf"
 
 case "$url" in
     http://127.0.0.1:*/* | http://localhost:*/*) ;;
@@ -32,8 +32,8 @@ if [[ "$path" != /gopls/* ]]; then
     usage
 fi
 
-if ! command -v caddy >/dev/null; then
-    echo "caddy is required" >&2
+if ! nginx -V 2>&1 | grep -q -- '--with-http_sub_module'; then
+    echo "nginx with http_sub_module is required" >&2
     exit 1
 fi
 
@@ -46,27 +46,37 @@ if [[ -f "$pid_file" ]]; then
     rm -f "$pid_file"
 fi
 
-cat > "$caddy_file" <<EOF
-{
-    admin off
-    auto_https off
-    order replace before reverse_proxy
+cat > "$nginx_file" <<EOF
+worker_processes 1;
+error_log ${log_file} info;
+pid /tmp/gopls-web-forward.nginx.pid;
+
+events {
+    worker_connections 64;
 }
 
-:${listen_port} {
-    replace {
-        "http://127.0.0.1:${target_port}" "http://127.0.0.1:${listen_port}"
-        "http://localhost:${target_port}" "http://127.0.0.1:${listen_port}"
-    }
+http {
+    access_log off;
 
-    reverse_proxy 127.0.0.1:${target_port} {
-        header_up Accept-Encoding identity
+    server {
+        listen 0.0.0.0:${listen_port};
+
+        location / {
+            proxy_pass http://127.0.0.1:${target_port};
+            proxy_set_header Host 127.0.0.1:${target_port};
+            proxy_set_header Accept-Encoding "";
+
+            sub_filter_once off;
+            sub_filter_types application/javascript text/javascript text/css;
+            sub_filter "http://127.0.0.1:${target_port}" "http://127.0.0.1:${listen_port}";
+            sub_filter "http://localhost:${target_port}" "http://127.0.0.1:${listen_port}";
+        }
     }
 }
 EOF
 
-caddy validate --config "$caddy_file" --adapter caddyfile >"$log_file" 2>&1
-caddy run --config "$caddy_file" --adapter caddyfile >>"$log_file" 2>&1 &
+nginx -t -c "$nginx_file" >"$log_file" 2>&1
+nginx -c "$nginx_file" -g "daemon off;" >>"$log_file" 2>&1 &
 pid="$!"
 echo "$pid" > "$pid_file"
 
@@ -74,7 +84,7 @@ sleep 0.2
 
 if ! kill -0 "$pid" 2>/dev/null; then
     rm -f "$pid_file"
-    echo "failed to start caddy; see $log_file" >&2
+    echo "failed to start nginx; see $log_file" >&2
     exit 1
 fi
 
