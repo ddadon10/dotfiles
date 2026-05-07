@@ -180,7 +180,6 @@ COPY bashrc /root/.bashrc
 COPY bash_profile /root/.bash_profile
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY gopls-web-forward /usr/local/bin/gopls-web-forward
-COPY config.toml /etc/codex/config.toml
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
 
