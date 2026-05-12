@@ -3,6 +3,7 @@
   "chat.disableAIFeatures": true,
   "diffEditor.hideUnchangedRegions.enabled": true,
   "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.renderSideBySide": false,
   "editor.autoClosingDelete": "always",
   "editor.bracketPairColorization.enabled": false,
   "editor.cursorBlinking": "solid",
@@ -55,6 +56,9 @@
   "gopls": {
     "ui.completion.matcher": "CaseSensitive",
   },
+  "go.testEnvFile": "${workspaceFolder}/env/app/test.env",
+  "go.toolsManagement.autoUpdate": true,
+  "gomod.focusMode": false,
   "redhat.telemetry.enabled": false,
   "scm.diffDecorations": "none",
   "search.smartCase": true,
@@ -306,5 +310,5 @@
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
   "workbench.tree.renderIndentGuides": "none",
-  "terminal.integrated.initialHint": false,
+  "terminal.integrated.initialHint": false
 }
