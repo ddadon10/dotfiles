@@ -18,6 +18,8 @@
   "editor.occurrencesHighlight": "off",
   "editor.renderLineHighlight": "none",
   "editor.renderWhitespace": "none",
+  "editor.scrollbar.horizontalScrollbarSize": 8,
+  "editor.scrollbar.verticalScrollbarSize": 8,
   "editor.selectionHighlight": false,
   "editor.stickyScroll.enabled": false,
   "editor.suggest.showSnippets": false,
@@ -287,7 +289,7 @@
   ],
   "window.autoDetectColorScheme": true,
   "window.commandCenter": false,
-  "window.title": "${activeEditorShort}${separator}${rootNameShort}${separator}${profileName}",
+  "window.title": "${rootNameShort}",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.useModal": "off",
   "workbench.activityBar.location": "top",
@@ -308,6 +310,6 @@
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
-  "workbench.startupEditor": "none",
+  "workbench.startupEditor": "welcomePageInEmptyWorkbench",
   "workbench.tree.renderIndentGuides": "none"
 }
