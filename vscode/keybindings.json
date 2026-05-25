@@ -134,10 +134,6 @@
 
   // Left Bar Navigation
   {
-    "key": "shift+cmd+c",
-    "command": "workbench.view.explorer",
-  },
-  {
     "key": "shift+cmd+g",
     "command": "workbench.view.scm",
     "when": "workbench.scm.active",
@@ -147,8 +143,6 @@
     "command": "workbench.view.extension.test",
     "when": "workbench.view.testing.active",
   },
-
-  // Codex Bar Navigation
   {
     "key": "shift+cmd+o",
     "command": "workbench.action.toggleAuxiliaryBar",
