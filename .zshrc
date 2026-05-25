@@ -26,8 +26,6 @@ dev() {
     lsof -nP -iTCP:"$dev_web_port" -sTCP:LISTEN >/dev/null 2>&1 || break
   done
 
-  echo "DEV_WEB_PORT=${dev_web_port} URL=http://127.0.0.1:${dev_web_port}"
-
   docker run \
     --rm \
     --interactive \

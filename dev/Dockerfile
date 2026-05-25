@@ -160,12 +160,12 @@ RUN <<EOF
         esbenp.prettier-vscode \
         golang.Go \
         HashiCorp.HCL \
-        JetBrains.jetbrains-ai-assistant \
         ms-azuretools.vscode-containers \
         ms-ossdata.vscode-pgsql \
         PKief.material-icon-theme \
         r3inbowari.gomodexplorer \
-        redhat.vscode-yaml
+        redhat.vscode-yaml \
+        vscodevim.vim
     do
         "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
             --user-data-dir /opt/vscode-server/data \
@@ -178,7 +178,6 @@ EOF
 RUN mkdir -p /root/.codex
 
 COPY AGENTS.md /root/AGENTS.md
-COPY .codex/config.toml /root/.codex/config.toml
 COPY .vimrc /root/.vimrc
 COPY dev/bashrc /root/.bashrc
 COPY dev/bash_profile /root/.bash_profile

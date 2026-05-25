@@ -32,9 +32,6 @@
     "*.go": "${capture}_test.go",
   },
   "extensions.autoUpdate": true,
-  "extensions.experimental.affinity": {
-    "vscodevim.vim": 1,
-  },
   "extensions.ignoreRecommendations": true,
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
