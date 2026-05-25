@@ -51,7 +51,17 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 RUN az aks install-cli
 
 # Install k9s
-RUN curl -SsfL "https://github.com/derailed/k9s/releases/download/v0.50.18/k9s_Linux_arm64.tar.gz" -o k9s.tar.gz && tar -xzf k9s.tar.gz -C /usr/local/bin k9s && rm -f k9s.tar.gz
+RUN <<EOF
+    machine="$(uname -m)"
+    case "${machine}" in
+        x86_64) arch="amd64" ;;
+        aarch64) arch="arm64" ;;
+        *) exit 1 ;;
+    esac
+    curl -SsfL "https://github.com/derailed/k9s/releases/download/v0.50.18/k9s_Linux_${arch}.tar.gz" -o k9s.tar.gz
+    tar -xzf k9s.tar.gz -C /usr/local/bin k9s
+    rm -f k9s.tar.gz
+EOF
 
 # Setup .bashrc
 RUN cat > /root/.bashrc << 'EOF'
