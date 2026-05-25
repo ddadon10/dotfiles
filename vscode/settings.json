@@ -65,6 +65,8 @@
   "telemetry.feedback.enabled": false,
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontSize": 14,
+  "terminal.integrated.initialHint": false,
+  "terminal.integrated.tabs.enabled": false,
   "vim.showMarksInGutter": true,
   "vim.showmodename": false,
   "vim.sneak": true,
@@ -307,6 +309,5 @@
   "workbench.editor.empty.hint": "hidden",
   "workbench.editor.enablePreview": false,
   "workbench.startupEditor": "none",
-  "workbench.tree.renderIndentGuides": "none",
-  "terminal.integrated.initialHint": false
+  "workbench.tree.renderIndentGuides": "none"
 }

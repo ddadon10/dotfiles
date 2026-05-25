@@ -13,7 +13,7 @@ export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
 export SUDO_USER="${SUDO_USER:-vscode}"
 export SUDO_PS1=1
 export PROMPT_DIRTRIM=2
-export PS1='[\w]\$ '
+export PS1='\u@\h:\w\$ '
 
 exec code \
   serve-web \
