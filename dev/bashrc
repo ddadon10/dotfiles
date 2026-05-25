@@ -6,10 +6,7 @@ export TERM=xterm-ghostty
 export COLORTERM=truecolor
 
 # Path
-if [ -s /root/.nvm/nvm.sh ]; then
-  . /root/.nvm/nvm.sh
-fi
-export PATH="/root/.nvm/versions/node/v24.15.0/bin:/root/go/bin:$PATH"
+source /root/.nvm/nvm.sh
 
 # Environment
 java_arch=$(dpkg --print-architecture 2>/dev/null || true)
@@ -45,15 +42,6 @@ pbcopy() {
   local b64
   b64=$(base64 | tr -d '\n')
   printf '\033]52;c;%s\a' "$b64" >/dev/tty
-}
-pbpaste() {
-  local saved_tty response
-  saved_tty=$(stty -g </dev/tty)
-  stty raw -echo </dev/tty
-  printf '\e]52;c;?\a' >/dev/tty
-  IFS= read -rd $'\a' -t10 response </dev/tty || true
-  stty "$saved_tty" </dev/tty
-  printf '%s' "${response##*;}" | base64 -d
 }
 
 # Codex
