@@ -165,8 +165,7 @@ RUN <<EOF
         ms-ossdata.vscode-pgsql \
         PKief.material-icon-theme \
         r3inbowari.gomodexplorer \
-        redhat.vscode-yaml \
-        vscodevim.vim
+        redhat.vscode-yaml
     do
         "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
             --user-data-dir /opt/vscode-server/data \
