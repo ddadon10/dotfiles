@@ -16,6 +16,8 @@ java_arch=$(dpkg --print-architecture 2>/dev/null || true)
 if [ -n "$java_arch" ] && [ -d "/usr/lib/jvm/java-21-openjdk-${java_arch}" ]; then
   export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${java_arch}"
 fi
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
 export NODE_ENV=production
 export CGO_ENABLED=0
 export EDITOR=vim
@@ -56,8 +58,6 @@ pbpaste() {
 
 # Codex
 export IS_SANDBOX=1
-alias cdx='codex'
-alias cfix='codex --profile fix'
 
 # Bash Completion
 #

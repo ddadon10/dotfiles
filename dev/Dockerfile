@@ -113,7 +113,7 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
-RUN npm install -g @openai/codex@0.124.0
+RUN npm install -g @openai/codex@0.133.0
 
 RUN mkdir -p \
     /opt/vscode-server/data/Machine \
@@ -156,7 +156,7 @@ RUN <<EOF
     server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
     for extension in \
         bradlc.vscode-tailwindcss \
-        openai.chatgpt \
+        PKief.material-icon-theme \
         eamodio.gitlens \
         esbenp.prettier-vscode \
         golang.Go \

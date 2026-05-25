@@ -31,7 +31,7 @@
   "explorer.fileNesting.patterns": {
     "*.go": "${capture}_test.go",
   },
-  "extensions.autoUpdate": false,
+  "extensions.autoUpdate": true,
   "extensions.experimental.affinity": {
     "vscodevim.vim": 1,
   },

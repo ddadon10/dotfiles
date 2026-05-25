@@ -10,6 +10,10 @@ fi
 
 mkdir -p /workspace /opt/vscode-server/data/User /opt/vscode-server/extensions /opt/vscode-cli
 export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
+export SUDO_USER="${SUDO_USER:-vscode}"
+export SUDO_PS1=1
+export PROMPT_DIRTRIM=2
+export PS1='[\w]\$ '
 
 exec code \
   serve-web \

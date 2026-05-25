@@ -1,13 +1,12 @@
 model = "gpt-5.5"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "medium"
 developer_instructions = """
 You are running in a Docker container.
 You cannot run Docker.
-Commit frequently.
 """
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
-web_search = "cached" # use cached index to avoid fetching arbitrary live pages and reduce prompt-injection risk
+web_search = "disabled"
 plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
 
@@ -16,17 +15,8 @@ trust_level = "trusted"
 
 [shell_environment_policy]
 inherit = "all"
-experimental_use_profile = true
 
 [tui]
 notifications = true
 notification_method = "osc9"
 status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "total-input-tokens", "total-output-tokens", "fast-mode"]
-
-[profiles.fix]
-model = "gpt-5.3-codex-spark"
-model_reasoning_effort = "medium"
-developer_instructions = """
-In fix profile, prefer minimal changes and targeted validation.
-Do not run make, make lint, or full test suites unless explicitly requested.
-"""

@@ -123,6 +123,10 @@
     "when": "canNavigateBack",
   },
   {
+    "key": "shift+cmd+o",
+    "command": "workbench.view.extensions",
+  },
+  {
     "key": "cmd+i",
     "command": "workbench.action.navigateForward",
     "when": "canNavigateForward",
@@ -142,7 +146,7 @@
 
   // Codex Bar Navigation
   {
-    "key": "shift+cmd+c",
+    "key": "shift+cmd+l",
     "command": "workbench.action.toggleAuxiliaryBar",
   },
 
