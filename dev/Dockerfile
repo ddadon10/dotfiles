@@ -156,7 +156,6 @@ RUN <<EOF
     server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
     for extension in \
         bradlc.vscode-tailwindcss \
-        PKief.material-icon-theme \
         eamodio.gitlens \
         esbenp.prettier-vscode \
         golang.Go \
@@ -164,6 +163,7 @@ RUN <<EOF
         JetBrains.jetbrains-ai-assistant \
         ms-azuretools.vscode-containers \
         ms-ossdata.vscode-pgsql \
+        PKief.material-icon-theme \
         r3inbowari.gomodexplorer \
         redhat.vscode-yaml \
         vscodevim.vim
@@ -176,10 +176,15 @@ RUN <<EOF
     done
 EOF
 
-COPY bashrc /root/.bashrc
-COPY bash_profile /root/.bash_profile
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY gopls-web-forward /usr/local/bin/gopls-web-forward
+RUN mkdir -p /root/.codex
+
+COPY AGENTS.md /root/AGENTS.md
+COPY .codex/config.toml /root/.codex/config.toml
+COPY .vimrc /root/.vimrc
+COPY dev/bashrc /root/.bashrc
+COPY dev/bash_profile /root/.bash_profile
+COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY dev/gopls-web-forward /usr/local/bin/gopls-web-forward
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
 
