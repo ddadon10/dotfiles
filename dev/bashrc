@@ -11,8 +11,8 @@ source /root/.nvm/nvm.sh
 # Environment
 arch=$(dpkg --print-architecture)
 export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${arch}"
-git config --global user.name "$GIT_USER_NAME"
-git config --global user.email "$GIT_USER_EMAIL"
+[ "$(git config --global --get user.name 2>/dev/null || true)" = "$GIT_USER_NAME" ] || git config --global user.name "$GIT_USER_NAME"
+[ "$(git config --global --get user.email 2>/dev/null || true)" = "$GIT_USER_EMAIL" ] || git config --global user.email "$GIT_USER_EMAIL"
 export IS_SANDBOX=1
 export NODE_ENV=production
 export CGO_ENABLED=0
