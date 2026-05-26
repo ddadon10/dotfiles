@@ -134,6 +134,10 @@
 
   // Left Bar Navigation
   {
+    "key": "shift+cmd+o",
+    "command": "workbench.action.toggleAuxiliaryBar",
+  },
+  {
     "key": "shift+cmd+g",
     "command": "workbench.view.scm",
     "when": "workbench.scm.active",
@@ -143,11 +147,6 @@
     "command": "workbench.view.extension.test",
     "when": "workbench.view.testing.active",
   },
-  {
-    "key": "shift+cmd+o",
-    "command": "workbench.action.toggleAuxiliaryBar",
-  },
-
   // Bottom Bar Navigation
   {
     "key": "cmd+1",
