@@ -181,9 +181,8 @@ COPY AGENTS.md /root/AGENTS.md
 COPY .vimrc /root/.vimrc
 COPY dev/bashrc /root/.bashrc
 COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY dev/gopls-web-forward /usr/local/bin/gopls-web-forward
 RUN echo 'source /root/.bashrc' > /root/.bash_profile
 
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/gopls-web-forward
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

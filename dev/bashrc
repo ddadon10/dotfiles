@@ -9,18 +9,16 @@ export COLORTERM=truecolor
 source /root/.nvm/nvm.sh
 
 # Environment
-java_arch=$(dpkg --print-architecture 2>/dev/null || true)
-if [ -n "$java_arch" ] && [ -d "/usr/lib/jvm/java-21-openjdk-${java_arch}" ]; then
-  export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${java_arch}"
-fi
+arch=$(dpkg --print-architecture)
+export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-${arch}"
 git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
+export IS_SANDBOX=1
 export NODE_ENV=production
 export CGO_ENABLED=0
 export EDITOR=vim
 
 # Shell Options
-shopt -s checkwinsize
 shopt -s histappend
 shopt -s extglob
 
@@ -28,14 +26,9 @@ shopt -s extglob
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTCONTROL=ignoreboth:erasedups
-HISTTIMEFORMAT="%F %T  "
 
 # Aliases
-alias ls='ls -l --all --classify --color=auto'
-alias grep='grep --color=auto'
-alias gd='git diff'
-alias gdh='git diff HEAD~1'
-alias gdt='git diff trunk...'
+alias ls='ls -aF'
 
 # Clipboard (OSC-52)
 pbcopy() {
@@ -43,9 +36,6 @@ pbcopy() {
   b64=$(base64 | tr -d '\n')
   printf '\033]52;c;%s\a' "$b64" >/dev/tty
 }
-
-# Codex
-export IS_SANDBOX=1
 
 # Bash Completion
 source /usr/share/bash-completion/bash_completion
