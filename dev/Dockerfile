@@ -63,7 +63,7 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
-    cluster_version="$(pg_lsclusters --no-header | awk 'NR == 1 { print $1 }')"
+    cluster_version="$(pg_lsclusters --no-header | grep -o '^[^ ]*')"
     pg_ctlcluster "${cluster_version}" main start
     su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
     pg_ctlcluster "${cluster_version}" main stop
@@ -73,10 +73,9 @@ EOF
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
 RUN <<EOF
-    curl -fsSL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
     . /root/.nvm/nvm.sh
     nvm install 24.15.0
-    nvm alias default 24.15.0
     node -v
     npm -v
 EOF
@@ -90,8 +89,7 @@ RUN <<EOF
         aarch64) arch="arm64" ;;
         *) exit 1 ;;
     esac
-    curl -sSfL -o /usr/local/bin/kubectl \
-        "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${arch}/kubectl"
+    curl -sSfL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${arch}/kubectl"
     chmod +x /usr/local/bin/kubectl
 EOF
 
