@@ -160,8 +160,8 @@ EOF
 COPY AGENTS.md /root/AGENTS.md
 COPY .vimrc /root/.vimrc
 COPY dev/bashrc /root/.bashrc
-COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN echo 'source /root/.bashrc' > /root/.bash_profile
+COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
