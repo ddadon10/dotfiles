@@ -19,7 +19,6 @@ exec code \
   serve-web \
   --host 0.0.0.0 \
   --port 8080 \
-  --commit-id "$(< /opt/vscode-cli/serve-web/commit-id)" \
   --without-connection-token \
   --accept-server-license-terms \
   --server-data-dir /opt/vscode-server \

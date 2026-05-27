@@ -131,27 +131,11 @@ RUN <<EOF
         --disable-telemetry \
         --default-folder /workspace &
     pid="$!"
-    trap 'kill "$pid" 2>/dev/null || true' EXIT
-    ready=0
-    for _ in {1..180}; do
-        if curl -fsS http://127.0.0.1:8123/ 2>/dev/null | grep -q 'vscode-workbench-web-configuration'; then
-            ready=1
-            break
-        fi
-        sleep 1
-    done
-    if [[ "$ready" -ne 1 ]]; then
-        exit 1
-    fi
-    kill "$pid"
-    wait "$pid" || true
-    trap - EXIT
-    find /opt/vscode-cli/serve-web -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort | tail -n 1 > /opt/vscode-cli/serve-web/commit-id
-    test -s /opt/vscode-cli/serve-web/commit-id
+    trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true' EXIT
+    curl -fsSL --retry 180 --retry-delay 1 --retry-connrefused http://127.0.0.1:8123/ | grep -q 'vscode-workbench-web-configuration'
 EOF
 
 RUN <<EOF
-    server_commit="$(< /opt/vscode-cli/serve-web/commit-id)"
     for extension in \
         bradlc.vscode-tailwindcss \
         eamodio.gitlens \
@@ -165,7 +149,7 @@ RUN <<EOF
         redhat.vscode-yaml \
         vscodevim.vim
     do
-        "/opt/vscode-cli/serve-web/${server_commit}/bin/code-server" \
+        code \
             --user-data-dir /opt/vscode-server/data \
             --extensions-dir /opt/vscode-server/extensions \
             --install-extension "${extension}" \
