@@ -17,6 +17,7 @@ export IS_SANDBOX=1
 export NODE_ENV=production
 export CGO_ENABLED=0
 export EDITOR=vim
+export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
 
 # Shell Options
 shopt -s histappend
