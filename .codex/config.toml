@@ -6,7 +6,7 @@ You cannot run Docker.
 """
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
-web_search = "disabled"
+web_search = "live"
 plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
 
