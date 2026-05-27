@@ -157,8 +157,6 @@ RUN <<EOF
     done
 EOF
 
-RUN mkdir -p /root/.codex
-
 COPY AGENTS.md /root/AGENTS.md
 COPY .vimrc /root/.vimrc
 COPY dev/bashrc /root/.bashrc
