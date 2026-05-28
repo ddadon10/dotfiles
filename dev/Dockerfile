@@ -132,7 +132,14 @@ RUN <<EOF
         --default-folder /workspace &
     pid="$!"
     trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true' EXIT
-    curl -fsSL --retry 180 --retry-delay 1 --retry-connrefused http://127.0.0.1:8123/ | grep -q 'vscode-workbench-web-configuration'
+    for i in {1..180}; do
+        if curl -fsSL http://127.0.0.1:8123/ | rg -q 'vscode-workbench-web-configuration'; then
+            exit 0
+        fi
+        sleep 1
+    done
+    echo "Timed out waiting for VS Code web UI after ${i} attempts" >&2
+    exit 1
 EOF
 
 RUN <<EOF
