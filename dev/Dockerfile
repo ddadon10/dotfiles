@@ -111,7 +111,6 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
-RUN npm install -g @openai/codex@0.133.0
 
 RUN mkdir -p \
     /opt/vscode-server/data/Machine \
@@ -164,10 +163,15 @@ RUN <<EOF
     done
 EOF
 
-COPY AGENTS.md /root/AGENTS.md
+RUN npm install -g @openai/codex@0.134.0
+
 COPY .vimrc /root/.vimrc
+
 COPY dev/bashrc /root/.bashrc
 RUN echo 'source /root/.bashrc' > /root/.bash_profile
+
+COPY AGENTS.md /root/AGENTS.md
+
 COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
