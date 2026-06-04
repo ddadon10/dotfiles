@@ -7,6 +7,7 @@ alias ls='ls -aF'
 codesrv() {
   docker run \
     --interactive \
+    --name codesrv \
     --tty \
     --env "GIT_USER_NAME=$(git config --global user.name)" \
     --env "GIT_USER_EMAIL=$(git config --global user.email)" \
