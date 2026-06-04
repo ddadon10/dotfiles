@@ -8,7 +8,6 @@ codesrv() {
   docker run \
     --interactive \
     --tty \
-    --name codesrv \
     --env "GIT_USER_NAME=$(git config --global user.name)" \
     --env "GIT_USER_EMAIL=$(git config --global user.email)" \
     --publish "127.0.0.1:8080:8080" \
