@@ -1,6 +1,7 @@
 # Aliases
 alias cat='bat --plain --paging never'
-alias ls='ls -aF'
+alias grep='grep --color=auto'
+alias ls='ls -aF --color=auto'
 
 # Path
 source /root/.nvm/nvm.sh

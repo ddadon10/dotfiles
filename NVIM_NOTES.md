@@ -28,10 +28,10 @@ Docker image and moves toward a Neovim-first shell workflow.
 - Keep `vscode-langservers-extracted`; it is Neovim LSP tooling, not VS Code
   web/editor.
 - Docker installs `@openai/codex@0.141.0`.
-- Neovim should be launched with `--listen` when invoked from the shell, using a
-  stable Unix socket outside the repo, for example `/tmp/nvim-${UID}/socket`.
-- Do not put `nvim --listen ...` directly in `$EDITOR`; use `EDITOR=nvim` and a
-  shell wrapper or alias for interactive launches.
+- Keep `EDITOR=vim` for now.
+- Neovim socket support is deferred; when added, use a stable Unix socket
+  outside the repo, for example `/tmp/nvim-${UID}/socket`.
+- Do not put `nvim --listen ...` directly in `$EDITOR`.
 - Use Tokyonight Night normally:
   - Add `folke/tokyonight.nvim`.
   - Remove `miikanissi/modus-themes.nvim`.
@@ -394,13 +394,12 @@ changes separate from Neovim Lua behavior.
    - Remove custom `ENTRYPOINT`; use `CMD ["/bin/bash", "--login"]`.
    - Keep runtime shell setup in `dev/.bashrc`.
 
-3. Shell defaults for Neovim.
-   - Set `EDITOR=nvim` and `VISUAL=nvim` after Neovim is installed.
-   - Add an `NVIM_SOCKET` default such as `/tmp/nvim-${UID}/socket`.
-   - Create the socket directory with `0700` permissions.
-   - Handle stale socket files before starting Neovim.
-   - Add a shell wrapper or alias so interactive `nvim` starts with
-     `--listen "$NVIM_SOCKET"`.
+3. Shell aliases and defaults.
+   - Keep `EDITOR=vim` for now.
+   - Add color aliases for `ls` and `grep` in `dev/.bashrc`.
+   - Keep `cat` and `MANPAGER` backed by `bat`.
+   - Defer `NVIM_SOCKET` and the interactive `nvim --listen` wrapper until
+     after the next config steps.
    - Do not make the container entrypoint launch Neovim by default.
    - Do not put `nvim --listen ...` directly in `$EDITOR`.
 
@@ -515,7 +514,8 @@ changes separate from Neovim Lua behavior.
 
 19. Interactive verification.
     - Start the container shell.
-    - Start `nvim` and confirm it listens on `$NVIM_SOCKET`.
+    - After socket support exists, start `nvim` and confirm it listens on
+      `$NVIM_SOCKET`.
     - Run `:Copilot setup` once after the credential mount exists.
     - Run `:Copilot status`.
     - Confirm Gitsigns signs, blame, and diff behavior in a git repo.
