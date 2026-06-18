@@ -403,10 +403,13 @@ changes separate from Neovim Lua behavior.
    - Do not make the container entrypoint launch Neovim by default.
    - Do not put `nvim --listen ...` directly in `$EDITOR`.
 
-4. Copilot credential mount plan.
-   - Add or update the run script separately from the Dockerfile.
-   - Create host `~/.config/github-copilot`.
-   - Mount it to `/root/.config/github-copilot`.
+4. Copilot credential mount and zsh launcher cleanup.
+   - Remove the obsolete `.zshrc` `codesrv()` launcher.
+   - Keep `.zshrc` `dev()` using the Dockerfile default
+     `CMD ["/bin/bash", "--login"]`; do not override the entrypoint.
+   - Create host `~/.codex` in `.zshrc` `dev()` before mounting it.
+   - Create host `~/.config/github-copilot` in `.zshrc` `dev()`.
+   - Mount it to `/root/.config/github-copilot` in `.zshrc` `dev()`.
    - Mount only that directory; do not mount host `~/.config` over
      `/root/.config`, because that can hide `/root/.config/nvim`.
 
@@ -534,8 +537,6 @@ changes separate from Neovim Lua behavior.
 - Should the Codex left pane auto-run `codex`, or open a shell intended for
   manual `codex` use?
 - Should Gitsigns get full hunk mappings, or only old Fugitive parity mappings?
-- Should Copilot credentials live in host `~/.config/github-copilot` or a
-  repo-local ignored directory?
 - Should Copilot use its default `npx` language server behavior, or pin/use the
   bundled server with `vim.g.copilot_version = false`?
 - Which LSP servers should be kept for the actual work done in this repo?
