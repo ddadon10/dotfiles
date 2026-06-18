@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
-    nginx \
+    neovim \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -45,22 +45,13 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     strace \
     sudo \
     tree \
+    tree-sitter-cli \
     unzip \
     vim \
     xz-utils \
     yq \
     zip \
     && rm -rf /var/lib/apt/lists/*
-
-RUN <<EOF
-    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-    install -D -o root -g root -m 644 microsoft.gpg /etc/apt/keyrings/microsoft-archive-keyring.gpg
-    echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
-    apt-get update
-    apt-get install --yes --no-install-recommends code
-    rm microsoft.gpg
-    rm -rf /var/lib/apt/lists/*
-EOF
 
 RUN <<EOF
     cluster_version="$(pg_lsclusters --no-header | grep -o '^[^ ]*')"
@@ -81,6 +72,35 @@ RUN <<EOF
 EOF
 
 RUN npm install -g typescript
+
+RUN npm install -g \
+    @tailwindcss/language-server \
+    bash-language-server \
+    dockerfile-language-server-nodejs \
+    typescript-language-server \
+    vscode-langservers-extracted \
+    yaml-language-server
+
+RUN <<EOF
+    machine=$(uname -m)
+    case "${machine}" in
+        x86_64) arch="x64" ;;
+        aarch64) arch="arm64" ;;
+        *) exit 1 ;;
+    esac
+    ver=$(curl -sSf "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest" | jq -r '.tag_name')
+    mkdir -p /opt/lua-language-server
+    curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${ver}/lua-language-server-${ver#v}-linux-${arch}.tar.gz" | tar -xzf - -C /opt/lua-language-server
+    ln -s /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server
+EOF
+
+RUN <<EOF
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com trixie main" > /etc/apt/sources.list.d/hashicorp.list
+    apt-get update
+    apt-get install --yes --no-install-recommends terraform-ls
+    rm -rf /var/lib/apt/lists/*
+EOF
 
 RUN <<EOF
     machine=$(uname -m)
@@ -105,6 +125,7 @@ EOF
 
 RUN npm install -g firebase-tools
 
+RUN go install github.com/jesseduffield/lazygit@latest
 RUN go install github.com/sosedoff/pgweb@latest
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
@@ -112,66 +133,34 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
 
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
 
-RUN mkdir -p \
-    /opt/vscode-server/data/Machine \
-    /opt/vscode-server/data/User \
-    /opt/vscode-server/extensions \
-    /opt/vscode-cli \
-    /workspace
-
-RUN <<EOF
-    export VSCODE_CLI_DATA_DIR=/opt/vscode-cli
-    code serve-web \
-        --host 127.0.0.1 \
-        --port 8123 \
-        --without-connection-token \
-        --accept-server-license-terms \
-        --server-data-dir /opt/vscode-server \
-        --disable-telemetry \
-        --default-folder /workspace &
-    pid="$!"
-    trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true' EXIT
-    for i in {1..180}; do
-        if curl -fsSL http://127.0.0.1:8123/ | rg -q 'vscode-workbench-web-configuration'; then
-            exit 0
-        fi
-        sleep 1
-    done
-    echo "Timed out waiting for VS Code web UI after ${i} attempts" >&2
-    exit 1
-EOF
-
-RUN <<EOF
-    for extension in \
-        bradlc.vscode-tailwindcss \
-        eamodio.gitlens \
-        esbenp.prettier-vscode \
-        golang.Go \
-        HashiCorp.HCL \
-        ms-azuretools.vscode-containers \
-        ms-ossdata.vscode-pgsql \
-        PKief.material-icon-theme \
-        r3inbowari.gomodexplorer \
-        redhat.vscode-yaml \
-        vscodevim.vim
-    do
-        code \
-            --user-data-dir /opt/vscode-server/data \
-            --extensions-dir /opt/vscode-server/extensions \
-            --install-extension "${extension}" \
-            --force
-    done
-EOF
-
-RUN npm install -g @openai/codex@0.134.0
+RUN npm install -g @openai/codex@0.141.0
 
 COPY .vimrc /root/.vimrc
 
-COPY dev/bashrc /root/.bashrc
+RUN mkdir -p /root/.config/lazygit
+COPY <<EOF /root/.config/lazygit/config.yml
+gui:
+  mouseEvents: false
+  showCommandLog: false
+  showRandomTip: false
+
+git:
+  autoFetch: false
+  autoForwardBranches: none
+  fetchAll: false
+  pagers:
+    - pager: delta --dark --paging=never
+
+update:
+  method: never
+
+disableStartupPopups: true
+notARepository: quit
+EOF
+
+COPY dev/.bashrc /root/.bashrc
 RUN echo 'source /root/.bashrc' > /root/.bash_profile
 
 COPY AGENTS.md /root/AGENTS.md
 
-COPY dev/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/bash", "--login"]
