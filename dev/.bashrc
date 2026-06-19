@@ -34,5 +34,8 @@ pbcopy() {
   printf '\033]52;c;%s\a' "$b64" >/dev/tty
 }
 
+# Path
+source /root/.nvm/nvm.sh
+
 # Bash Completion
 source /usr/share/bash-completion/bash_completion

@@ -1,3 +1,4 @@
+vim.g.copilot_no_tab_map = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
@@ -181,4 +182,13 @@ vim.lsp.enable({
     'terraformls',
     'ts_ls',
     'yamlls',
+})
+
+-- Completion
+require('mini.completion').setup({ delay = { completion = 250, info = 0, signature = 0 } })
+
+vim.keymap.set('i', '<Tab>', 'copilot#Accept(pumvisible() ? "\\<C-y>" : "\\<Tab>")', {
+    expr = true,
+    replace_keycodes = false,
+    silent = true,
 })

@@ -68,9 +68,9 @@ Docker image and moves toward a Neovim-first shell workflow.
   - `config.scratch`.
   - `dev/scratches`.
 - Add `github/copilot.vim`:
-  - Keep Mini completion on `<Tab>`.
-  - Disable Copilot's default Tab mapping.
-  - Use an explicit accept mapping such as insert-mode `<C-J>`.
+  - Share `<Tab>` between Copilot and Mini completion.
+  - Disable Copilot's automatic Tab mapping.
+  - Use an explicit expression mapping through `copilot#Accept(...)`.
   - Persist credentials by mounting the whole host
     `~/.config/github-copilot` directory into
     `/root/.config/github-copilot`.
@@ -106,7 +106,7 @@ Configured plugins:
 Mini modules to activate later:
 
 - `mini.bufremove`: safer buffer deletion; needed by buffer close mappings.
-- `mini.completion`: completion engine; keep completion on `<Tab>`.
+- `mini.completion`: completion engine shared with Copilot insert mappings.
 - `mini.icons`: icon provider; call `MiniIcons.mock_nvim_web_devicons()` so
   `nvim-tree` can use icons without `nvim-web-devicons`.
 - `mini.pairs`: auto-pairs.
@@ -171,9 +171,14 @@ Behavior:
 ### Completion
 
 - Uses `mini.completion`.
-- Tweaks LSP completion detail display.
-- Overrides `MiniCompletion.completefunc_lsp` to clean up completion menu text.
-- Adds custom inline signature help rendered as end-of-line virtual text.
+- Mini completion info and signature windows show immediately.
+- `<Tab>` accepts the full Copilot suggestion when visible.
+- `<Tab>` falls back to `<C-y>` when no Copilot suggestion is visible and popup
+  completion is visible.
+- `<Tab>` falls back to normal Tab when neither Copilot nor popup completion is
+  visible.
+- The old custom inline ghost signature helper is not imported.
+- `MiniCompletion.completefunc_lsp` cleanup is not imported.
 
 ### Search And Navigation
 
@@ -289,9 +294,8 @@ Autosave is source-only and should not be imported.
 - `{`: previous buffer.
 - `}`: next buffer.
 - `|`: close buffer.
-- insert `<Tab>`: accept popup completion if visible.
-- insert `<C-J>`: target mapping for accepting a Copilot suggestion.
-- insert `<C-p>`: signature request.
+- insert `<Tab>`: accept full Copilot suggestion if visible, else `<C-y>` if popup
+  completion is visible, else normal Tab.
 - terminal `<Esc>`: leave terminal mode.
 - `<Leader><Leader>`: live grep.
 - `<Leader>G`: live grep Go files.
@@ -537,13 +541,17 @@ changes separate from Neovim Lua behavior.
     - Defer LSP keymaps.
 
 12. Append completion and Copilot insert behavior to `.config/nvim/init.lua`.
-    - Inline the former `config/completion.lua` behavior.
+    Completed in `.config/nvim/init.lua`.
     - Configure `mini.completion` from `nvim-mini/mini.nvim`.
-    - Review custom signature-help rendering line by line.
-    - Import the `ConfigSignature` autocmds here.
-    - Review Copilot `<Tab>` behavior in this same step.
-    - Do not set `vim.g.copilot_no_tab_map = true` unless the keymap review
-      changes direction.
+    - Show Mini completion info and signature windows immediately.
+    - Set `vim.g.copilot_no_tab_map = true`.
+    - Share `<Tab>` through `copilot#Accept(...)`.
+    - Use `<C-y>` as the `<Tab>` popup fallback.
+    - Do not import `<C-Space>`.
+    - Do not import `ConfigSignature`.
+    - Do not import `GhostSig` highlights.
+    - Do not override `MiniCompletion.completefunc_lsp`.
+    - Do not import general keymaps here.
 
 13. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
     - Inline only the needed behavior from former `config/state.lua` and
@@ -588,7 +596,8 @@ changes separate from Neovim Lua behavior.
       `<S-CR>` search navigation.
     - Remove `<Leader>n` scratch mapping.
     - Remove treesitter-context mappings `[c]` and `<Leader>ot`.
-    - Add Copilot accept mapping, likely insert-mode `<C-J>`.
+    - Do not add a separate Copilot `<C-J>` mapping; Copilot accept is already
+      handled by the contextual insert-mode `<Tab>` mapping.
     - Replace Fugitive blame/diff mappings with Gitsigns equivalents.
     - Decide whether to add hunk mappings for preview, stage, reset, and
       navigation or keep parity with the old mappings only.
