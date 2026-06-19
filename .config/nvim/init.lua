@@ -70,3 +70,19 @@ vim.pack.add({
 }, {
     confirm = false,
 })
+
+-- Colorscheme
+require('tokyonight').setup({ style = 'night' })
+vim.cmd.colorscheme('tokyonight')
+
+-- Icons
+require('mini.icons').setup()
+MiniIcons.mock_nvim_web_devicons()
+MiniIcons.tweak_lsp_kind('replace')
+
+-- Editing
+require('mini.bufremove').setup()
+require('mini.pairs').setup()
+
+-- Navigation
+require('flash').setup()

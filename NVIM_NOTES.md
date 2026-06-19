@@ -40,7 +40,8 @@ Docker image and moves toward a Neovim-first shell workflow.
   - Add `folke/tokyonight.nvim`.
   - Remove `miikanissi/modus-themes.nvim`.
   - Remove custom color overrides and transparency-related theme overrides.
-  - Use `colorscheme tokyonight-night`.
+  - Use normal Tokyonight setup with `style = 'night'`, then load
+    `colorscheme tokyonight`.
 - Set formatting column to 100:
   - Change `textwidth` from `120` to `100`.
   - Keep word wrap, linebreak, and breakindent enabled.
@@ -469,19 +470,34 @@ changes separate from Neovim Lua behavior.
    - Omit `nvim-treesitter/nvim-treesitter-context`.
    - Let `nvim-treesitter/nvim-treesitter` track its default branch.
 
-7. Append theme and global plugin flags to `.config/nvim/init.lua`.
-   - Set `vim.g.copilot_no_tab_map = true` before Copilot can map `<Tab>`.
-   - Use `colorscheme tokyonight-night`.
+7. Append theme setup to `.config/nvim/init.lua`. Completed in
+   `.config/nvim/init.lua`.
+   - Add a `-- Colorscheme` comment before the theme block.
+   - Configure Tokyonight normally with one-line setup:
+     `require('tokyonight').setup({ style = 'night' })`.
+   - Load it with `vim.cmd.colorscheme('tokyonight')`.
    - Do not add Tokyonight custom `on_colors`, `on_highlights`, or transparency
      overrides.
+   - Leave default Tokyonight italics, sidebar, float, terminal color, dimming,
+     and cache behavior unchanged for now.
+   - Defer Copilot `<Tab>` behavior until the completion/keymap step.
    - Defer detailed UI setup until later.
 
-8. Append completion setup to `.config/nvim/init.lua`.
-   - Inline the former `config/completion.lua` behavior.
-   - Configure `mini.completion` from `nvim-mini/mini.nvim`.
-   - Keep Mini completion on `<Tab>`.
-   - Review custom signature-help rendering line by line.
-   - Import the `ConfigSignature` autocmds here.
+8. Append independent plugin foundation setup to `.config/nvim/init.lua`.
+   Completed in `.config/nvim/init.lua`.
+   - Configure `mini.icons` before any plugin expects icon support.
+   - Call `MiniIcons.mock_nvim_web_devicons()` so `nvim-tree` can use icons
+     without `nvim-tree/nvim-web-devicons`.
+   - Call `MiniIcons.tweak_lsp_kind('replace')` before LSP/UI code displays
+     LSP kinds.
+   - Configure `mini.pairs`.
+   - Configure `mini.bufremove` so later buffer-close mappings can use it.
+   - Configure `flash.nvim` with defaults.
+   - Defer Flash behavior changes and mappings to the keymap review step.
+   - Do not configure `mini.completion` here; review it together with Copilot
+     insert-mode behavior.
+   - Do not configure `mini.statusline`, `mini.tabline`, `fzf-lua`,
+     `nvim-tree`, Aerial, Quicker, or Gitsigns here.
 
 9. Append Treesitter setup to `.config/nvim/init.lua`.
    - Inline the former `config/treesitter.lua` behavior.
@@ -498,38 +514,44 @@ changes separate from Neovim Lua behavior.
     - Only enable servers that are installed and useful.
     - Import the diagnostic `InsertEnter` and `InsertLeave` autocmds here.
 
-11. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
+11. Append completion and Copilot insert behavior to `.config/nvim/init.lua`.
+    - Inline the former `config/completion.lua` behavior.
+    - Configure `mini.completion` from `nvim-mini/mini.nvim`.
+    - Review custom signature-help rendering line by line.
+    - Import the `ConfigSignature` autocmds here.
+    - Review Copilot `<Tab>` behavior in this same step.
+    - Do not set `vim.g.copilot_no_tab_map = true` unless the keymap review
+      changes direction.
+
+12. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
     - Inline only the needed behavior from former `config/state.lua` and
       `config/search.lua`.
     - Replace Fugitive helpers with git CLI or Gitsigns-backed behavior.
     - Use git CLI fallbacks for project name, worktree, and branch where needed.
     - Keep workspace-aware fzf behavior.
+    - Configure `fzf-lua` picker UI and actions after state helpers exist.
 
-12. Append UI, statusline, and Git signs to `.config/nvim/init.lua`.
-    - Inline the former `config/ui.lua` and `config/statusline.lua` behavior
-      after pruning.
-    - Configure `mini.icons` before `nvim-tree`.
-    - Call `MiniIcons.mock_nvim_web_devicons()` so `nvim-tree` can use icons
-      without `nvim-tree/nvim-web-devicons`.
-    - Call `MiniIcons.tweak_lsp_kind('replace')` before LSP status rendering
-      depends on icon kinds.
-    - Configure `mini.bufremove`.
-    - Configure `mini.pairs`.
+13. Append Git signs, statusline, and tabline to `.config/nvim/init.lua`.
+    - Configure `gitsigns.setup()`.
+    - Replace Fugitive branch/statusline helpers with Gitsigns variables plus
+      git CLI fallbacks where needed.
     - Configure `mini.statusline`.
     - Configure `mini.tabline` instead of Bufferline.
-    - Configure `gitsigns.setup()`.
     - Use Gitsigns status variables where attached.
-    - Import Aerial and nvim-tree autocmds only after their setup blocks exist.
-    - Strong candidates to remove or defer here:
-      - `quicker.nvim`
 
-13. Append terminal behavior to `.config/nvim/init.lua`.
+14. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
+    - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
+    - Configure Aerial.
+    - Decide whether to keep or defer Quicker.
+    - Import Aerial and nvim-tree autocmds only after their setup blocks exist.
+
+15. Append terminal behavior to `.config/nvim/init.lua`.
     - Inline the former `config/terminal.lua` behavior.
     - Import terminal autocmds here.
     - Keep terminal statusline and auto-insert behavior only if it still fits
       the single-file layout.
 
-14. Append fixed layout behavior to `.config/nvim/init.lua`.
+16. Append fixed layout behavior to `.config/nvim/init.lua`.
     - Create or focus a left Codex terminal pane.
     - Keep the editor pane near 100 columns where terminal width permits.
     - Configure nvim-tree on the right.
@@ -537,7 +559,7 @@ changes separate from Neovim Lua behavior.
     - Use `winfixwidth` and `winfixheight` for side panes.
     - Add a resize autocmd or fallback behavior for narrow terminals.
 
-15. Append keymaps to `.config/nvim/init.lua`.
+17. Append keymaps to `.config/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
     - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
@@ -549,23 +571,23 @@ changes separate from Neovim Lua behavior.
     - Decide whether to add hunk mappings for preview, stage, reset, and
       navigation or keep parity with the old mappings only.
 
-16. Optional workflow code.
+18. Optional workflow code.
     - Review former `config/runner.lua` separately and probably defer initially.
     - Do not import former `config/autosave.lua`.
     - Do not import former `config/scratch.lua`.
     - Do not import `dev/scratches`.
 
-17. Query overrides.
+19. Query overrides.
     - Import under `.config/nvim/queries`.
     - Review last.
     - Import only query files for languages we keep.
 
-18. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
+20. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
     - Copy `.config/nvim` into `/root/.config/nvim`.
     - Run `nvim --headless "+qa"` during build.
     - Do not reintroduce VS Code web/editor setup.
 
-19. Interactive verification.
+21. Interactive verification.
     - Start the container shell.
     - After socket support exists, start `nvim` and confirm it listens on
       `$NVIM_SOCKET`.
