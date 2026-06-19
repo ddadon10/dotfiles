@@ -258,9 +258,16 @@ Custom queries:
 ### Git
 
 - Gitsigns provides buffer signs, hunks, diff, blame, and statusline variables.
-- Branch/project name helpers need Gitsigns variables plus git CLI fallbacks.
-- `<Leader>b` should toggle a Gitsigns blame split.
-- `<Leader>d` should run a Gitsigns diff.
+- Statusline should use `vim.b.gitsigns_head` for the current buffer branch
+  when available.
+- Statusline should use `vim.b.gitsigns_status_dict` for added, changed, and
+  removed counts.
+- Branch helpers should fall back to `git rev-parse --abbrev-ref HEAD` when
+  Gitsigns buffer data is unavailable.
+- `<Leader>b` should use a Gitsigns blame action.
+- `<Leader>d` should run `require('gitsigns').diffthis()`.
+- Later hunk mappings can use `nav_hunk`, `preview_hunk`, `stage_hunk`, and
+  `reset_hunk`.
 - Fugitive's broader `:Git` workflow is not included in the target import.
 
 ### Scratch Projects
@@ -553,21 +560,20 @@ changes separate from Neovim Lua behavior.
     - Do not override `MiniCompletion.completefunc_lsp`.
     - Do not import general keymaps here.
 
-13. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
-    - Inline only the needed behavior from former `config/state.lua` and
-      `config/search.lua`.
-    - Replace Fugitive helpers with git CLI or Gitsigns-backed behavior.
-    - Use git CLI fallbacks for project name, worktree, and branch where needed.
-    - Keep workspace-aware fzf behavior.
-    - Configure `fzf-lua` picker UI and actions after state helpers exist.
+13. Append Git signs to `.config/nvim/init.lua`. Completed in
+    `.config/nvim/init.lua`.
+    - Configure `gitsigns.setup()` with defaults.
+    - Do not add keymaps in this step.
+    - Do not add statusline integration in this step.
 
-14. Append Git signs, statusline, and tabline to `.config/nvim/init.lua`.
-    - Configure `gitsigns.setup()`.
-    - Replace Fugitive branch/statusline helpers with Gitsigns variables plus
-      git CLI fallbacks where needed.
+14. Append statusline and tabline to `.config/nvim/init.lua`.
     - Configure `mini.statusline`.
     - Configure `mini.tabline` instead of Bufferline.
-    - Use Gitsigns status variables where attached.
+    - Use `vim.b.gitsigns_head` for branch display where attached.
+    - Use `vim.b.gitsigns_status_dict` for Git change counts where attached.
+    - Fall back to `git rev-parse --abbrev-ref HEAD` when Gitsigns buffer data
+      is unavailable.
+    - Do not reintroduce Fugitive branch/statusline helpers.
 
 15. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
     - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
@@ -589,7 +595,14 @@ changes separate from Neovim Lua behavior.
     - Use `winfixwidth` and `winfixheight` for side panes.
     - Add a resize autocmd or fallback behavior for narrow terminals.
 
-18. Append keymaps to `.config/nvim/init.lua`.
+18. Append search to `.config/nvim/init.lua`.
+    - Configure `fzf-lua` picker UI and actions.
+    - Keep search profiles for all files, Go files, and frontend files.
+    - Keep the tests-last ripgrep filter if it still reads clearly inline.
+    - Do not import the former `config/state.lua` module.
+    - Do not add keymaps in this step.
+
+19. Append keymaps to `.config/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
     - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
@@ -598,22 +611,25 @@ changes separate from Neovim Lua behavior.
     - Remove treesitter-context mappings `[c]` and `<Leader>ot`.
     - Do not add a separate Copilot `<C-J>` mapping; Copilot accept is already
       handled by the contextual insert-mode `<Tab>` mapping.
-    - Replace Fugitive blame/diff mappings with Gitsigns equivalents.
-    - Decide whether to add hunk mappings for preview, stage, reset, and
-      navigation or keep parity with the old mappings only.
+    - Replace old Fugitive diff mapping with `require('gitsigns').diffthis()`.
+    - Replace old Fugitive blame mapping with a Gitsigns blame action.
+    - Decide whether blame should use `blame_line`,
+      `toggle_current_line_blame`, or a fuller blame view.
+    - Decide whether to add hunk mappings using `nav_hunk`, `preview_hunk`,
+      `stage_hunk`, and `reset_hunk`.
 
-19. Optional workflow code.
+20. Optional workflow code.
     - Review former `config/runner.lua` separately and probably defer initially.
     - Do not import former `config/autosave.lua`.
     - Do not import former `config/scratch.lua`.
     - Do not import `dev/scratches`.
 
-20. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
+21. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
     - Copy `.config/nvim` into `/root/.config/nvim`.
     - Run `nvim --headless "+qa"` during build.
     - Do not reintroduce VS Code web/editor setup.
 
-21. Interactive verification.
+22. Interactive verification.
     - Start the container shell.
     - After socket support exists, start `nvim` and confirm it listens on
       `$NVIM_SOCKET`.

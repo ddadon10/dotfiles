@@ -88,6 +88,9 @@ require('mini.pairs').setup()
 -- Navigation
 require('flash').setup()
 
+-- Git
+require('gitsigns').setup()
+
 -- Treesitter
 local treesitter_parsers = {
     'bash',
