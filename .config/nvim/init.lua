@@ -126,6 +126,22 @@ require('mini.statusline').setup({ content = { active = statusline, inactive = s
 -- Tabline
 require('mini.tabline').setup()
 
+-- Aerial
+require('aerial').setup({
+    attach_mode = 'global',
+    disable_max_lines = 1000000,
+    highlight_on_hover = true,
+    show_guides = true,
+})
+
+-- NvimTree
+require('nvim-tree').setup({
+    filters = { git_ignored = false },
+    prefer_startup_root = true,
+    update_focused_file = { enable = true, update_root = { enable = true } },
+    view = { width = 40 },
+})
+
 -- Treesitter
 local treesitter_parsers = {
     'bash',

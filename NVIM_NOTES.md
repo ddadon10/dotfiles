@@ -577,10 +577,15 @@ changes separate from Neovim Lua behavior.
     - Do not reintroduce Fugitive branch/statusline helpers.
 
 15. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
-    - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
+    Partially completed in `.config/nvim/init.lua`.
     - Configure Aerial.
-    - Decide whether to keep or defer Quicker.
-    - Import Aerial and nvim-tree autocmds only after their setup blocks exist.
+    - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
+    - Keep `prefer_startup_root = true` for nvim-tree root updates.
+    - Defer Aerial placement to the fixed layout step.
+    - Defer nvim-tree auto-open and focus behavior to the fixed layout step.
+    - Defer Aerial and nvim-tree autocmds until layout/focus behavior exists.
+    - Defer special Aerial and nvim-tree statuslines.
+    - Defer Quicker.
 
 16. Append terminal behavior to `.config/nvim/init.lua`.
     - Inline the former `config/terminal.lua` behavior.
