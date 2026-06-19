@@ -3,9 +3,6 @@ alias cat='bat --plain --paging never'
 alias grep='grep --color=auto'
 alias ls='ls -aF --color=auto'
 
-# Path
-source /root/.nvm/nvm.sh
-
 # Environment
 export CGO_ENABLED=0
 export COLORTERM=truecolor

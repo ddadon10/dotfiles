@@ -88,9 +88,9 @@ RUN <<EOF
         aarch64) arch="arm64" ;;
         *) exit 1 ;;
     esac
-    ver=$(curl -sSf "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest" | jq -r '.tag_name')
+    ver=$(curl -sSfL "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest" | jq -r '.tag_name')
     mkdir -p /opt/lua-language-server
-    curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${ver}/lua-language-server-${ver#v}-linux-${arch}.tar.gz" | tar -xzf - -C /opt/lua-language-server
+    curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${ver}/lua-language-server-${ver}-linux-${arch}.tar.gz" | tar -xzf - -C /opt/lua-language-server
     ln -s /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server
 EOF
 
@@ -136,6 +136,8 @@ RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.
 RUN npm install -g @openai/codex@0.141.0
 
 COPY .vimrc /root/.vimrc
+COPY .config/nvim /root/.config/nvim
+RUN nvim --headless "+qa"
 
 RUN mkdir -p /root/.config/lazygit
 COPY <<EOF /root/.config/lazygit/config.yml
