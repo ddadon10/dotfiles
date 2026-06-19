@@ -133,3 +133,52 @@ vim.api.nvim_create_autocmd('FileType', {
         end
     end,
 })
+
+-- LSP
+vim.diagnostic.config({ signs = false })
+
+local diagnostic_group = vim.api.nvim_create_augroup('ConfigDiagnostics', { clear = true })
+
+vim.api.nvim_create_autocmd('InsertEnter', {
+    group = diagnostic_group,
+    callback = function() vim.diagnostic.enable(false) end,
+})
+
+vim.api.nvim_create_autocmd('InsertLeave', {
+    group = diagnostic_group,
+    callback = function() vim.diagnostic.enable() end,
+})
+
+vim.lsp.config('lua_ls', {
+    settings = {
+        Lua = {
+            runtime = {
+                version = 'LuaJIT',
+                path = {
+                    'lua/?.lua',
+                    'lua/?/init.lua',
+                },
+            },
+            workspace = {
+                checkThirdParty = false,
+                library = {
+                    vim.env.VIMRUNTIME,
+                },
+            },
+        },
+    },
+})
+
+vim.lsp.enable({
+    'bashls',
+    'cssls',
+    'dockerls',
+    'gopls',
+    'html',
+    'jsonls',
+    'lua_ls',
+    'tailwindcss',
+    'terraformls',
+    'ts_ls',
+    'yamlls',
+})

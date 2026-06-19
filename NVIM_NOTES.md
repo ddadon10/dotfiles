@@ -158,13 +158,15 @@ Enabled servers:
 
 Behavior:
 
-- Diagnostics use underline only.
 - Diagnostic signs are disabled.
-- Virtual text diagnostics are disabled.
-- Diagnostics are disabled while typing and re-enabled on insert leave.
-- Rename triggers `wall` afterward.
-- `<Leader>f` organizes imports and formats.
-- `<Leader>w` organizes imports, formats, and saves all.
+- Other diagnostic display behavior uses Neovim defaults.
+- Diagnostics are disabled in insert mode and re-enabled on insert leave.
+- LuaLS is configured for Neovim Lua development:
+  - `runtime.version = 'LuaJIT'`.
+  - `runtime.path = { 'lua/?.lua', 'lua/?/init.lua' }`.
+  - `workspace.checkThirdParty = false`.
+  - `workspace.library = { vim.env.VIMRUNTIME }`.
+- Formatting helpers, rename overrides, and LSP keymaps are deferred.
 
 ### Completion
 
@@ -520,11 +522,19 @@ changes separate from Neovim Lua behavior.
     - Import YAML Bash block scalar injection query.
     - Do not import `queries/caddyfile/*` yet.
 
-11. Append LSP setup to `.config/nvim/init.lua`.
-    - Inline the former `config/lsp.lua` behavior.
-    - Review enabled servers against the Docker-installed binaries.
-    - Only enable servers that are installed and useful.
-    - Import the diagnostic `InsertEnter` and `InsertLeave` autocmds here.
+11. Append LSP setup to `.config/nvim/init.lua`. Completed in
+    `.config/nvim/init.lua`.
+    - Enable installed servers only.
+    - Omit `marksman`.
+    - Disable diagnostic signs only; keep other diagnostic display defaults.
+    - Disable diagnostics on `InsertEnter`.
+    - Re-enable diagnostics on `InsertLeave`.
+    - Configure `lua_ls` for Neovim Lua development with LuaJIT, Neovim-style
+      module paths, disabled third-party prompts, and `vim.env.VIMRUNTIME`.
+    - Defer organize-imports/format helpers.
+    - Defer rename overrides.
+    - Defer state helpers.
+    - Defer LSP keymaps.
 
 12. Append completion and Copilot insert behavior to `.config/nvim/init.lua`.
     - Inline the former `config/completion.lua` behavior.
