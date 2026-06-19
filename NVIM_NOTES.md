@@ -509,15 +509,24 @@ changes separate from Neovim Lua behavior.
    - Remove `require('render-markdown').setup({})`.
    - Do not import `treesitter-context`.
    - Defer Caddy filetype detection and Caddy query files.
-   - Defer all custom query files.
+   - Import non-Caddy custom query files in the next step.
 
-10. Append LSP setup to `.config/nvim/init.lua`.
+10. Import non-Caddy Treesitter query overrides. Completed under
+    `.config/nvim/queries`.
+    - Import Dockerfile Bash injection query.
+    - Import Go template HTML injection query.
+    - Import HCL Bash heredoc injection query.
+    - Import Markdown fenced code block injection query.
+    - Import YAML Bash block scalar injection query.
+    - Do not import `queries/caddyfile/*` yet.
+
+11. Append LSP setup to `.config/nvim/init.lua`.
     - Inline the former `config/lsp.lua` behavior.
     - Review enabled servers against the Docker-installed binaries.
     - Only enable servers that are installed and useful.
     - Import the diagnostic `InsertEnter` and `InsertLeave` autocmds here.
 
-11. Append completion and Copilot insert behavior to `.config/nvim/init.lua`.
+12. Append completion and Copilot insert behavior to `.config/nvim/init.lua`.
     - Inline the former `config/completion.lua` behavior.
     - Configure `mini.completion` from `nvim-mini/mini.nvim`.
     - Review custom signature-help rendering line by line.
@@ -526,7 +535,7 @@ changes separate from Neovim Lua behavior.
     - Do not set `vim.g.copilot_no_tab_map = true` unless the keymap review
       changes direction.
 
-12. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
+13. Append workspace state, Git helpers, and search to `.config/nvim/init.lua`.
     - Inline only the needed behavior from former `config/state.lua` and
       `config/search.lua`.
     - Replace Fugitive helpers with git CLI or Gitsigns-backed behavior.
@@ -534,7 +543,7 @@ changes separate from Neovim Lua behavior.
     - Keep workspace-aware fzf behavior.
     - Configure `fzf-lua` picker UI and actions after state helpers exist.
 
-13. Append Git signs, statusline, and tabline to `.config/nvim/init.lua`.
+14. Append Git signs, statusline, and tabline to `.config/nvim/init.lua`.
     - Configure `gitsigns.setup()`.
     - Replace Fugitive branch/statusline helpers with Gitsigns variables plus
       git CLI fallbacks where needed.
@@ -542,19 +551,19 @@ changes separate from Neovim Lua behavior.
     - Configure `mini.tabline` instead of Bufferline.
     - Use Gitsigns status variables where attached.
 
-14. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
+15. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
     - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
     - Configure Aerial.
     - Decide whether to keep or defer Quicker.
     - Import Aerial and nvim-tree autocmds only after their setup blocks exist.
 
-15. Append terminal behavior to `.config/nvim/init.lua`.
+16. Append terminal behavior to `.config/nvim/init.lua`.
     - Inline the former `config/terminal.lua` behavior.
     - Import terminal autocmds here.
     - Keep terminal statusline and auto-insert behavior only if it still fits
       the single-file layout.
 
-16. Append fixed layout behavior to `.config/nvim/init.lua`.
+17. Append fixed layout behavior to `.config/nvim/init.lua`.
     - Create or focus a left Codex terminal pane.
     - Keep the editor pane near 100 columns where terminal width permits.
     - Configure nvim-tree on the right.
@@ -562,7 +571,7 @@ changes separate from Neovim Lua behavior.
     - Use `winfixwidth` and `winfixheight` for side panes.
     - Add a resize autocmd or fallback behavior for narrow terminals.
 
-17. Append keymaps to `.config/nvim/init.lua`.
+18. Append keymaps to `.config/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
     - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
@@ -574,16 +583,11 @@ changes separate from Neovim Lua behavior.
     - Decide whether to add hunk mappings for preview, stage, reset, and
       navigation or keep parity with the old mappings only.
 
-18. Optional workflow code.
+19. Optional workflow code.
     - Review former `config/runner.lua` separately and probably defer initially.
     - Do not import former `config/autosave.lua`.
     - Do not import former `config/scratch.lua`.
     - Do not import `dev/scratches`.
-
-19. Query overrides.
-    - Import under `.config/nvim/queries`.
-    - Review last.
-    - Import only query files for languages we keep.
 
 20. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
     - Copy `.config/nvim` into `/root/.config/nvim`.
