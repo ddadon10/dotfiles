@@ -103,7 +103,7 @@ Configured plugins:
 - `stevearc/aerial.nvim`: symbols outline.
 - `stevearc/quicker.nvim`: quickfix UI.
 
-Mini modules to activate later:
+Mini modules used or planned:
 
 - `mini.bufremove`: safer buffer deletion; needed by buffer close mappings.
 - `mini.completion`: completion engine shared with Copilot insert mappings.
@@ -246,8 +246,8 @@ Custom queries:
 ### UI
 
 - Tokyonight Night colorscheme with no custom color overrides.
-- `mini.statusline` custom statusline.
-- `mini.tabline` replaces Bufferline.
+- `mini.statusline` custom global statusline with `laststatus = 3`.
+- `mini.tabline` replaces Bufferline with default settings.
 - `mini.icons` provides icons and mocks `nvim-web-devicons` for `nvim-tree`.
 - `mini.pairs`.
 - `nvim-tree` should open as the fixed right-side file explorer.
@@ -258,12 +258,9 @@ Custom queries:
 ### Git
 
 - Gitsigns provides buffer signs, hunks, diff, blame, and statusline variables.
-- Statusline should use `vim.b.gitsigns_head` for the current buffer branch
-  when available.
-- Statusline should use `vim.b.gitsigns_status_dict` for added, changed, and
-  removed counts.
-- Branch helpers should fall back to `git rev-parse --abbrev-ref HEAD` when
-  Gitsigns buffer data is unavailable.
+- Statusline uses `vim.b.gitsigns_head` plus `vim.b.gitsigns_status`.
+- `vim.b.gitsigns_status_dict` is available later if custom Git count
+  formatting is needed.
 - `<Leader>b` should use a Gitsigns blame action.
 - `<Leader>d` should run `require('gitsigns').diffthis()`.
 - Later hunk mappings can use `nav_hunk`, `preview_hunk`, `stage_hunk`, and
@@ -566,13 +563,17 @@ changes separate from Neovim Lua behavior.
     - Do not add keymaps in this step.
     - Do not add statusline integration in this step.
 
-14. Append statusline and tabline to `.config/nvim/init.lua`.
+14. Append statusline and tabline to `.config/nvim/init.lua`. Completed in
+    `.config/nvim/init.lua`.
+    - Set `vim.o.laststatus = 3` for one global statusline.
     - Configure `mini.statusline`.
-    - Configure `mini.tabline` instead of Bufferline.
-    - Use `vim.b.gitsigns_head` for branch display where attached.
-    - Use `vim.b.gitsigns_status_dict` for Git change counts where attached.
-    - Fall back to `git rev-parse --abbrev-ref HEAD` when Gitsigns buffer data
-      is unavailable.
+    - Use a single statusline truncation width of `85`, based on
+      `165 / 2 = 82.5` rounded up.
+    - Use `vim.b.gitsigns_head` plus `vim.b.gitsigns_status` for Git text.
+    - Always show indentation as `spaces:N` or `tabs:N`.
+    - Configure `mini.tabline` with defaults instead of Bufferline.
+    - Do not shell out to `git` in the statusline render path.
+    - Defer special statuslines for terminal, nvim-tree, Aerial, and quickfix.
     - Do not reintroduce Fugitive branch/statusline helpers.
 
 15. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.

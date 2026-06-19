@@ -16,6 +16,7 @@ vim.o.formatoptions = 'qjl1'
 vim.o.guicursor = 'n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:block'
 vim.o.ignorecase = true
 vim.o.infercase = true
+vim.o.laststatus = 3
 vim.o.linebreak = true
 vim.o.list = true
 vim.o.listchars = 'tab:  ,extends:…,precedes:…,nbsp:␣'
@@ -90,6 +91,40 @@ require('flash').setup()
 
 -- Git
 require('gitsigns').setup()
+
+-- Statusline
+local statusline_trunc_width = 85
+
+local function statusline_git()
+    return vim.trim((vim.b.gitsigns_head or '') .. ' ' .. (vim.b.gitsigns_status or ''))
+end
+
+local function statusline_indent()
+    if vim.bo.expandtab then return string.format('spaces:%d', vim.bo.shiftwidth) end
+    return string.format('tabs:%d', vim.bo.tabstop)
+end
+
+local function statusline()
+    local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
+    local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
+    local filename = MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r'
+    local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
+
+    return MiniStatusline.combine_groups({
+        { hl = mode_hl, strings = { mode } },
+        { hl = 'MiniStatuslineDevinfo', strings = { statusline_git() } },
+        { hl = 'MiniStatuslineFilename', strings = { filename } },
+        '%<',
+        '%=',
+        { hl = 'MiniStatuslineModeVisual', strings = { diagnostics } },
+        { hl = 'MiniStatuslineFileinfo', strings = { fileinfo, statusline_indent() } },
+    })
+end
+
+require('mini.statusline').setup({ content = { active = statusline, inactive = statusline } })
+
+-- Tabline
+require('mini.tabline').setup()
 
 -- Treesitter
 local treesitter_parsers = {
