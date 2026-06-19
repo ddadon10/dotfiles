@@ -86,3 +86,50 @@ require('mini.pairs').setup()
 
 -- Navigation
 require('flash').setup()
+
+-- Treesitter
+local treesitter_parsers = {
+    'bash',
+    'c',
+    'css',
+    'diff',
+    'dockerfile',
+    'gitcommit',
+    'gitignore',
+    'go',
+    'gomod',
+    'gosum',
+    'gotmpl',
+    'gowork',
+    'hcl',
+    'html',
+    'javascript',
+    'jsdoc',
+    'json',
+    'lua',
+    'luadoc',
+    'markdown',
+    'markdown_inline',
+    'query',
+    'regex',
+    'sql',
+    'toml',
+    'tsx',
+    'typescript',
+    'vim',
+    'vimdoc',
+    'yaml',
+}
+
+require('nvim-treesitter').install(treesitter_parsers):wait()
+
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('ConfigTreesitter', { clear = true }),
+    callback = function(args)
+        if pcall(vim.treesitter.start, args.buf) then
+            vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+            vim.wo[0][0].foldmethod = 'expr'
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end
+    end,
+})

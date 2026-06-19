@@ -499,14 +499,17 @@ changes separate from Neovim Lua behavior.
    - Do not configure `mini.statusline`, `mini.tabline`, `fzf-lua`,
      `nvim-tree`, Aerial, Quicker, or Gitsigns here.
 
-9. Append Treesitter setup to `.config/nvim/init.lua`.
+9. Append Treesitter setup to `.config/nvim/init.lua`. Completed in
+   `.config/nvim/init.lua`.
    - Inline the former `config/treesitter.lua` behavior.
-   - Review the parser list one language at a time.
+   - Parser list is the source list minus `caddy` and `http`.
+   - Keep `sql`; SQL editing is useful.
+   - Install parsers with `require('nvim-treesitter').install(...):wait()`.
    - Import the Treesitter `FileType` autocmd here.
    - Remove `require('render-markdown').setup({})`.
    - Do not import `treesitter-context`.
-   - Drop specialized parsers if not useful, especially Caddy, Terraform/HCL,
-     SQL, and HTTP.
+   - Defer Caddy filetype detection and Caddy query files.
+   - Defer all custom query files.
 
 10. Append LSP setup to `.config/nvim/init.lua`.
     - Inline the former `config/lsp.lua` behavior.
