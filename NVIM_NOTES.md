@@ -587,11 +587,14 @@ changes separate from Neovim Lua behavior.
     - Defer special Aerial and nvim-tree statuslines.
     - Defer Quicker.
 
-16. Append terminal behavior to `.config/nvim/init.lua`.
-    - Inline the former `config/terminal.lua` behavior.
-    - Import terminal autocmds here.
-    - Keep terminal statusline and auto-insert behavior only if it still fits
-      the single-file layout.
+16. Append terminal behavior to `.config/nvim/init.lua`. Completed in
+    `.config/nvim/init.lua`.
+    - Add terminal auto-insert behavior for all terminal buffers.
+    - Do not import terminal-specific statusline behavior because
+      `laststatus = 3` uses one global statusline.
+    - Defer terminal `<Esc>`, terminal `<CR>`, and focus-editor behavior to
+      the keymap/layout steps.
+    - Defer Codex pane creation to the fixed layout step.
 
 17. Append fixed layout behavior to `.config/nvim/init.lua`.
     - Create or focus a left Codex terminal pane.

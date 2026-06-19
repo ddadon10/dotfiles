@@ -142,6 +142,15 @@ require('nvim-tree').setup({
     view = { width = 40 },
 })
 
+-- Terminal
+local terminal_group = vim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
+
+vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
+    group = terminal_group,
+    pattern = 'term://*',
+    command = 'startinsert',
+})
+
 -- Treesitter
 local treesitter_parsers = {
     'bash',
