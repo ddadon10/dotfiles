@@ -80,33 +80,41 @@ Docker image and moves toward a Neovim-first shell workflow.
 
 Plugin manager:
 
-- `nvim-mini/mini.deps`: bootstrapped automatically into Neovim data path.
+- Native `vim.pack`: Neovim 0.12 built-in package manager.
 
 Configured plugins:
 
-- `akinsho/bufferline.nvim`: buffer tabs.
 - `folke/flash.nvim`: jump/navigation motions.
 - `folke/tokyonight.nvim`: colorscheme.
 - `github/copilot.vim`: GitHub Copilot inline suggestions.
 - `ibhagwan/fzf-lua`: files, grep, LSP pickers, keymaps, jumps, marks.
 - `lewis6991/gitsigns.nvim`: Git signs, hunks, diff, and blame.
 - `neovim/nvim-lspconfig`: LSP server definitions.
-- `nvim-mini/mini.bufremove`: safer buffer deletion.
-- `nvim-mini/mini.completion`: completion engine.
-- `nvim-mini/mini.icons`: icon support.
-- `nvim-mini/mini.pairs`: auto-pairs.
-- `nvim-mini/mini.statusline`: statusline backend.
+- `nvim-mini/mini.nvim`: all-in-one Mini module collection.
 - `nvim-tree/nvim-tree.lua`: file explorer.
-- `nvim-tree/nvim-web-devicons`: file icons.
-- `nvim-treesitter/nvim-treesitter`: syntax, indent, folds; pinned to `90cd6580`.
-- `nvim-treesitter/nvim-treesitter-context`: sticky code context.
+- `nvim-treesitter/nvim-treesitter`: syntax, indent, folds; track default
+  branch.
 - `stevearc/aerial.nvim`: symbols outline.
 - `stevearc/quicker.nvim`: quickfix UI.
 
+Mini modules to activate later:
+
+- `mini.bufremove`: safer buffer deletion; needed by buffer close mappings.
+- `mini.completion`: completion engine; keep completion on `<Tab>`.
+- `mini.icons`: icon provider; call `MiniIcons.mock_nvim_web_devicons()` so
+  `nvim-tree` can use icons without `nvim-web-devicons`.
+- `mini.pairs`: auto-pairs.
+- `mini.statusline`: statusline backend.
+- `mini.tabline`: buffer tabline; replaces Bufferline.
+
 Source branch plugins intentionally removed from the target:
 
+- `akinsho/bufferline.nvim`: replaced by `mini.tabline`.
 - `MeanderingProgrammer/render-markdown.nvim`.
 - `miikanissi/modus-themes.nvim`.
+- `nvim-tree/nvim-web-devicons`: replaced by `mini.icons` plus
+  `MiniIcons.mock_nvim_web_devicons()`.
+- `nvim-treesitter/nvim-treesitter-context`.
 - `tpope/vim-fugitive`.
 
 ## Feature Catalog
@@ -177,7 +185,8 @@ Behavior:
 
 ### Treesitter
 
-Auto-installs parsers into the MiniDeps package path.
+Parser install behavior needs review during the Treesitter step; do not rely on
+the old source-branch package path.
 
 Configured parsers include:
 
@@ -212,8 +221,6 @@ Behavior:
 - Starts treesitter on filetype when possible.
 - Sets treesitter fold expression.
 - Sets treesitter indentation.
-- Configures `treesitter-context`.
-
 Custom queries:
 
 - Caddyfile highlights, injections, and locals.
@@ -227,8 +234,8 @@ Custom queries:
 
 - Tokyonight Night colorscheme with no custom color overrides.
 - `mini.statusline` custom statusline.
-- Bufferline configured with nvim-tree offset.
-- `nvim-web-devicons` plus `mini.icons`.
+- `mini.tabline` replaces Bufferline.
+- `mini.icons` provides icons and mocks `nvim-web-devicons` for `nvim-tree`.
 - `mini.pairs`.
 - `nvim-tree` should open as the fixed right-side file explorer.
 - Aerial should open below the file explorer, not as a competing right-edge pane.
@@ -297,7 +304,6 @@ Autosave is source-only and should not be imported.
 - `<Leader>q`: toggle quickfix.
 - `]q`: next quickfix entry.
 - `[q`: previous quickfix entry.
-- `[c`: go to treesitter context.
 - `<Leader>oc`: toggle cursorline.
 - `<Leader>od`: toggle diagnostics.
 - `<Leader>of`: toggle folding.
@@ -307,7 +313,6 @@ Autosave is source-only and should not be imported.
 - `<Leader>on`: toggle line numbers.
 - `<Leader>or`: toggle relative numbers.
 - `<Leader>os`: toggle spell check.
-- `<Leader>ot`: toggle treesitter context.
 - `<Leader>ow`: toggle word wrap.
 
 ## External Dependencies
@@ -347,7 +352,11 @@ Node through nvm; keep that path unless we intentionally simplify the image.
 Explicitly omit:
 
 - `autosave.lua`: surprising write behavior.
+- `bufferline.nvim`: replaced by `mini.tabline`.
 - `scratch.lua` and `dev/scratches`: useful but depends on `/opt/scratches`.
+- `nvim-tree/nvim-web-devicons`: replaced by `mini.icons` plus
+  `MiniIcons.mock_nvim_web_devicons()`.
+- `nvim-treesitter/nvim-treesitter-context`: removed by decision.
 - `render-markdown.nvim`: removed by decision.
 - `tpope/vim-fugitive`: replaced by Gitsigns for configured Git behavior.
 - `miikanissi/modus-themes.nvim`: replaced by Tokyonight.
@@ -355,11 +364,9 @@ Explicitly omit:
 Drop or defer unless explicitly wanted:
 
 - `runner.lua`: narrow Go/JavaScript/Bash runner.
-- `bufferline.nvim`: cosmetic and workflow-specific.
 - `quicker.nvim`: optional quickfix polish.
 - Caddyfile parser/query support: keep only if Caddyfiles are common.
 - Terraform/HCL LSP/parser support: keep only if Terraform is common.
-- `treesitter-context`: useful but visual noise for some workflows.
 
 ## Proposed Step-By-Step Import
 
@@ -438,18 +445,24 @@ changes separate from Neovim Lua behavior.
      - `/usr/lib/go-*/**`
      - `/usr/share/nvim/runtime/**`
 
-6. Append plugin bootstrap and declarations to `dev/nvim/init.lua`.
-   - Inline the former `config/bootstrap.lua` behavior in a clearly separated
-     section.
-   - Inline the former `config/plugins.lua` plugin declarations after bootstrap.
+6. Append plugin declarations to `dev/nvim/init.lua`. Completed in
+   `dev/nvim/init.lua`.
+   - Use Neovim 0.12 native `vim.pack.add`.
+   - Use `confirm = false`.
+   - Do not set `load`.
    - Add `folke/tokyonight.nvim`.
    - Add `lewis6991/gitsigns.nvim`.
    - Add `github/copilot.vim`.
+   - Add `nvim-mini/mini.nvim` as the only Mini dependency.
+   - Remove the separate `nvim-mini/mini.*` plugin declarations.
    - Omit `miikanissi/modus-themes.nvim`.
    - Omit `MeanderingProgrammer/render-markdown.nvim`.
    - Omit `tpope/vim-fugitive`.
-   - Keep `nvim-treesitter/nvim-treesitter` pinned to `90cd6580` until the
-     Treesitter step decides otherwise.
+   - Omit `akinsho/bufferline.nvim`; use `mini.tabline` later instead.
+   - Omit `nvim-tree/nvim-web-devicons`; use `mini.icons` plus
+     `MiniIcons.mock_nvim_web_devicons()` later instead.
+   - Omit `nvim-treesitter/nvim-treesitter-context`.
+   - Let `nvim-treesitter/nvim-treesitter` track its default branch.
 
 7. Append theme and global plugin flags to `dev/nvim/init.lua`.
    - Set `vim.g.copilot_no_tab_map = true` before Copilot can map `<Tab>`.
@@ -460,13 +473,17 @@ changes separate from Neovim Lua behavior.
 
 8. Append completion setup to `dev/nvim/init.lua`.
    - Inline the former `config/completion.lua` behavior.
+   - Configure `mini.completion` from `nvim-mini/mini.nvim`.
    - Keep Mini completion on `<Tab>`.
    - Review custom signature-help rendering line by line.
+   - Import the `ConfigSignature` autocmds here.
 
 9. Append Treesitter setup to `dev/nvim/init.lua`.
    - Inline the former `config/treesitter.lua` behavior.
    - Review the parser list one language at a time.
+   - Import the Treesitter `FileType` autocmd here.
    - Remove `require('render-markdown').setup({})`.
+   - Do not import `treesitter-context`.
    - Drop specialized parsers if not useful, especially Caddy, Terraform/HCL,
      SQL, and HTTP.
 
@@ -474,6 +491,7 @@ changes separate from Neovim Lua behavior.
     - Inline the former `config/lsp.lua` behavior.
     - Review enabled servers against the Docker-installed binaries.
     - Only enable servers that are installed and useful.
+    - Import the diagnostic `InsertEnter` and `InsertLeave` autocmds here.
 
 11. Append workspace state, Git helpers, and search to `dev/nvim/init.lua`.
     - Inline only the needed behavior from former `config/state.lua` and
@@ -485,14 +503,24 @@ changes separate from Neovim Lua behavior.
 12. Append UI, statusline, and Git signs to `dev/nvim/init.lua`.
     - Inline the former `config/ui.lua` and `config/statusline.lua` behavior
       after pruning.
+    - Configure `mini.icons` before `nvim-tree`.
+    - Call `MiniIcons.mock_nvim_web_devicons()` so `nvim-tree` can use icons
+      without `nvim-tree/nvim-web-devicons`.
+    - Call `MiniIcons.tweak_lsp_kind('replace')` before LSP status rendering
+      depends on icon kinds.
+    - Configure `mini.bufremove`.
+    - Configure `mini.pairs`.
+    - Configure `mini.statusline`.
+    - Configure `mini.tabline` instead of Bufferline.
     - Configure `gitsigns.setup()`.
     - Use Gitsigns status variables where attached.
+    - Import Aerial and nvim-tree autocmds only after their setup blocks exist.
     - Strong candidates to remove or defer here:
-      - `bufferline.nvim`
       - `quicker.nvim`
 
 13. Append terminal behavior to `dev/nvim/init.lua`.
     - Inline the former `config/terminal.lua` behavior.
+    - Import terminal autocmds here.
     - Keep terminal statusline and auto-insert behavior only if it still fits
       the single-file layout.
 
@@ -507,7 +535,10 @@ changes separate from Neovim Lua behavior.
 15. Append keymaps to `dev/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
+    - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
+      `<S-CR>` search navigation.
     - Remove `<Leader>n` scratch mapping.
+    - Remove treesitter-context mappings `[c]` and `<Leader>ot`.
     - Add Copilot accept mapping, likely insert-mode `<C-J>`.
     - Replace Fugitive blame/diff mappings with Gitsigns equivalents.
     - Decide whether to add hunk mappings for preview, stage, reset, and

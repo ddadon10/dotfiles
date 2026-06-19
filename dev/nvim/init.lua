@@ -54,3 +54,19 @@ vim.api.nvim_create_autocmd('BufReadPost', {
     },
     command = 'setlocal readonly nomodifiable',
 })
+
+vim.pack.add({
+    'https://github.com/folke/flash.nvim',
+    'https://github.com/folke/tokyonight.nvim',
+    'https://github.com/github/copilot.vim',
+    'https://github.com/ibhagwan/fzf-lua',
+    'https://github.com/lewis6991/gitsigns.nvim',
+    'https://github.com/neovim/nvim-lspconfig',
+    'https://github.com/nvim-mini/mini.nvim',
+    'https://github.com/nvim-tree/nvim-tree.lua',
+    'https://github.com/nvim-treesitter/nvim-treesitter',
+    'https://github.com/stevearc/aerial.nvim',
+    'https://github.com/stevearc/quicker.nvim',
+}, {
+    confirm = false,
+})
