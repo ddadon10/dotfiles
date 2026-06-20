@@ -42,9 +42,9 @@ Docker image and moves toward a Neovim-first shell workflow.
   - Remove custom color overrides and transparency-related theme overrides.
   - Use normal Tokyonight setup with `style = 'night'`, then load
     `colorscheme tokyonight`.
-- Do not force hard wrapping:
+- Do not force hard wrapping or soft wrapping:
   - Set `textwidth = 0`.
-  - Keep word wrap, linebreak, and breakindent enabled.
+  - Disable word wrap so long lines scroll horizontally.
   - Keep `colorcolumn = '+1'` for now and revisit after testing with
     `textwidth = 0`.
 - Target layout:
@@ -140,7 +140,7 @@ Source branch plugins intentionally removed from the target:
 - Swap disabled, undo enabled.
 - 4-space indentation.
 - `textwidth=0`; layout presets define the preferred readable text columns.
-- Wrap enabled with linebreak.
+- Wrap disabled; horizontal scrolling enabled.
 - List characters enabled.
 - Search uses smartcase.
 - OSC52 clipboard configured.
@@ -354,7 +354,7 @@ The target Dockerfile installs or expects:
   - Configured by inline Dockerfile YAML at `/root/.config/lazygit/config.yml`
     with:
     - `delta --dark --paging=never` for diffs.
-    - Startup popups, random tips, command log, and mouse capture disabled.
+    - Startup popups, random tips, and command log disabled.
     - Background fetch/update behavior disabled.
     - `notARepository: quit`.
 - Node and npm
@@ -461,7 +461,7 @@ changes separate from Neovim Lua behavior.
    - Keep `vim.opt` mutations in their own sorted block.
    - Set `textwidth = 0` to avoid forced hard wrapping.
    - Set `signcolumn = 'no'` so signs do not reserve a permanent gutter.
-   - Keep `colorcolumn = '+1'`, word wrap, linebreak, and breakindent enabled.
+   - Keep `colorcolumn = '+1'`; disable word wrap.
    - Keep `shell = '/bin/bash'`.
    - Use static readonly autocmd patterns:
      - `/go/pkg/mod/**`
@@ -634,15 +634,25 @@ changes separate from Neovim Lua behavior.
     - Do not import the former `config/state.lua` module.
     - Do not add keymaps in this step.
 
-19. Append keymaps to `.config/nvim/init.lua`.
+19. Append keymaps to `.config/nvim/init.lua`. Partially completed in
+    `.config/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
+    - Completed first fzf/search keymap batch with one-line keymap calls.
+    - Added `gd`, `<Leader><Leader>`, `<Leader>.`, `<Leader>/`, `<Leader>?`,
+      `<Leader>a`, `<Leader>j`, `<Leader>m`, and `<Leader>p`.
+    - Completed sorted LSP keymap batch: `ga`, `gd`, `ge`, `gh`, `gi`, `gp`,
+      `gt`, `gu`, and `gx`.
+    - `ge` uses `vim.diagnostic.jump({ count = 1, float = true })`.
+    - Defer `<Leader>G` and `<Leader>F` until profiled grep is imported.
     - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
       `<S-CR>` search navigation.
     - Remove `<Leader>n` scratch mapping.
     - Remove treesitter-context mappings `[c]` and `<Leader>ot`.
     - Do not add a separate Copilot `<C-J>` mapping; Copilot accept is already
       handled by the contextual insert-mode `<Tab>` mapping.
+    - Defer remaining formatting, Git, terminal, quickfix, and UI toggle
+      mappings.
     - Replace old Fugitive diff mapping with `require('gitsigns').diffthis()`.
     - Replace old Fugitive blame mapping with a Gitsigns blame action.
     - Decide whether blame should use `blame_line`,
@@ -669,6 +679,12 @@ changes separate from Neovim Lua behavior.
     - Run `:Copilot status`.
     - Confirm Gitsigns number highlights, blame, and diff behavior in a git repo.
     - Confirm the responsive layout at MacBook and desktop terminal widths.
+
+23. Final Neovim default audit.
+    - Compare explicit `vim.o`, `vim.opt`, plugin setup, and tool config values
+      against current defaults.
+    - Remove redundant default settings when deleting them does not change the
+      intended behavior.
 
 ## References
 

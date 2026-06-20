@@ -142,7 +142,6 @@ RUN nvim --headless "+qa"
 RUN mkdir -p /root/.config/lazygit
 COPY <<EOF /root/.config/lazygit/config.yml
 gui:
-  mouseEvents: false
   showCommandLog: false
   showRandomTip: false
 
