@@ -139,7 +139,7 @@ require('nvim-tree').setup({
     filters = { git_ignored = false },
     prefer_startup_root = true,
     update_focused_file = { enable = true, update_root = { enable = true } },
-    view = { width = 40 },
+    view = { side = 'left', width = 30 },
 })
 
 -- Terminal
@@ -149,6 +149,24 @@ vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
     group = terminal_group,
     pattern = 'term://*',
     command = 'startinsert',
+})
+
+-- Layout
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true }),
+    callback = function()
+        if #vim.api.nvim_list_uis() == 0 then return end
+
+        require('nvim-tree.api').tree.open()
+        vim.wo.winfixwidth = true
+
+        vim.cmd('wincmd p')
+        vim.cmd('botright vertical 43split')
+        vim.cmd.terminal('codex')
+        vim.wo.winfixwidth = true
+
+        vim.cmd('wincmd p')
+    end,
 })
 
 -- Treesitter

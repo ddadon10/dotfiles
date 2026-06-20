@@ -48,10 +48,10 @@ Docker image and moves toward a Neovim-first shell workflow.
   - Keep `colorcolumn = '+1'` if the marker should stay one column after
     `textwidth`.
 - Target layout:
-  - Codex terminal on the left.
+  - File explorer on the left.
   - Main editor in the middle at about 100 columns when the terminal is wide
     enough.
-  - File explorer on the right.
+  - Codex terminal on the right.
   - Aerial below the file explorer.
   - This needs a dedicated layout step after base UI, terminal, nvim-tree, and
     Aerial are working.
@@ -581,9 +581,10 @@ changes separate from Neovim Lua behavior.
     - Configure Aerial.
     - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
     - Keep `prefer_startup_root = true` for nvim-tree root updates.
-    - Defer Aerial placement to the fixed layout step.
-    - Defer nvim-tree auto-open and focus behavior to the fixed layout step.
-    - Defer Aerial and nvim-tree autocmds until layout/focus behavior exists.
+    - Defer Aerial placement to the next layout step.
+    - nvim-tree auto-open and focus behavior is handled by the fixed layout
+      step.
+    - Defer Aerial autocmds until Aerial placement exists.
     - Defer special Aerial and nvim-tree statuslines.
     - Defer Quicker.
 
@@ -593,16 +594,20 @@ changes separate from Neovim Lua behavior.
     - Do not import terminal-specific statusline behavior because
       `laststatus = 3` uses one global statusline.
     - Defer terminal `<Esc>`, terminal `<CR>`, and focus-editor behavior to
-      the keymap/layout steps.
-    - Defer Codex pane creation to the fixed layout step.
+      the keymap step.
+    - Codex pane creation is handled by the fixed layout step.
 
-17. Append fixed layout behavior to `.config/nvim/init.lua`.
-    - Create or focus a left Codex terminal pane.
+17. Append fixed layout behavior to `.config/nvim/init.lua`. Partially
+    completed in `.config/nvim/init.lua`.
+    - Open nvim-tree on the left at 30 columns.
     - Keep the editor pane near 100 columns where terminal width permits.
-    - Configure nvim-tree on the right.
-    - Place Aerial below nvim-tree rather than as a competing right-edge pane.
-    - Use `winfixwidth` and `winfixheight` for side panes.
-    - Add a resize autocmd or fallback behavior for narrow terminals.
+    - Open a right Codex terminal pane running `codex`.
+    - Fix Codex terminal width at 43 columns.
+    - Refocus the editor after startup layout setup.
+    - Skip layout setup during headless Neovim runs.
+    - Defer Aerial placement below nvim-tree to the next step.
+    - Defer `winfixheight` until Aerial is added below nvim-tree.
+    - Defer resize autocmd or narrow-terminal fallback behavior.
 
 18. Append search to `.config/nvim/init.lua`.
     - Configure `fzf-lua` picker UI and actions.
@@ -657,8 +662,6 @@ changes separate from Neovim Lua behavior.
 
 ## Open Decisions
 
-- Should the Codex left pane auto-run `codex`, or open a shell intended for
-  manual `codex` use?
 - Should Gitsigns get full hunk mappings, or only old Fugitive parity mappings?
 - Should Copilot use its default `npx` language server behavior, or pin/use the
   bundled server with `vim.g.copilot_version = false`?
