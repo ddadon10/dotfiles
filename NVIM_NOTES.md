@@ -623,10 +623,14 @@ changes separate from Neovim Lua behavior.
     - Defer `winfixheight` until Aerial is added below nvim-tree.
     - Resize side panes on `VimResized`.
 
-18. Append search to `.config/nvim/init.lua`.
-    - Configure `fzf-lua` picker UI and actions.
-    - Keep search profiles for all files, Go files, and frontend files.
-    - Keep the tests-last ripgrep filter if it still reads clearly inline.
+18. Append search to `.config/nvim/init.lua`. Partially completed in
+    `.config/nvim/init.lua`.
+    - Configure the basic `fzf-lua` picker UI.
+    - Use Mini Icons for fzf file icons.
+    - Use filename-first formatting globally and for the files picker.
+    - Omit fzf-lua values that match installed defaults.
+    - Defer search profiles for all files, Go files, and frontend files.
+    - Defer the tests-last ripgrep filter.
     - Do not import the former `config/state.lua` module.
     - Do not add keymaps in this step.
 

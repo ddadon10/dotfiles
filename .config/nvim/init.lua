@@ -87,6 +87,28 @@ require('mini.pairs').setup()
 -- Navigation
 require('flash').setup()
 
+-- Search
+require('fzf-lua').setup({
+    defaults = {
+        file_icons = 'mini',
+        formatter = 'path.filename_first',
+    },
+    files = { formatter = 'path.filename_first' },
+    grep = { hidden = true },
+    winopts = {
+        col = 0.50,
+        height = 0.50,
+        title = 'fzf',
+        title_flags = false,
+        width = 0.60,
+        preview = {
+            delay = 0,
+            layout = 'vertical',
+            vertical = 'down:40%',
+        },
+    },
+})
+
 -- Git
 require('gitsigns').setup({ numhl = true, signcolumn = false })
 
