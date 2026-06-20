@@ -610,7 +610,7 @@ changes separate from Neovim Lua behavior.
 
 17. Append responsive layout behavior to `.config/nvim/init.lua`. Partially
     completed in `.config/nvim/init.lua`.
-    - Use a responsive `nvim-tree | editor | Codex` layout.
+    - Use a responsive `nvim-tree + Aerial | editor | Codex` layout.
     - MacBook preset: `30 | 104 | 39`.
     - Desktop preset: `41 | 124 | 56`.
     - Switch to the desktop preset at `223` columns, observed on 1920x1080 with
@@ -623,10 +623,11 @@ changes separate from Neovim Lua behavior.
     - Skip layout setup during headless Neovim runs.
     - Resize side panes on `VimResized`.
 
-18. Place Aerial below nvim-tree.
+18. Place Aerial below nvim-tree. Completed in `.config/nvim/init.lua`.
     - Split the left sidebar into nvim-tree above Aerial.
-    - Add fixed Aerial height and `winfixheight`.
-    - Resize the nvim-tree and Aerial left sidebar panes on `VimResized`.
+    - Use fixed Aerial height `16` and `winfixheight`.
+    - Keep responsive dimensions width-only.
+    - Let Aerial inherit nvim-tree width from the horizontal split.
     - Decide Aerial focus/toggle key behavior after placement is stable.
 
 19. Append search to `.config/nvim/init.lua`. Partially completed in

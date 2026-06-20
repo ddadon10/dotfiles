@@ -150,6 +150,7 @@ require('aerial').setup({
     attach_mode = 'global',
     disable_max_lines = 1000000,
     highlight_on_hover = true,
+    layout = { resize_to_content = false },
     show_guides = true,
 })
 
@@ -206,6 +207,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
     callback = function()
         if #vim.api.nvim_list_uis() == 0 then return end
 
+        local editor_window = vim.api.nvim_get_current_win()
         local dimensions = layout_dimensions()
 
         require('nvim-tree.api').tree.open()
@@ -214,7 +216,14 @@ vim.api.nvim_create_autocmd('VimEnter', {
         vim.wo.winbar = '%= Explorer %='
         vim.wo.winfixwidth = true
 
-        vim.cmd('wincmd p')
+        vim.cmd('belowright 16split')
+        require('aerial').open_in_win(vim.api.nvim_get_current_win(), editor_window)
+        vim.api.nvim_win_set_height(0, 16)
+        vim.wo.winbar = '%= Symbols %='
+        vim.wo.winfixheight = true
+        vim.wo.winfixwidth = true
+
+        vim.api.nvim_set_current_win(editor_window)
         vim.cmd('botright vertical ' .. dimensions.codex .. 'split')
         vim.cmd.terminal('codex')
         layout_windows.codex = vim.api.nvim_get_current_win()
@@ -225,7 +234,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         vim.wo.winhighlight = 'Normal:NvimTreeNormal,NormalNC:NvimTreeNormalNC,EndOfBuffer:NvimTreeNormal'
         vim.wo.winfixwidth = true
 
-        vim.cmd('wincmd p')
+        vim.api.nvim_set_current_win(editor_window)
     end,
 })
 
