@@ -141,6 +141,7 @@ Source branch plugins intentionally removed from the target:
 - 4-space indentation.
 - `textwidth=0`; layout presets define the preferred readable text columns.
 - Wrap disabled; horizontal scrolling enabled.
+- Cursor blinking disabled globally.
 - List characters enabled.
 - Search uses smartcase.
 - OSC52 clipboard configured.
@@ -202,7 +203,7 @@ Behavior:
   - `s`: jump.
   - `S`: treesitter jump.
   - operator-pending `r`: remote jump.
-  - operator/visual `R`: treesitter search.
+  - Omit operator/visual `R`: treesitter search.
 
 ### Treesitter
 
@@ -462,6 +463,7 @@ changes separate from Neovim Lua behavior.
    - Set `textwidth = 0` to avoid forced hard wrapping.
    - Set `signcolumn = 'no'` so signs do not reserve a permanent gutter.
    - Keep `colorcolumn = '+1'`; disable word wrap.
+   - Disable cursor blinking globally with `guicursor`.
    - Keep `shell = '/bin/bash'`.
    - Use static readonly autocmd patterns:
      - `/go/pkg/mod/**`
@@ -512,7 +514,7 @@ changes separate from Neovim Lua behavior.
    - Configure `mini.pairs`.
    - Configure `mini.bufremove` so later buffer-close mappings can use it.
    - Configure `flash.nvim` with defaults.
-   - Defer Flash behavior changes and mappings to the keymap review step.
+   - Defer Flash behavior changes to the final default/config audit.
    - Do not configure `mini.completion` here; review it together with Copilot
      insert-mode behavior.
    - Do not configure `mini.statusline`, `mini.tabline`, `fzf-lua`,
@@ -619,11 +621,15 @@ changes separate from Neovim Lua behavior.
       of opening new panes.
     - Refocus the editor after startup layout setup.
     - Skip layout setup during headless Neovim runs.
-    - Defer Aerial placement below nvim-tree to the next step.
-    - Defer `winfixheight` until Aerial is added below nvim-tree.
     - Resize side panes on `VimResized`.
 
-18. Append search to `.config/nvim/init.lua`. Partially completed in
+18. Place Aerial below nvim-tree.
+    - Split the left sidebar into nvim-tree above Aerial.
+    - Add fixed Aerial height and `winfixheight`.
+    - Resize the nvim-tree and Aerial left sidebar panes on `VimResized`.
+    - Decide Aerial focus/toggle key behavior after placement is stable.
+
+19. Append search to `.config/nvim/init.lua`. Partially completed in
     `.config/nvim/init.lua`.
     - Configure the basic `fzf-lua` picker UI.
     - Use Mini Icons for fzf file icons.
@@ -634,7 +640,7 @@ changes separate from Neovim Lua behavior.
     - Do not import the former `config/state.lua` module.
     - Do not add keymaps in this step.
 
-19. Append keymaps to `.config/nvim/init.lua`. Partially completed in
+20. Append keymaps to `.config/nvim/init.lua`. Partially completed in
     `.config/nvim/init.lua`.
     - Import late because mappings wire together prior sections.
     - Prune features before adding mappings.
@@ -651,27 +657,33 @@ changes separate from Neovim Lua behavior.
     - Remove treesitter-context mappings `[c]` and `<Leader>ot`.
     - Do not add a separate Copilot `<C-J>` mapping; Copilot accept is already
       handled by the contextual insert-mode `<Tab>` mapping.
-    - Defer remaining formatting, Git, terminal, quickfix, and UI toggle
+    - Completed Fugitive parity Git mappings: `<Leader>b` opens the Gitsigns
+      sidebar blame and `<Leader>d` opens `require('gitsigns').diffthis()`.
+    - Close the Gitsigns blame sidebar with `q` or normal window close commands.
+    - Completed buffer/tabline navigation with `{`, `|`, and `}`.
+    - Completed terminal-mode window navigation with `<C-w>h`, `<C-w>j`,
+      `<C-w>k`, and `<C-w>l`.
+    - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
+    - Omitted Flash treesitter-search `R` mapping.
+    - After Aerial placement, add quickfix/file explorer/Aerial navigation
       mappings.
-    - Replace old Fugitive diff mapping with `require('gitsigns').diffthis()`.
-    - Replace old Fugitive blame mapping with a Gitsigns blame action.
-    - Decide whether blame should use `blame_line`,
-      `toggle_current_line_blame`, or a fuller blame view.
+    - Defer formatting, terminal `<Esc>`, terminal `<CR>`, remaining Git, and UI
+      toggle mappings.
     - Decide whether to add hunk mappings using `nav_hunk`, `preview_hunk`,
       `stage_hunk`, and `reset_hunk`.
 
-20. Optional workflow code.
+21. Optional workflow code.
     - Review former `config/runner.lua` separately and probably defer initially.
     - Do not import former `config/autosave.lua`.
     - Do not import former `config/scratch.lua`.
     - Do not import `dev/scratches`.
 
-21. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
+22. Docker: copy and prewarm config. Completed in `dev/Dockerfile`.
     - Copy `.config/nvim` into `/root/.config/nvim`.
     - Run `nvim --headless "+qa"` during build.
     - Do not reintroduce VS Code web/editor setup.
 
-22. Interactive verification.
+23. Interactive verification.
     - Start the container shell.
     - After socket support exists, start `nvim` and confirm it listens on
       `$NVIM_SOCKET`.
@@ -680,7 +692,7 @@ changes separate from Neovim Lua behavior.
     - Confirm Gitsigns number highlights, blame, and diff behavior in a git repo.
     - Confirm the responsive layout at MacBook and desktop terminal widths.
 
-23. Final Neovim default audit.
+24. Final Neovim default audit.
     - Compare explicit `vim.o`, `vim.opt`, plugin setup, and tool config values
       against current defaults.
     - Remove redundant default settings when deleting them does not change the
