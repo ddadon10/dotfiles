@@ -126,7 +126,7 @@ require('fzf-lua').setup({
 require('gitsigns').setup({ numhl = true, signcolumn = false })
 
 -- Statusline
-local statusline_trunc_width = 85
+local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
 
 local function statusline_git()
     return vim.trim((vim.b.gitsigns_head or '') .. ' ' .. (vim.b.gitsigns_status or ''))
