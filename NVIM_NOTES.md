@@ -614,6 +614,7 @@ changes separate from Neovim Lua behavior.
     - Switch to the desktop preset at `223` columns, observed on 1920x1080 with
       JetBrains Mono 14px Bold.
     - Open a right Codex terminal pane running `codex`.
+    - Hide the Codex terminal buffer from buffer lists and tablines.
     - Store side-pane window IDs so `VimResized` resizes existing panes instead
       of opening new panes.
     - Refocus the editor after startup layout setup.

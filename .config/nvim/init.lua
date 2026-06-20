@@ -197,6 +197,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         vim.cmd('botright vertical ' .. dimensions.codex .. 'split')
         vim.cmd.terminal('codex')
         layout_windows.codex = vim.api.nvim_get_current_win()
+        vim.bo.buflisted = false
         vim.wo.number = false
         vim.wo.signcolumn = 'no'
         vim.wo.winbar = '%= Codex %='
