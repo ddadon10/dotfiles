@@ -272,8 +272,7 @@ Custom queries:
   formatting is needed.
 - `<Leader>b` should use a Gitsigns blame action.
 - `<Leader>d` should run `require('gitsigns').diffthis()`.
-- Later hunk mappings can use `nav_hunk`, `preview_hunk`, `stage_hunk`, and
-  `reset_hunk`.
+- Do not add Gitsigns hunk mappings.
 - Fugitive's broader `:Git` workflow is not included in the target import.
 
 ### Scratch Projects
@@ -311,8 +310,6 @@ Autosave is source-only and should not be imported.
   completion is visible, else normal Tab.
 - terminal `<Esc>`: leave terminal mode.
 - `<Leader><Leader>`: live grep.
-- `<Leader>G`: live grep Go files.
-- `<Leader>F`: live grep frontend files.
 - `<Leader>.`: resume last fzf picker.
 - `<Leader>/`: grep current buffer.
 - `<Leader>?`: keymaps.
@@ -636,8 +633,8 @@ changes separate from Neovim Lua behavior.
     - Use Mini Icons for fzf file icons.
     - Use filename-first formatting globally and for the files picker.
     - Omit fzf-lua values that match installed defaults.
-    - Defer search profiles for all files, Go files, and frontend files.
-    - Defer the tests-last ripgrep filter.
+    - Do not import search profiles for all files, Go files, or frontend files.
+    - Do not import the tests-last ripgrep filter.
     - Do not import the former `config/state.lua` module.
     - Do not add keymaps in this step.
 
@@ -651,7 +648,7 @@ changes separate from Neovim Lua behavior.
     - Completed sorted LSP keymap batch: `ga`, `gd`, `ge`, `gh`, `gi`, `gp`,
       `gt`, `gu`, and `gx`.
     - `ge` uses `vim.diagnostic.jump({ count = 1, float = true })`.
-    - Defer `<Leader>G` and `<Leader>F` until profiled grep is imported.
+    - Do not import `<Leader>G` or `<Leader>F` profiled grep mappings.
     - Do not import the old `ConfigSearchMaps` autocmd for `<CR>` and
       `<S-CR>` search navigation.
     - Remove `<Leader>n` scratch mapping.
@@ -666,12 +663,10 @@ changes separate from Neovim Lua behavior.
       `<C-w>k`, and `<C-w>l`.
     - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
     - Omitted Flash treesitter-search `R` mapping.
-    - After Aerial placement, add quickfix/file explorer/Aerial navigation
-      mappings.
+    - Do not add file explorer or Aerial focus mappings; use `Ctrl-w`.
     - Defer formatting, terminal `<Esc>`, terminal `<CR>`, remaining Git, and UI
       toggle mappings.
-    - Decide whether to add hunk mappings using `nav_hunk`, `preview_hunk`,
-      `stage_hunk`, and `reset_hunk`.
+    - Do not add Gitsigns hunk mappings.
 
 21. Optional workflow code.
     - Review former `config/runner.lua` separately and probably defer initially.
@@ -709,7 +704,6 @@ changes separate from Neovim Lua behavior.
 
 ## Open Decisions
 
-- Should Gitsigns get full hunk mappings, or only old Fugitive parity mappings?
 - Should Copilot use its default `npx` language server behavior, or pin/use the
   bundled server with `vim.g.copilot_version = false`?
 - Which LSP servers should be kept for the actual work done in this repo?
