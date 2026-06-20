@@ -73,6 +73,8 @@ vim.pack.add({
 -- Colorscheme
 require('tokyonight').setup({ style = 'night' })
 vim.cmd.colorscheme('tokyonight')
+vim.api.nvim_set_hl(0, 'CodexNormal', { bg = '#181923', fg = '#c0caf5' })
+vim.api.nvim_set_hl(0, 'CodexEndOfBuffer', { bg = '#181923', fg = '#181923' })
 
 -- Icons
 require('mini.icons').setup()
@@ -243,7 +245,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         vim.wo.number = false
         vim.wo.signcolumn = 'no'
         vim.wo.winbar = '%= Codex %='
-        vim.wo.winhighlight = 'Normal:NvimTreeNormal,NormalNC:NvimTreeNormalNC,EndOfBuffer:NvimTreeNormal'
+        vim.wo.winhighlight = 'Normal:CodexNormal,NormalNC:CodexNormal,EndOfBuffer:CodexEndOfBuffer'
         vim.wo.winfixwidth = true
 
         vim.api.nvim_set_current_win(editor_window)

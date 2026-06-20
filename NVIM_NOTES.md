@@ -254,13 +254,15 @@ Custom queries:
 
 ### UI
 
-- Tokyonight Night colorscheme with no custom color overrides.
+- Tokyonight Night colorscheme with no broad color overrides.
 - `mini.statusline` custom global statusline with `laststatus = 3`.
 - `mini.tabline` replaces Bufferline with default settings.
 - `mini.icons` provides icons and mocks `nvim-web-devicons` for `nvim-tree`.
 - `mini.pairs`.
 - `nvim-tree` should open as the fixed left-side file explorer.
 - Aerial should open below the file explorer, not as a competing right-edge pane.
+- Codex uses a dedicated `CodexNormal` background; terminal ANSI colors stay
+  unchanged.
 - Quicker wraps quickfix with a window title, custom mappings, and fzf quickfix
   output.
 - Terminal buffers get a custom statusline and auto-insert behavior.
@@ -607,6 +609,7 @@ changes separate from Neovim Lua behavior.
       JetBrains Mono 14px Bold.
     - Open a right Codex terminal pane running `codex`.
     - Hide the Codex terminal buffer from buffer lists and tablines.
+    - Use a dedicated Codex highlight group for a subtle panel background.
     - Store side-pane window IDs so `VimResized` resizes existing panes instead
       of opening new panes.
     - Refocus the editor after startup layout setup.
