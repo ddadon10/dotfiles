@@ -259,9 +259,10 @@ Custom queries:
 - `mini.tabline` replaces Bufferline with default settings.
 - `mini.icons` provides icons and mocks `nvim-web-devicons` for `nvim-tree`.
 - `mini.pairs`.
-- `nvim-tree` should open as the fixed right-side file explorer.
+- `nvim-tree` should open as the fixed left-side file explorer.
 - Aerial should open below the file explorer, not as a competing right-edge pane.
-- Quicker wraps quickfix with custom mappings.
+- Quicker wraps quickfix with a window title, custom mappings, and fzf quickfix
+  output.
 - Terminal buffers get a custom statusline and auto-insert behavior.
 
 ### Git
@@ -281,12 +282,7 @@ Scratch support is source-only and should not be imported.
 
 ### Code Runner
 
-- `<Leader>s` runs simple filetype commands.
-- Go:
-  - If cursor is inside `Test*`, `Benchmark*`, or `Fuzz*`, run that test.
-  - Otherwise run the current Go file.
-- JavaScript: run current file with `node`.
-- Bash or sh: run current file with `bash`.
+Code runner support is source-only and should not be imported.
 
 ### Autosave
 
@@ -308,6 +304,7 @@ Autosave is source-only and should not be imported.
 - `|`: close buffer.
 - insert `<Tab>`: accept full Copilot suggestion if visible, else `<C-y>` if popup
   completion is visible, else normal Tab.
+- fzf `<C-q>`: send all current matches to quickfix.
 - terminal `<Esc>`: leave terminal mode.
 - `<Leader><Leader>`: live grep.
 - `<Leader>.`: resume last fzf picker.
@@ -320,7 +317,6 @@ Autosave is source-only and should not be imported.
 - `<Leader>j`: jumps.
 - `<Leader>m`: marks.
 - `<Leader>p`: global picker.
-- `<Leader>s`: run code or test.
 - `<Leader>t`: toggle terminal.
 - `<Leader>r`: toggle outline.
 - `<Leader>q`: toggle quickfix.
@@ -386,7 +382,6 @@ Explicitly omit:
 Drop or defer unless explicitly wanted:
 
 - `runner.lua`: narrow Go/JavaScript/Bash runner.
-- `quicker.nvim`: optional quickfix polish.
 - Caddyfile parser/query support: keep only if Caddyfiles are common.
 - Terraform/HCL LSP/parser support: keep only if Terraform is common.
 
@@ -585,16 +580,14 @@ changes separate from Neovim Lua behavior.
     - Do not reintroduce Fugitive branch/statusline helpers.
 
 15. Append file explorer, symbols, and quickfix UI to `.config/nvim/init.lua`.
-    Partially completed in `.config/nvim/init.lua`.
+    Completed in `.config/nvim/init.lua`.
     - Configure Aerial.
     - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
     - Keep `prefer_startup_root = true` for nvim-tree root updates.
-    - Defer Aerial placement to the next layout step.
+    - Configure Quicker with a centered `Quickfix` winbar.
     - nvim-tree auto-open and focus behavior is handled by the responsive layout
       step.
-    - Defer Aerial autocmds until Aerial placement exists.
-    - Defer special Aerial and nvim-tree statuslines.
-    - Defer Quicker.
+    - Do not add special Aerial, nvim-tree, or quickfix statuslines.
 
 16. Append terminal behavior to `.config/nvim/init.lua`. Completed in
     `.config/nvim/init.lua`.
@@ -625,13 +618,18 @@ changes separate from Neovim Lua behavior.
     - Use fixed Aerial height `16` and `winfixheight`.
     - Keep responsive dimensions width-only.
     - Let Aerial inherit nvim-tree width from the horizontal split.
-    - Decide Aerial focus/toggle key behavior after placement is stable.
+    - Do not add Aerial focus/toggle mappings; use `Ctrl-w`.
 
-19. Append search to `.config/nvim/init.lua`. Partially completed in
+19. Append search to `.config/nvim/init.lua`. Completed in
     `.config/nvim/init.lua`.
     - Configure the basic `fzf-lua` picker UI.
     - Use Mini Icons for fzf file icons.
     - Use filename-first formatting globally and for the files picker.
+    - Use fzf `<C-q>` to send all current matches to quickfix.
+    - Open fzf quickfix output with `belowright copen 16` so it stays under the
+      current editor column.
+    - Keep fzf-lua defaults for `enter`, `alt-q`, split, vsplit, and tabedit
+      actions.
     - Omit fzf-lua values that match installed defaults.
     - Do not import search profiles for all files, Go files, or frontend files.
     - Do not import the tests-last ripgrep filter.
@@ -659,6 +657,9 @@ changes separate from Neovim Lua behavior.
       sidebar blame and `<Leader>d` opens `require('gitsigns').diffthis()`.
     - Close the Gitsigns blame sidebar with `q` or normal window close commands.
     - Completed buffer/tabline navigation with `{`, `|`, and `}`.
+    - Completed quickfix mappings with `<Leader>q`, `[q`, and `]q`.
+    - Open quickfix from the editor window so it stays under the editor column.
+    - Use fixed quickfix height `16`.
     - Completed terminal-mode window navigation with `<C-w>h`, `<C-w>j`,
       `<C-w>k`, and `<C-w>l`.
     - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
@@ -669,7 +670,7 @@ changes separate from Neovim Lua behavior.
     - Do not add Gitsigns hunk mappings.
 
 21. Optional workflow code.
-    - Review former `config/runner.lua` separately and probably defer initially.
+    - Do not import former `config/runner.lua`.
     - Do not import former `config/autosave.lua`.
     - Do not import former `config/scratch.lua`.
     - Do not import `dev/scratches`.

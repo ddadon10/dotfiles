@@ -86,9 +86,21 @@ require('mini.pairs').setup()
 -- Navigation
 require('flash').setup()
 
+-- Quickfix
+require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
+
 -- Search
+local fzf_actions = require('fzf-lua.actions')
+
 require('fzf-lua').setup({
+    actions = {
+        files = {
+            true,
+            ['ctrl-q'] = { fn = fzf_actions.file_sel_to_qf, prefix = 'select-all' },
+        },
+    },
     defaults = {
+        copen = 'belowright copen 16',
         file_icons = 'mini',
         formatter = 'path.filename_first',
     },
@@ -370,6 +382,8 @@ vim.keymap.set('n', 'gp', function() fzf.lsp_definitions({ jump1 = false, winopt
 vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' } }) end, { desc = 'Go to type definition' })
 vim.keymap.set('n', 'gu', function() fzf.lsp_references({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' } }) end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
+vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
+vim.keymap.set('n', ']q', '<cmd>cnext<cr>', { desc = 'Next quickfix item' })
 vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', '|', function() MiniBufremove.delete() end, { desc = 'Close buffer' })
 vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
@@ -383,3 +397,4 @@ vim.keymap.set('n', '<Leader>d', function() require('gitsigns').diffthis() end, 
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
+vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ height = 16, open_cmd_mods = { split = 'belowright' } }) end, { desc = 'Toggle quickfix' })
