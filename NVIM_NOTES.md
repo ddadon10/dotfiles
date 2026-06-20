@@ -42,22 +42,30 @@ Docker image and moves toward a Neovim-first shell workflow.
   - Remove custom color overrides and transparency-related theme overrides.
   - Use normal Tokyonight setup with `style = 'night'`, then load
     `colorscheme tokyonight`.
-- Set formatting column to 100:
-  - Change `textwidth` from `120` to `100`.
+- Do not force hard wrapping:
+  - Set `textwidth = 0`.
   - Keep word wrap, linebreak, and breakindent enabled.
-  - Keep `colorcolumn = '+1'` if the marker should stay one column after
-    `textwidth`.
+  - Keep `colorcolumn = '+1'` for now and revisit after testing with
+    `textwidth = 0`.
 - Target layout:
   - File explorer on the left.
-  - Main editor in the middle at about 100 columns when the terminal is wide
-    enough.
+  - Main editor in the middle.
   - Codex terminal on the right.
   - Aerial below the file explorer.
+  - Use responsive presets:
+    - MacBook: `30 | 104 | 39`, which gives `100` text columns after the
+      editor gutter.
+    - Desktop: `41 | 124 | 56`, which gives `120` text columns after the
+      editor gutter.
+    - `223` columns is the observed desktop threshold for 1920x1080 with
+      JetBrains Mono 14px Bold.
   - This needs a dedicated layout step after base UI, terminal, nvim-tree, and
     Aerial are working.
 - Replace Fugitive with Gitsigns for configured Git behavior:
   - Add `lewis6991/gitsigns.nvim`.
   - Remove `tpope/vim-fugitive`.
+  - Use `numhl = true` and `signcolumn = false` so Git changes do not reserve a
+    sign column.
   - Replace branch/statusline, blame, and diff behavior with Gitsigns plus git
     CLI fallbacks where needed.
   - Gitsigns does not replace broader Fugitive porcelain commands like `:Git`,
@@ -131,7 +139,7 @@ Source branch plugins intentionally removed from the target:
 - Mouse enabled.
 - Swap disabled, undo enabled.
 - 4-space indentation.
-- `textwidth=100` and colorcolumn at `+1`.
+- `textwidth=0`; layout presets define the preferred readable text columns.
 - Wrap enabled with linebreak.
 - List characters enabled.
 - Search uses smartcase.
@@ -451,7 +459,8 @@ changes separate from Neovim Lua behavior.
    - Keep `vim.g` globals sorted alphabetically by global name.
    - Keep `vim.o` option assignments sorted alphabetically by option name.
    - Keep `vim.opt` mutations in their own sorted block.
-   - Changed `textwidth` from `120` to `100`.
+   - Set `textwidth = 0` to avoid forced hard wrapping.
+   - Set `signcolumn = 'no'` so signs do not reserve a permanent gutter.
    - Keep `colorcolumn = '+1'`, word wrap, linebreak, and breakindent enabled.
    - Keep `shell = '/bin/bash'`.
    - Use static readonly autocmd patterns:
@@ -582,7 +591,7 @@ changes separate from Neovim Lua behavior.
     - Configure `nvim-tree` after `mini.icons` has mocked `nvim-web-devicons`.
     - Keep `prefer_startup_root = true` for nvim-tree root updates.
     - Defer Aerial placement to the next layout step.
-    - nvim-tree auto-open and focus behavior is handled by the fixed layout
+    - nvim-tree auto-open and focus behavior is handled by the responsive layout
       step.
     - Defer Aerial autocmds until Aerial placement exists.
     - Defer special Aerial and nvim-tree statuslines.
@@ -595,19 +604,23 @@ changes separate from Neovim Lua behavior.
       `laststatus = 3` uses one global statusline.
     - Defer terminal `<Esc>`, terminal `<CR>`, and focus-editor behavior to
       the keymap step.
-    - Codex pane creation is handled by the fixed layout step.
+    - Codex pane creation is handled by the responsive layout step.
 
-17. Append fixed layout behavior to `.config/nvim/init.lua`. Partially
+17. Append responsive layout behavior to `.config/nvim/init.lua`. Partially
     completed in `.config/nvim/init.lua`.
-    - Open nvim-tree on the left at 30 columns.
-    - Keep the editor pane near 100 columns where terminal width permits.
+    - Use a responsive `nvim-tree | editor | Codex` layout.
+    - MacBook preset: `30 | 104 | 39`.
+    - Desktop preset: `41 | 124 | 56`.
+    - Switch to the desktop preset at `223` columns, observed on 1920x1080 with
+      JetBrains Mono 14px Bold.
     - Open a right Codex terminal pane running `codex`.
-    - Fix Codex terminal width at 43 columns.
+    - Store side-pane window IDs so `VimResized` resizes existing panes instead
+      of opening new panes.
     - Refocus the editor after startup layout setup.
     - Skip layout setup during headless Neovim runs.
     - Defer Aerial placement below nvim-tree to the next step.
     - Defer `winfixheight` until Aerial is added below nvim-tree.
-    - Defer resize autocmd or narrow-terminal fallback behavior.
+    - Resize side panes on `VimResized`.
 
 18. Append search to `.config/nvim/init.lua`.
     - Configure `fzf-lua` picker UI and actions.
@@ -649,8 +662,8 @@ changes separate from Neovim Lua behavior.
       `$NVIM_SOCKET`.
     - Run `:Copilot setup` once after the credential mount exists.
     - Run `:Copilot status`.
-    - Confirm Gitsigns signs, blame, and diff behavior in a git repo.
-    - Confirm the fixed layout at normal and narrow terminal widths.
+    - Confirm Gitsigns number highlights, blame, and diff behavior in a git repo.
+    - Confirm the responsive layout at MacBook and desktop terminal widths.
 
 ## References
 

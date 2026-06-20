@@ -5,7 +5,6 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 vim.o.breakindent = true
-vim.o.colorcolumn = '+1'
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
@@ -29,7 +28,7 @@ vim.o.shell = '/bin/bash'
 vim.o.shiftwidth = 4
 vim.o.showcmd = false
 vim.o.showmode = false
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = 'no'
 vim.o.smartcase = true
 vim.o.smartindent = true
 vim.o.splitbelow = true
@@ -37,7 +36,6 @@ vim.o.splitkeep = 'screen'
 vim.o.splitright = true
 vim.o.swapfile = false
 vim.o.tabstop = 4
-vim.o.textwidth = 100
 vim.o.undofile = true
 vim.o.updatetime = 250
 vim.o.virtualedit = 'block'
@@ -90,7 +88,7 @@ require('mini.pairs').setup()
 require('flash').setup()
 
 -- Git
-require('gitsigns').setup()
+require('gitsigns').setup({ numhl = true, signcolumn = false })
 
 -- Statusline
 local statusline_trunc_width = 85
@@ -134,12 +132,41 @@ require('aerial').setup({
     show_guides = true,
 })
 
+-- Layout
+local layout_windows = {}
+
+local function layout_dimensions()
+    local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
+    if vim.o.columns >= desktop_width then
+        -- Editor will have 120 text columns, and 4 number columns.
+        -- We substract 1 from explorer and 1 from codex to account for the window separator.
+        return { explorer = 41, codex = 56 }
+    end
+
+    -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
+    -- Editor will have 100 text columns, and 4 number columns.
+    -- We substract 1 from explorer and 1 from codex to account for the window separator.
+    return { explorer = 30, codex = 39 }
+end
+
+local function apply_layout_dimensions()
+    local dimensions = layout_dimensions()
+
+    if layout_windows.explorer and vim.api.nvim_win_is_valid(layout_windows.explorer) then
+        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer)
+    end
+
+    if layout_windows.codex and vim.api.nvim_win_is_valid(layout_windows.codex) then
+        vim.api.nvim_win_set_width(layout_windows.codex, dimensions.codex)
+    end
+end
+
 -- NvimTree
 require('nvim-tree').setup({
     filters = { git_ignored = false },
     prefer_startup_root = true,
     update_focused_file = { enable = true, update_root = { enable = true } },
-    view = { side = 'left', width = 30 },
+    view = { side = 'left', width = function() return layout_dimensions().explorer end },
 })
 
 -- Terminal
@@ -151,21 +178,40 @@ vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
     command = 'startinsert',
 })
 
--- Layout
+local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
+
 vim.api.nvim_create_autocmd('VimEnter', {
-    group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true }),
+    group = layout_group,
     callback = function()
         if #vim.api.nvim_list_uis() == 0 then return end
 
+        local dimensions = layout_dimensions()
+
         require('nvim-tree.api').tree.open()
+        layout_windows.explorer = vim.api.nvim_get_current_win()
+        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer)
+        vim.wo.winbar = '%= Explorer %='
         vim.wo.winfixwidth = true
 
         vim.cmd('wincmd p')
-        vim.cmd('botright vertical 43split')
+        vim.cmd('botright vertical ' .. dimensions.codex .. 'split')
         vim.cmd.terminal('codex')
+        layout_windows.codex = vim.api.nvim_get_current_win()
+        vim.wo.number = false
+        vim.wo.signcolumn = 'no'
+        vim.wo.winbar = '%= Codex %='
+        vim.wo.winhighlight = 'Normal:NvimTreeNormal,NormalNC:NvimTreeNormalNC,EndOfBuffer:NvimTreeNormal'
         vim.wo.winfixwidth = true
 
         vim.cmd('wincmd p')
+    end,
+})
+
+vim.api.nvim_create_autocmd('VimResized', {
+    group = layout_group,
+    callback = function()
+        if #vim.api.nvim_list_uis() == 0 then return end
+        apply_layout_dimensions()
     end,
 })
 
