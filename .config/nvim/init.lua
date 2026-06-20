@@ -164,7 +164,7 @@ require('aerial').setup({
     attach_mode = 'global',
     disable_max_lines = 1000000,
     highlight_on_hover = true,
-    layout = { resize_to_content = false },
+    layout = { resize_to_content = false, win_opts = { winbar = '%= Symbols %=' } },
     show_guides = true,
 })
 
@@ -233,7 +233,6 @@ vim.api.nvim_create_autocmd('VimEnter', {
         vim.cmd('belowright 16split')
         require('aerial').open_in_win(vim.api.nvim_get_current_win(), editor_window)
         vim.api.nvim_win_set_height(0, 16)
-        vim.wo.winbar = '%= Symbols %='
         vim.wo.winfixheight = true
         vim.wo.winfixwidth = true
 

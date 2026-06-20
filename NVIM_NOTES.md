@@ -261,6 +261,7 @@ Custom queries:
 - `mini.pairs`.
 - `nvim-tree` should open as the fixed left-side file explorer.
 - Aerial should open below the file explorer, not as a competing right-edge pane.
+- Aerial should use a centered `Symbols` winbar title.
 - Codex uses a dedicated `CodexNormal` background; terminal ANSI colors stay
   unchanged.
 - Quicker wraps quickfix with a window title, custom mappings, and fzf quickfix
@@ -623,6 +624,8 @@ changes separate from Neovim Lua behavior.
 
 18. Place Aerial below nvim-tree. Completed in `.config/nvim/init.lua`.
     - Split the left sidebar into nvim-tree above Aerial.
+    - Set Aerial's centered `Symbols` winbar title through
+      `layout.win_opts`.
     - Use fixed Aerial height `16` and `winfixheight`.
     - Keep responsive dimensions width-only.
     - Let Aerial inherit nvim-tree width from the horizontal split.
