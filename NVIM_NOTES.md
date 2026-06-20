@@ -265,7 +265,12 @@ Custom queries:
   unchanged.
 - Quicker wraps quickfix with a window title, custom mappings, and fzf quickfix
   output.
-- Terminal buffers get a custom statusline and auto-insert behavior.
+- Terminal buffers auto-enter insert mode.
+- Persistent shell terminal toggle is pending:
+  - `<Leader>t` should hide/unhide the same terminal buffer.
+  - It should open below the editor column only.
+  - It should use fixed height `16`.
+  - It should not touch the Codex terminal.
 
 ### Git
 
@@ -319,7 +324,7 @@ Autosave is source-only and should not be imported.
 - `<Leader>j`: jumps.
 - `<Leader>m`: marks.
 - `<Leader>p`: global picker.
-- `<Leader>t`: toggle terminal.
+- `<Leader>t`: toggle persistent editor-scoped terminal.
 - `<Leader>r`: toggle outline.
 - `<Leader>q`: toggle quickfix.
 - `]q`: next quickfix entry.
@@ -668,8 +673,8 @@ changes separate from Neovim Lua behavior.
     - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
     - Omitted Flash treesitter-search `R` mapping.
     - Do not add file explorer or Aerial focus mappings; use `Ctrl-w`.
-    - Defer formatting, terminal `<Esc>`, terminal `<CR>`, remaining Git, and UI
-      toggle mappings.
+    - Defer formatting, persistent editor-scoped terminal toggle, terminal
+      `<Esc>`, terminal `<CR>`, remaining Git, and UI toggle mappings.
     - Do not add Gitsigns hunk mappings.
 
 21. Optional workflow code.
@@ -683,16 +688,7 @@ changes separate from Neovim Lua behavior.
     - Run `nvim --headless "+qa"` during build.
     - Do not reintroduce VS Code web/editor setup.
 
-23. Interactive verification.
-    - Start the container shell.
-    - After socket support exists, start `nvim` and confirm it listens on
-      `$NVIM_SOCKET`.
-    - Run `:Copilot setup` once after the credential mount exists.
-    - Run `:Copilot status`.
-    - Confirm Gitsigns number highlights, blame, and diff behavior in a git repo.
-    - Confirm the responsive layout at MacBook and desktop terminal widths.
-
-24. Final Neovim default audit.
+23. Final Neovim default audit.
     - Compare explicit `vim.o`, `vim.opt`, plugin setup, and tool config values
       against current defaults.
     - Remove redundant default settings when deleting them does not change the
