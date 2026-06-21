@@ -144,7 +144,6 @@ local function open_editor_bottom_split(height)
     end
 
     vim.cmd('belowright ' .. height .. 'split')
-    vim.api.nvim_win_set_height(0, height)
     vim.wo.winfixheight = true
     return vim.api.nvim_get_current_win()
 end
@@ -422,7 +421,7 @@ local function toggle_terminal_panel(name, title, command)
     local dimensions = layout_dimensions()
 
     if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
-        vim.api.nvim_win_close(layout_windows[name], true)
+        vim.api.nvim_win_hide(layout_windows[name])
         layout_windows[name] = nil
         return
     end
