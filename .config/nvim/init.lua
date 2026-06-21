@@ -9,19 +9,14 @@ vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
 vim.o.fillchars = 'eob: '
 vim.o.foldenable = false
-vim.o.formatoptions = 'qjl1'
-vim.o.guicursor = 'n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:block,a:blinkon0'
+vim.o.guicursor = 'n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:block'
 vim.o.ignorecase = true
-vim.o.infercase = true
 vim.o.laststatus = 3
-vim.o.list = true
-vim.o.listchars = 'tab:  ,extends:…,precedes:…,nbsp:␣'
 vim.o.mouse = 'a'
 vim.o.mousescroll = 'ver:1,hor:1'
 vim.o.number = true
 vim.o.pumheight = 10
 vim.o.ruler = false
-vim.o.shell = '/bin/bash'
 vim.o.shiftwidth = 4
 vim.o.showcmd = false
 vim.o.showmode = false
@@ -31,13 +26,8 @@ vim.o.smartindent = true
 vim.o.splitbelow = true
 vim.o.splitkeep = 'screen'
 vim.o.splitright = true
-vim.o.swapfile = false
 vim.o.tabstop = 4
-vim.o.undofile = true
-vim.o.updatetime = 250
-vim.o.virtualedit = 'block'
 vim.o.wrap = false
-vim.o.writebackup = false
 
 vim.opt.shortmess:append('IscWa')
 
