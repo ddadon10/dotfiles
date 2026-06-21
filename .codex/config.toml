@@ -1,14 +1,12 @@
 model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
-developer_instructions = """
-You are running in a Docker container.
-You cannot run Docker.
-"""
+developer_instructions = "You are running in a Docker container.You cannot run Docker."
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 web_search = "live"
 plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
+service_tier = "fast"
 
 [projects."/workspace"]
 trust_level = "trusted"
@@ -17,6 +15,7 @@ trust_level = "trusted"
 inherit = "all"
 
 [tui]
+show_tooltips = false
 notifications = true
 notification_method = "osc9"
 status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "total-input-tokens", "total-output-tokens", "fast-mode"]
