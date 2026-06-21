@@ -49,18 +49,19 @@ Docker image and moves toward a Neovim-first shell workflow.
     `textwidth = 0`.
 - Target layout:
   - File explorer on the left.
-  - Main editor in the middle.
-  - Codex terminal on the right.
+  - Main editor on the right.
   - Aerial below the file explorer.
-  - Use responsive presets:
-    - MacBook: `30 | 104 | 39`, which gives `100` text columns after the
-      editor gutter.
-    - Desktop: `41 | 124 | 56`, which gives `120` text columns after the
-      editor gutter.
+  - Do not open a permanent right Codex pane.
+  - Use nested dimensions from `layout_dimensions()` as the central source for
+    layout width and height values.
+  - Use responsive width presets:
+    - MacBook: `explorer.width = 40`, leaving `134` editor columns.
+    - Desktop: `explorer.width = 68`, leaving `154` editor columns.
     - `223` columns is the observed desktop threshold for 1920x1080 with
       JetBrains Mono 14px Bold.
-  - This needs a dedicated layout step after base UI, terminal, nvim-tree, and
-    Aerial are working.
+  - Quickfix, Terminal, and Codex are editor-scoped bottom panels.
+  - Quickfix, Terminal, Codex, and Aerial use height `16`.
+  - Terminal and Codex reuse persistent hidden terminal buffers.
 - Replace Fugitive with Gitsigns for configured Git behavior:
   - Add `lewis6991/gitsigns.nvim`.
   - Remove `tpope/vim-fugitive`.
@@ -264,16 +265,16 @@ Custom queries:
 - `nvim-tree` should open as the fixed left-side file explorer.
 - Aerial should open below the file explorer, not as a competing right-edge pane.
 - Aerial should use a centered `Symbols` winbar title.
-- Codex uses a dedicated `CodexNormal` background; terminal ANSI colors stay
-  unchanged.
+- Terminal and Codex panels use shared hardcoded terminal foreground and
+  background highlights.
 - Quicker wraps quickfix with a window title, custom mappings, and fzf quickfix
   output.
 - Terminal buffers auto-enter insert mode.
-- Persistent shell terminal toggle is pending:
+- Editor-scoped bottom panels:
   - `<Leader>t` should hide/unhide the same terminal buffer.
+  - `<Leader>c` should hide/unhide the same Codex terminal buffer.
   - It should open below the editor column only.
-  - It should use fixed height `16`.
-  - It should not touch the Codex terminal.
+  - It should use dimensions from `layout_dimensions()`.
 
 ### Git
 
@@ -322,6 +323,7 @@ Autosave is source-only and should not be imported.
 - `<Leader>?`: keymaps.
 - `<Leader>a`: all pickers.
 - `<Leader>b`: toggle blame.
+- `<Leader>c`: toggle Codex.
 - `<Leader>d`: Git diff.
 - `<Leader>e`: focus or open file explorer.
 - `<Leader>j`: jumps.
@@ -605,23 +607,28 @@ changes separate from Neovim Lua behavior.
       `laststatus = 3` uses one global statusline.
     - Defer terminal `<Esc>`, terminal `<CR>`, and focus-editor behavior to
       the keymap step.
-    - Codex pane creation is handled by the responsive layout step.
+    - Shell and Codex terminal panels are handled by the responsive layout and
+      keymap steps.
 
-17. Append responsive layout behavior to `.config/nvim/init.lua`. Partially
-    completed in `.config/nvim/init.lua`.
-    - Use a responsive `nvim-tree + Aerial | editor | Codex` layout.
-    - MacBook preset: `30 | 104 | 39`.
-    - Desktop preset: `41 | 124 | 56`.
+17. Append responsive layout behavior to `.config/nvim/init.lua`. Completed in
+    `.config/nvim/init.lua`.
+    - Use a responsive `nvim-tree + Aerial | editor` layout.
+    - Do not open a permanent right Codex pane.
+    - Use nested dimensions from `layout_dimensions()` for widths and heights.
+    - MacBook preset: `explorer.width = 40`.
+    - Desktop preset: `explorer.width = 68`.
     - Switch to the desktop preset at `223` columns, observed on 1920x1080 with
       JetBrains Mono 14px Bold.
-    - Open a right Codex terminal pane running `codex`.
-    - Hide the Codex terminal buffer from buffer lists and tablines.
-    - Use a dedicated Codex highlight group for a subtle panel background.
-    - Store side-pane window IDs so `VimResized` resizes existing panes instead
-      of opening new panes.
+    - Quickfix, Terminal, Codex, and Aerial all use height `16`.
+    - Quickfix, Terminal, and Codex are editor-scoped bottom panels.
+    - Terminal and Codex reuse persistent hidden terminal buffers.
+    - Use shared terminal highlight groups for Terminal and Codex panel
+      backgrounds.
+    - Store layout window IDs so `VimResized` resizes existing panes instead of
+      opening new panes.
     - Refocus the editor after startup layout setup.
     - Skip layout setup during headless Neovim runs.
-    - Resize side panes on `VimResized`.
+    - Resize tracked layout panes on `VimResized`.
 
 18. Place Aerial below nvim-tree. Completed in `.config/nvim/init.lua`.
     - Split the left sidebar into nvim-tree above Aerial.
@@ -638,8 +645,8 @@ changes separate from Neovim Lua behavior.
     - Use Mini Icons for fzf file icons.
     - Use filename-first formatting globally and for the files picker.
     - Use fzf `<C-q>` to send all current matches to quickfix.
-    - Open fzf quickfix output with `belowright copen 16` so it stays under the
-      current editor column.
+    - Open fzf quickfix output with `belowright copen` and the centralized
+      quickfix height so it stays under the current editor column.
     - Keep fzf-lua defaults for `enter`, `alt-q`, split, vsplit, and tabedit
       actions.
     - Omit fzf-lua values that match installed defaults.
@@ -671,7 +678,10 @@ changes separate from Neovim Lua behavior.
     - Completed buffer/tabline navigation with `{`, `|`, and `}`.
     - Completed quickfix mappings with `<Leader>q`, `[q`, and `]q`.
     - Open quickfix from the editor window so it stays under the editor column.
-    - Use fixed quickfix height `16`.
+    - Use the centralized quickfix height from `layout_dimensions()`.
+    - Completed persistent editor-scoped Codex toggle with `<Leader>c`.
+    - Completed persistent editor-scoped terminal toggle with `<Leader>t`.
+    - Terminal and Codex buffers are hidden from buffer lists and tablines.
     - Completed terminal-mode window navigation with `<C-w>h`, `<C-w>j`,
       `<C-w>k`, and `<C-w>l`.
     - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
@@ -692,8 +702,8 @@ changes separate from Neovim Lua behavior.
       right-side detail section.
     - Do not add `<Leader>od`; diagnostics are already managed by normal/insert
       mode behavior.
-    - Defer formatting, persistent editor-scoped terminal toggle, terminal
-      `<Esc>`, terminal `<CR>`, and remaining Git mappings.
+    - Defer formatting, terminal `<Esc>`, terminal `<CR>`, and remaining Git
+      mappings.
     - Do not add Gitsigns hunk mappings.
 
 21. Optional workflow code.

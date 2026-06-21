@@ -18,7 +18,7 @@ export TERM=xterm-ghostty
 [ "$(git config --global --get user.name 2>/dev/null || true)" = "$GIT_USER_NAME" ] || git config --global user.name "$GIT_USER_NAME"
 [ "$(git config --global --get user.email 2>/dev/null || true)" = "$GIT_USER_EMAIL" ] || git config --global user.email "$GIT_USER_EMAIL"
 
-# Prompt
+# PS1
 ps1_debian_red='\[\033[38;2;206;0;86m\]'
 ps1_path_blue='\[\033[38;2;125;207;255m\]'
 ps1_arrow_yellow='\[\033[38;2;224;175;104m\]'

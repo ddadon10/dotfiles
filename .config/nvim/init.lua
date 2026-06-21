@@ -73,8 +73,8 @@ vim.pack.add({
 -- Colorscheme
 require('tokyonight').setup({ style = 'night' })
 vim.cmd.colorscheme('tokyonight')
-vim.api.nvim_set_hl(0, 'CodexNormal', { bg = '#181923', fg = '#c0caf5' })
-vim.api.nvim_set_hl(0, 'CodexEndOfBuffer', { bg = '#181923', fg = '#181923' })
+vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d1e1d', fg = '#ffffff' })
+vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d1e1d', fg = '#1d1e1d' })
 
 -- Icons
 require('mini.icons').setup()
@@ -87,6 +87,87 @@ require('mini.pairs').setup()
 
 -- Navigation
 require('flash').setup()
+
+-- Layout
+local buffers = {}
+local layout_windows = {}
+
+local function layout_dimensions()
+    local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
+    if vim.o.columns >= desktop_width then
+        -- Desktop: 68 explorer + 1 separator + 154 editor.
+        return {
+            aerial = { height = 16 },
+            codex = { height = 16 },
+            explorer = { width = 68 },
+            quickfix = { height = 16 },
+            terminal = { height = 16 },
+        }
+    end
+
+    -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
+    -- MacBook: 40 explorer + 1 separator + 134 editor.
+    return {
+        aerial = { height = 16 },
+        codex = { height = 16 },
+        explorer = { width = 40 },
+        quickfix = { height = 16 },
+        terminal = { height = 16 },
+    }
+end
+
+local function set_window_width(name, width)
+    local window = layout_windows[name]
+    if not window or not vim.api.nvim_win_is_valid(window) then return end
+    vim.api.nvim_win_set_width(window, width)
+end
+
+local function set_window_height(name, height)
+    local window = layout_windows[name]
+    if not window or not vim.api.nvim_win_is_valid(window) then return end
+    vim.api.nvim_win_set_height(window, height)
+end
+
+local function apply_layout_dimensions()
+    local dimensions = layout_dimensions()
+
+    set_window_width('explorer', dimensions.explorer.width)
+    set_window_height('aerial', dimensions.aerial.height)
+    set_window_height('quickfix', dimensions.quickfix.height)
+    set_window_height('terminal', dimensions.terminal.height)
+    set_window_height('codex', dimensions.codex.height)
+end
+
+local function open_editor_bottom_split(height)
+    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
+        vim.api.nvim_set_current_win(layout_windows.editor)
+    end
+
+    vim.cmd('belowright ' .. height .. 'split')
+    vim.api.nvim_win_set_height(0, height)
+    vim.wo.winfixheight = true
+    return vim.api.nvim_get_current_win()
+end
+
+local function configure_terminal_panel(title)
+    vim.bo.bufhidden = 'hide'
+    vim.bo.buflisted = false
+    vim.wo.number = false
+    vim.wo.signcolumn = 'no'
+    vim.wo.winbar = '%= ' .. title .. ' %='
+    vim.wo.winhighlight = 'Normal:TerminalNormal,NormalNC:TerminalNormal,EndOfBuffer:TerminalEndOfBuffer'
+    vim.wo.winfixheight = true
+end
+
+local function toggle_quickfix()
+    local dimensions = layout_dimensions()
+
+    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
+        vim.api.nvim_set_current_win(layout_windows.editor)
+    end
+
+    require('quicker').toggle({ height = dimensions.quickfix.height, open_cmd_mods = { split = 'belowright' } })
+end
 
 -- Quickfix
 require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
@@ -102,7 +183,7 @@ require('fzf-lua').setup({
         },
     },
     defaults = {
-        copen = 'belowright copen 16',
+        copen = 'belowright copen ' .. layout_dimensions().quickfix.height,
         file_icons = 'mini',
         formatter = 'path.filename_first',
     },
@@ -168,41 +249,12 @@ require('aerial').setup({
     show_guides = true,
 })
 
--- Layout
-local layout_windows = {}
-
-local function layout_dimensions()
-    local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
-    if vim.o.columns >= desktop_width then
-        -- Editor will have 120 text columns, and 4 number columns.
-        -- We substract 1 from explorer and 1 from codex to account for the window separator.
-        return { explorer = 41, codex = 56 }
-    end
-
-    -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
-    -- Editor will have 100 text columns, and 4 number columns.
-    -- We substract 1 from explorer and 1 from codex to account for the window separator.
-    return { explorer = 30, codex = 39 }
-end
-
-local function apply_layout_dimensions()
-    local dimensions = layout_dimensions()
-
-    if layout_windows.explorer and vim.api.nvim_win_is_valid(layout_windows.explorer) then
-        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer)
-    end
-
-    if layout_windows.codex and vim.api.nvim_win_is_valid(layout_windows.codex) then
-        vim.api.nvim_win_set_width(layout_windows.codex, dimensions.codex)
-    end
-end
-
 -- NvimTree
 require('nvim-tree').setup({
     filters = { git_ignored = false },
     prefer_startup_root = true,
     update_focused_file = { enable = true, update_root = { enable = true } },
-    view = { side = 'left', width = function() return layout_dimensions().explorer end },
+    view = { side = 'left', width = function() return layout_dimensions().explorer.width end },
 })
 
 -- Terminal
@@ -216,6 +268,16 @@ vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
 
 local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
 
+vim.api.nvim_create_autocmd('FileType', {
+    group = layout_group,
+    pattern = 'qf',
+    callback = function()
+        layout_windows.quickfix = vim.api.nvim_get_current_win()
+        set_window_height('quickfix', layout_dimensions().quickfix.height)
+        vim.wo.winfixheight = true
+    end,
+})
+
 vim.api.nvim_create_autocmd('VimEnter', {
     group = layout_group,
     callback = function()
@@ -224,28 +286,20 @@ vim.api.nvim_create_autocmd('VimEnter', {
         local editor_window = vim.api.nvim_get_current_win()
         local dimensions = layout_dimensions()
 
+        layout_windows.editor = editor_window
+
         require('nvim-tree.api').tree.open()
         layout_windows.explorer = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer)
+        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
         vim.wo.winbar = '%= Explorer %='
         vim.wo.winfixwidth = true
 
-        vim.cmd('belowright 16split')
-        require('aerial').open_in_win(vim.api.nvim_get_current_win(), editor_window)
-        vim.api.nvim_win_set_height(0, 16)
-        vim.wo.winfixheight = true
-        vim.wo.winfixwidth = true
-
-        vim.api.nvim_set_current_win(editor_window)
-        vim.cmd('botright vertical ' .. dimensions.codex .. 'split')
-        vim.cmd.terminal('codex')
-        layout_windows.codex = vim.api.nvim_get_current_win()
-        vim.bo.buflisted = false
-        vim.wo.number = false
-        vim.wo.signcolumn = 'no'
-        vim.wo.winbar = '%= Codex %='
-        vim.wo.winhighlight = 'Normal:CodexNormal,NormalNC:CodexNormal,EndOfBuffer:CodexEndOfBuffer'
-        vim.wo.winfixwidth = true
+        vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
+        layout_windows.aerial = vim.api.nvim_get_current_win()
+        require('aerial').open_in_win(layout_windows.aerial, editor_window)
+        vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
+        vim.wo[layout_windows.aerial].winfixheight = true
+        vim.wo[layout_windows.aerial].winfixwidth = true
 
         vim.api.nvim_set_current_win(editor_window)
     end,
@@ -364,6 +418,39 @@ vim.keymap.set('i', '<Tab>', 'copilot#Accept(pumvisible() ? "\\<C-y>" : "\\<Tab>
     silent = true,
 })
 
+local function toggle_terminal_panel(name, title, command)
+    local dimensions = layout_dimensions()
+
+    if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
+        vim.api.nvim_win_close(layout_windows[name], true)
+        layout_windows[name] = nil
+        return
+    end
+
+    layout_windows[name] = open_editor_bottom_split(dimensions[name].height)
+
+    if buffers[name] and vim.api.nvim_buf_is_valid(buffers[name]) then
+        vim.api.nvim_win_set_buf(layout_windows[name], buffers[name])
+    else
+        if command then
+            vim.cmd.terminal(command)
+        else
+            vim.cmd.terminal()
+        end
+        buffers[name] = vim.api.nvim_get_current_buf()
+    end
+
+    configure_terminal_panel(title)
+end
+
+local function toggle_codex()
+    toggle_terminal_panel('codex', 'Codex', 'codex')
+end
+
+local function toggle_terminal()
+    toggle_terminal_panel('terminal', 'Terminal')
+end
+
 -- Keymaps
 local fzf = require('fzf-lua')
 
@@ -394,8 +481,10 @@ vim.keymap.set('n', '<Leader>/', function() fzf.lgrep_curbuf({ winopts = { title
 vim.keymap.set('n', '<Leader>?', function() fzf.keymaps({ previewer = false, winopts = { height = 0.50, title = 'Keymaps' } }) end, { desc = 'Keymaps' })
 vim.keymap.set('n', '<Leader>a', function() fzf.builtin({ previewer = false, winopts = { height = 0.50, title = 'Pickers' } }) end, { desc = 'All pickers' })
 vim.keymap.set('n', '<Leader>b', function() require('gitsigns').blame() end, { desc = 'Blame' })
+vim.keymap.set('n', '<Leader>c', toggle_codex, { desc = 'Toggle Codex' })
 vim.keymap.set('n', '<Leader>d', function() require('gitsigns').diffthis() end, { desc = 'Git diff' })
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
-vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ height = 16, open_cmd_mods = { split = 'belowright' } }) end, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })
