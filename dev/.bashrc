@@ -18,6 +18,16 @@ export TERM=xterm-ghostty
 [ "$(git config --global --get user.name 2>/dev/null || true)" = "$GIT_USER_NAME" ] || git config --global user.name "$GIT_USER_NAME"
 [ "$(git config --global --get user.email 2>/dev/null || true)" = "$GIT_USER_EMAIL" ] || git config --global user.email "$GIT_USER_EMAIL"
 
+# Prompt
+ps1_debian_red='\[\033[38;2;206;0;86m\]'
+ps1_path_blue='\[\033[38;2;125;207;255m\]'
+ps1_arrow_yellow='\[\033[38;2;224;175;104m\]'
+ps1_reset_attr='\[\033[0m\]'
+ps1_debian_icon=$'\uF306'
+ps1_arrow_icon=$'\u276F'
+
+PS1="${ps1_debian_red}${ps1_debian_icon}${ps1_reset_attr} ${ps1_path_blue}\\w${ps1_reset_attr} ${ps1_arrow_yellow}${ps1_arrow_icon}${ps1_reset_attr} "
+
 # Shell Options
 shopt -s histappend
 shopt -s extglob
