@@ -221,6 +221,7 @@ local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
     local filename = MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r'
+    local location = MiniStatusline.section_location({ trunc_width = statusline_trunc_width })
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
 
     return MiniStatusline.combine_groups({
@@ -230,7 +231,7 @@ local function statusline()
         '%<',
         '%=',
         { hl = 'MiniStatuslineModeVisual', strings = { diagnostics } },
-        { hl = 'MiniStatuslineFileinfo', strings = { fileinfo, statusline_indent() } },
+        { hl = 'MiniStatuslineFileinfo', strings = { location, fileinfo, statusline_indent() } },
     })
 end
 
@@ -457,6 +458,7 @@ vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window
 vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
 vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
+vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash jump' })
 vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() require('flash').treesitter() end, { desc = 'Flash treesitter' })
 vim.keymap.set('o', 'r', function() require('flash').remote() end, { desc = 'Remote Flash' })
@@ -475,6 +477,7 @@ vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', '|', function() MiniBufremove.delete() end, { desc = 'Close buffer' })
 vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 vim.keymap.set('n', '<Leader><Leader>', function() fzf.live_grep() end, { desc = 'Live grep' })
+vim.keymap.set('x', '<Leader><Leader>', function() fzf.grep_visual({ winopts = { title = 'Selection Search' } }) end, { desc = 'Search selection' })
 vim.keymap.set('n', '<Leader>.', function() fzf.resume() end, { desc = 'Resume last picker' })
 vim.keymap.set('n', '<Leader>/', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('n', '<Leader>?', function() fzf.keymaps({ previewer = false, winopts = { height = 0.50, title = 'Keymaps' } }) end, { desc = 'Keymaps' })

@@ -257,8 +257,7 @@ Custom queries:
 
 - Tokyonight Night colorscheme with no broad color overrides.
 - `mini.statusline` custom global statusline with `laststatus = 3`.
-- Detailed statusline info toggle is pending; `<Leader>oi` should control the
-  right-side diagnostics and cursor/location section.
+- Statusline always shows Mini location information.
 - `mini.tabline` replaces Bufferline with default settings.
 - `mini.icons` provides icons and mocks `nvim-web-devicons` for `nvim-tree`.
 - `mini.pairs`.
@@ -316,8 +315,9 @@ Autosave is source-only and should not be imported.
 - insert `<Tab>`: accept full Copilot suggestion if visible, else `<C-y>` if popup
   completion is visible, else normal Tab.
 - fzf `<C-q>`: send all current matches to quickfix.
-- terminal `<Esc>`: leave terminal mode.
+- visual `<D-c>`: copy selection to system clipboard.
 - `<Leader><Leader>`: live grep.
+- visual `<Leader><Leader>`: search selection.
 - `<Leader>.`: resume last fzf picker.
 - `<Leader>/`: grep current buffer.
 - `<Leader>?`: keymaps.
@@ -334,15 +334,6 @@ Autosave is source-only and should not be imported.
 - `<Leader>q`: toggle quickfix.
 - `]q`: next quickfix entry.
 - `[q`: previous quickfix entry.
-- `<Leader>oc`: toggle cursorline.
-- `<Leader>of`: toggle folding.
-- `<Leader>oh`: toggle search highlight.
-- `<Leader>oi`: toggle detailed statusline info.
-- `<Leader>ol`: toggle list chars.
-- `<Leader>on`: toggle line numbers.
-- `<Leader>or`: toggle relative numbers.
-- `<Leader>os`: toggle spell check.
-- `<Leader>ow`: toggle word wrap.
 
 ## External Dependencies
 
@@ -605,8 +596,7 @@ changes separate from Neovim Lua behavior.
     - Add terminal auto-insert behavior for all terminal buffers.
     - Do not import terminal-specific statusline behavior because
       `laststatus = 3` uses one global statusline.
-    - Defer terminal `<Esc>`, terminal `<CR>`, and focus-editor behavior to
-      the keymap step.
+    - Do not add terminal `<Esc>`, terminal `<CR>`, or focus-editor mappings.
     - Shell and Codex terminal panels are handled by the responsive layout and
       keymap steps.
 
@@ -687,23 +677,13 @@ changes separate from Neovim Lua behavior.
     - Completed Flash mappings with `s`, `S`, and operator-pending `r`.
     - Omitted Flash treesitter-search `R` mapping.
     - Do not add file explorer or Aerial focus mappings; use `Ctrl-w`.
-    - Pending UI toggle mappings:
-      - `<Leader>oc`: cursorline.
-      - `<Leader>of`: folding.
-      - `<Leader>oh`: search highlight.
-      - `<Leader>oi`: detailed statusline info.
-      - `<Leader>ol`: list chars.
-      - `<Leader>on`: line numbers.
-      - `<Leader>or`: relative line numbers.
-      - `<Leader>os`: spell check.
-      - `<Leader>ow`: word wrap.
-    - `<Leader>oi` should toggle a statusline detail flag. When enabled, show
-      diagnostics plus `Ln:%04l/%04L Col:%03c %03p%%`; when disabled, hide that
-      right-side detail section.
+    - Do not add UI option toggle mappings.
+    - Do not add `<Leader>oi`; always show Mini statusline location instead.
     - Do not add `<Leader>od`; diagnostics are already managed by normal/insert
       mode behavior.
-    - Defer formatting, terminal `<Esc>`, terminal `<CR>`, and remaining Git
-      mappings.
+    - Defer formatting.
+    - Do not add terminal `<Esc>` or terminal `<CR>` mappings.
+    - No remaining Git mappings are needed.
     - Do not add Gitsigns hunk mappings.
 
 21. Optional workflow code.
