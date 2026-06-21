@@ -6,7 +6,7 @@ alias ls='ls -aF --color=auto'
 # Environment
 export CGO_ENABLED=0
 export COLORTERM=truecolor
-export EDITOR=vim
+export EDITOR=nvim
 export IS_SANDBOX=1
 export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"
 export LANG=C.UTF-8

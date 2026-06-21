@@ -4,11 +4,9 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
-vim.o.fileformats = 'unix,dos'
 vim.o.fillchars = 'eob: '
 vim.o.foldenable = false
 vim.o.formatoptions = 'qjl1'
@@ -41,7 +39,7 @@ vim.o.virtualedit = 'block'
 vim.o.wrap = false
 vim.o.writebackup = false
 
-vim.opt.shortmess:append('IscWaoOtTF')
+vim.opt.shortmess:append('IscWa')
 
 vim.api.nvim_create_autocmd('BufReadPost', {
     pattern = {

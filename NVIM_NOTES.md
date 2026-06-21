@@ -32,7 +32,7 @@ Docker image and moves toward a Neovim-first shell workflow.
 - Keep `vscode-langservers-extracted`; it is Neovim LSP tooling, not VS Code
   web/editor.
 - Docker installs `@openai/codex@0.141.0`.
-- Keep `EDITOR=vim` for now.
+- Use `EDITOR=nvim`.
 - Neovim socket support is deferred; when added, use a stable Unix socket
   outside the repo, for example `/tmp/nvim-${UID}/socket`.
 - Do not put `nvim --listen ...` directly in `$EDITOR`.
@@ -426,7 +426,7 @@ changes separate from Neovim Lua behavior.
    - Keep runtime shell setup in `dev/.bashrc`.
 
 3. Shell aliases and defaults.
-   - Keep `EDITOR=vim` for now.
+   - Use `EDITOR=nvim`.
    - Add color aliases for `ls` and `grep` in `dev/.bashrc`.
    - Keep `cat` and `MANPAGER` backed by `bat`.
    - Defer `NVIM_SOCKET` and the interactive `nvim --listen` wrapper until
@@ -702,6 +702,11 @@ changes separate from Neovim Lua behavior.
       against current defaults.
     - Remove redundant default settings when deleting them does not change the
       intended behavior.
+    - Core option audit completed:
+      - Removed redundant Unix default `fileformats`.
+      - Removed `breakindent` because wrapping is disabled.
+      - Simplified `shortmess` to append only non-default flags.
+      - Kept `ruler = false` as an intentional quiet-UI setting.
 
 ## References
 
