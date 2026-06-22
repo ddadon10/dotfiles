@@ -1,3 +1,5 @@
+local quick_edit = vim.env.NVIM_QUICK_EDIT == '1'
+
 vim.g.copilot_no_tab_map = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -225,26 +227,6 @@ end
 
 require('mini.statusline').setup({ content = { active = statusline, inactive = statusline } })
 
--- Tabline
-require('mini.tabline').setup()
-
--- Aerial
-require('aerial').setup({
-    attach_mode = 'global',
-    disable_max_lines = 1000000,
-    highlight_on_hover = true,
-    layout = { resize_to_content = false, win_opts = { winbar = '%= Symbols %=' } },
-    show_guides = true,
-})
-
--- NvimTree
-require('nvim-tree').setup({
-    filters = { git_ignored = false },
-    prefer_startup_root = true,
-    update_focused_file = { enable = true, update_root = { enable = true } },
-    view = { side = 'left', width = function() return layout_dimensions().explorer.width end },
-})
-
 -- Terminal
 local terminal_group = vim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
 
@@ -266,32 +248,55 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
-vim.api.nvim_create_autocmd('VimEnter', {
-    group = layout_group,
-    callback = function()
-        if #vim.api.nvim_list_uis() == 0 then return end
+-- Full layout
+if not quick_edit then
+    -- Tabline
+    require('mini.tabline').setup()
 
-        local editor_window = vim.api.nvim_get_current_win()
-        local dimensions = layout_dimensions()
+    -- Aerial
+    require('aerial').setup({
+        attach_mode = 'global',
+        disable_max_lines = 1000000,
+        highlight_on_hover = true,
+        layout = { resize_to_content = false, win_opts = { winbar = '%= Symbols %=' } },
+        show_guides = true,
+    })
 
-        layout_windows.editor = editor_window
+    -- NvimTree
+    require('nvim-tree').setup({
+        filters = { git_ignored = false },
+        prefer_startup_root = true,
+        update_focused_file = { enable = true, update_root = { enable = true } },
+        view = { side = 'left', width = function() return layout_dimensions().explorer.width end },
+    })
 
-        require('nvim-tree.api').tree.open()
-        layout_windows.explorer = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
-        vim.wo.winbar = '%= Explorer %='
-        vim.wo.winfixwidth = true
+    vim.api.nvim_create_autocmd('VimEnter', {
+        group = layout_group,
+        callback = function()
+            if #vim.api.nvim_list_uis() == 0 then return end
 
-        vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
-        layout_windows.aerial = vim.api.nvim_get_current_win()
-        require('aerial').open_in_win(layout_windows.aerial, editor_window)
-        vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
-        vim.wo[layout_windows.aerial].winfixheight = true
-        vim.wo[layout_windows.aerial].winfixwidth = true
+            local editor_window = vim.api.nvim_get_current_win()
+            local dimensions = layout_dimensions()
 
-        vim.api.nvim_set_current_win(editor_window)
-    end,
-})
+            layout_windows.editor = editor_window
+
+            require('nvim-tree.api').tree.open()
+            layout_windows.explorer = vim.api.nvim_get_current_win()
+            vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
+            vim.wo.winbar = '%= Explorer %='
+            vim.wo.winfixwidth = true
+
+            vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
+            layout_windows.aerial = vim.api.nvim_get_current_win()
+            require('aerial').open_in_win(layout_windows.aerial, editor_window)
+            vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
+            vim.wo[layout_windows.aerial].winfixheight = true
+            vim.wo[layout_windows.aerial].winfixwidth = true
+
+            vim.api.nvim_set_current_win(editor_window)
+        end,
+    })
+end
 
 vim.api.nvim_create_autocmd('VimResized', {
     group = layout_group,

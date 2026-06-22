@@ -1,8 +1,9 @@
 FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH="/root/.nvm/versions/node/v24.15.0/bin:/root/go/bin:${PATH}"
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=24.15.0
+ARG PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \
@@ -66,7 +67,7 @@ RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 RUN <<EOF
     curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
     . /root/.nvm/nvm.sh
-    nvm install 24.15.0
+    nvm install ${NODE_VERSION}
     node -v
     npm -v
 EOF
@@ -132,12 +133,21 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
+RUN echo 'export PATH="$HOME/go/bin:$PATH"' > /etc/profile.d/go_bin_path.sh
 
 RUN npm install -g @openai/codex@0.141.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
 RUN nvim --headless "+qa"
+
+COPY <<EOF /usr/local/bin/nvim-editor
+#!/usr/bin/env bash
+set -euo pipefail
+NVIM_QUICK_EDIT=1 exec nvim "\$@"
+EOF
+
+RUN chmod +x /usr/local/bin/nvim-editor
 
 RUN mkdir -p /root/.config/lazygit
 COPY <<EOF /root/.config/lazygit/config.yml
