@@ -410,6 +410,21 @@ if has('ide')
     set quickscope
     set surround
 
+    " Navigation & Jumps
+    map <D-o> <C-o>
+    map <D-i> <C-i>
+    map <D-d> <C-d>
+    map <D-u> <C-u>
+    map <D-f> <C-f>
+    map <D-b> <C-b>
+    map <D-e> <C-e>
+    map <D-y> <C-y>
+
+    " Editing
+    map <D-r> <C-r>
+    map <D-n> <C-n>
+    map <D-p> <C-p>
+
     " Quickscope
     let g:qs_primary_color = '#26F0F1'
     let g:qs_secondary_color = '#F00699'
