@@ -278,24 +278,21 @@ if not quick_edit then
         filters = { git_ignored = false },
         prefer_startup_root = true,
         update_focused_file = { enable = true, update_root = { enable = true } },
-        view = { side = 'left', width = function() return layout_dimensions().explorer.width end },
+        view = { side = 'left' },
     })
 
-    vim.api.nvim_create_autocmd('VimEnter', {
-        group = layout_group,
-        callback = function()
+    local function open_full_layout()
             if #vim.api.nvim_list_uis() == 0 then return end
 
             local editor_window = vim.api.nvim_get_current_win()
             local dimensions = layout_dimensions()
-
             layout_windows.editor = editor_window
 
             require('nvim-tree.api').tree.open()
             layout_windows.explorer = vim.api.nvim_get_current_win()
             vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
-            vim.wo.winbar = '%= Explorer %='
-            vim.wo.winfixwidth = true
+            vim.wo[layout_windows.explorer].winbar = '%= Explorer %='
+            vim.wo[layout_windows.explorer].winfixwidth = true
 
             vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
             layout_windows.aerial = vim.api.nvim_get_current_win()
@@ -303,9 +300,14 @@ if not quick_edit then
             vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
             vim.wo[layout_windows.aerial].winfixheight = true
             vim.wo[layout_windows.aerial].winfixwidth = true
+            vim.w[layout_windows.aerial].aerial_set_width = true -- Prevent Aerial's deferred render from resizing the shared vertical split
 
             vim.api.nvim_set_current_win(editor_window)
-        end,
+    end
+
+    vim.api.nvim_create_autocmd('VimEnter', {
+        group = layout_group,
+        callback = open_full_layout,
     })
 end
 
