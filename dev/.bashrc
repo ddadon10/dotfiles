@@ -5,6 +5,9 @@ alias ls='ls -aF --color=auto'
 
 # Environment
 export CGO_ENABLED=0
+export BAT_THEME=auto
+export BAT_THEME_DARK=gruvbox-dark
+export BAT_THEME_LIGHT=gruvbox-light
 export COLORTERM=truecolor
 export EDITOR=/usr/local/bin/nvim-editor
 export IS_SANDBOX=1
@@ -12,6 +15,7 @@ export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"
 export LANG=C.UTF-8
 export MANPAGER="bat --plain --language man"
 export NODE_ENV=production
+export SHELL=/bin/bash
 export TERM=xterm-ghostty
 
 # Git
@@ -43,9 +47,6 @@ pbcopy() {
   b64=$(base64 | tr -d '\n')
   printf '\033]52;c;%s\a' "$b64" >/dev/tty
 }
-
-# Path
-source /root/.nvm/nvm.sh
 
 # Bash Completion
 source /usr/share/bash-completion/bash_completion

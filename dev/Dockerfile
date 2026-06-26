@@ -2,8 +2,7 @@ FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=24.15.0
-ARG PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:/root/go/bin:${PATH}"
+ARG PATH="/root/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \
@@ -34,6 +33,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     ncdu \
     ncurses-term \
     neovim \
+    nodejs \
+    npm \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -63,14 +64,6 @@ EOF
 
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
-
-RUN <<EOF
-    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-    . /root/.nvm/nvm.sh
-    nvm install ${NODE_VERSION}
-    node -v
-    npm -v
-EOF
 
 RUN npm install -g typescript
 
@@ -160,7 +153,7 @@ git:
   autoForwardBranches: none
   fetchAll: false
   pagers:
-    - pager: delta --dark --paging=never
+    - pager: delta --dark --syntax-theme=gruvbox-dark --paging=never
 
 update:
   method: never

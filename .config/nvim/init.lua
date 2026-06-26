@@ -1,11 +1,13 @@
 local quick_edit = vim.env.NVIM_QUICK_EDIT == '1'
 
+vim.g.copilot_enabled = 0
 vim.g.copilot_no_tab_map = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.o.background = 'dark'
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
@@ -45,8 +47,8 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 
 vim.pack.add({
+    'https://github.com/ellisonleao/gruvbox.nvim',
     'https://github.com/folke/flash.nvim',
-    'https://github.com/folke/tokyonight.nvim',
     'https://github.com/github/copilot.vim',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
@@ -61,10 +63,10 @@ vim.pack.add({
 })
 
 -- Colorscheme
-require('tokyonight').setup({ style = 'night' })
-vim.cmd.colorscheme('tokyonight')
-vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d1e1d', fg = '#ffffff' })
-vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d1e1d', fg = '#1d1e1d' })
+require('gruvbox').setup()
+vim.cmd.colorscheme('gruvbox')
+vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d2021', fg = '#ebdbb2' })
+vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d2021', fg = '#1d2021' })
 
 -- Icons
 require('mini.icons').setup()
@@ -207,6 +209,15 @@ local function statusline_indent()
     return string.format('tabs:%d', vim.bo.tabstop)
 end
 
+
+local function statusline_copilot()
+    if vim.g.copilot_enabled == 1 then
+        return vim.fn.nr2char(0xf06a9) -- nf-md-robot
+    else
+        return vim.fn.nr2char(0xf16a7) -- nf-md-robot_off
+    end
+end
+
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
@@ -221,7 +232,7 @@ local function statusline()
         '%<',
         '%=',
         { hl = 'MiniStatuslineModeVisual', strings = { diagnostics } },
-        { hl = 'MiniStatuslineFileinfo', strings = { location, fileinfo, statusline_indent() } },
+        { hl = 'MiniStatuslineFileinfo', strings = { statusline_copilot(), location, fileinfo, statusline_indent() } },
     })
 end
 
@@ -411,6 +422,15 @@ vim.keymap.set('i', '<Tab>', 'copilot#Accept(pumvisible() ? "\\<C-y>" : "\\<Tab>
     silent = true,
 })
 
+local function toggle_copilot()
+    if vim.g.copilot_enabled == 1 then
+        vim.cmd('silent Copilot disable')
+    else
+        vim.cmd('silent Copilot enable')
+    end
+    vim.cmd.redrawstatus()
+end
+
 local function toggle_terminal_panel(name, title, command)
     local dimensions = layout_dimensions()
 
@@ -451,6 +471,7 @@ vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window
 vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
 vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
+vim.keymap.set({ 'n', 'i' }, '<F1>', toggle_copilot, { desc = 'Toggle Copilot' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash jump' })
 vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() require('flash').treesitter() end, { desc = 'Flash treesitter' })
@@ -469,8 +490,7 @@ vim.keymap.set('n', ']q', '<cmd>cnext<cr>', { desc = 'Next quickfix item' })
 vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', '|', function() MiniBufremove.delete() end, { desc = 'Close buffer' })
 vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-vim.keymap.set('n', '<Leader><Leader>', function() fzf.live_grep() end, { desc = 'Live grep' })
-vim.keymap.set('x', '<Leader><Leader>', function() fzf.grep_visual({ winopts = { title = 'Selection Search' } }) end, { desc = 'Search selection' })
+vim.keymap.set('n', '<Leader><Leader>', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('n', '<Leader>.', function() fzf.resume() end, { desc = 'Resume last picker' })
 vim.keymap.set('n', '<Leader>/', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('n', '<Leader>?', function() fzf.keymaps({ previewer = false, winopts = { height = 0.50, title = 'Keymaps' } }) end, { desc = 'Keymaps' })
@@ -478,6 +498,8 @@ vim.keymap.set('n', '<Leader>a', function() fzf.builtin({ previewer = false, win
 vim.keymap.set('n', '<Leader>b', function() require('gitsigns').blame() end, { desc = 'Blame' })
 vim.keymap.set('n', '<Leader>c', toggle_codex, { desc = 'Toggle Codex' })
 vim.keymap.set('n', '<Leader>d', function() require('gitsigns').diffthis() end, { desc = 'Git diff' })
+vim.keymap.set('n', '<Leader>g', function() fzf.live_grep({ winopts = { title = 'Global Grep' } }) end, { desc = 'Global grep' })
+vim.keymap.set('x', '<Leader>g', function() fzf.grep_visual({ winopts = { title = 'Selection Search' } }) end, { desc = 'Global grep on selection' })
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
