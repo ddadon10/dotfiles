@@ -1,8 +1,12 @@
+# check=error=true
+
 FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG PATH="/root/go/bin:${PATH}"
+
+ENV LANG=C.UTF-8
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \

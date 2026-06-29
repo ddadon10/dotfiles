@@ -24,8 +24,8 @@ export TERM=xterm-ghostty
 
 # PS1
 ps1_debian_red='\[\033[38;2;206;0;86m\]'
-ps1_path_blue='\[\033[38;2;125;207;255m\]'
-ps1_arrow_yellow='\[\033[38;2;224;175;104m\]'
+ps1_path_blue='\[\033[38;2;69;133;136m\]'
+ps1_arrow_yellow='\[\033[38;2;215;153;33m\]'
 ps1_reset_attr='\[\033[0m\]'
 ps1_debian_icon=$'\uF306'
 ps1_arrow_icon=$'\u276F'
