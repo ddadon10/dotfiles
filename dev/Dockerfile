@@ -132,7 +132,7 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
 RUN echo 'export PATH="$HOME/go/bin:$PATH"' > /etc/profile.d/go_bin_path.sh
 
-RUN npm install -g @openai/codex@0.141.0
+RUN npm install -g @openai/codex@0.142.4
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
@@ -157,7 +157,7 @@ git:
   autoForwardBranches: none
   fetchAll: false
   pagers:
-    - pager: delta --dark --syntax-theme=gruvbox-dark --paging=never
+    - pager: delta --paging=never
 
 update:
   method: never

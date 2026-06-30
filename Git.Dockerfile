@@ -9,6 +9,7 @@ ENV SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
 ENV LANG=C.UTF-8
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
+    bash-completion \
     ca-certificates \
     git \
     openssh-client \
@@ -37,6 +38,9 @@ ps1_git_icon=$'\ue702'
 ps1_arrow_icon=$'\u276F'
 
 PS1="${ps1_git_orange}${ps1_git_icon}${ps1_reset_attr} ${ps1_path_blue}\\w${ps1_reset_attr} ${ps1_arrow_yellow}${ps1_arrow_icon}${ps1_reset_attr} "
+
+# Bash Completion
+source /usr/share/bash-completion/bash_completion
 EOF
 
 CMD ["/bin/bash"]

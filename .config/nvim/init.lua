@@ -7,7 +7,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.o.background = 'dark'
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
