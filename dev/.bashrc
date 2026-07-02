@@ -15,6 +15,7 @@ export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"
 export LANG=C.UTF-8
 export MANPAGER="bat --plain --language man"
 export NODE_ENV=production
+export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
 export SHELL=/bin/bash
 export TERM=xterm-ghostty
 
@@ -40,6 +41,10 @@ shopt -s extglob
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTCONTROL=ignoreboth:erasedups
+
+# Terminal Title
+trap 'printf "\033]2;%s\033\\\\" "❯ ${BASH_COMMAND} - ${PWD}" >/dev/tty' DEBUG
+PROMPT_COMMAND='printf "\033]2;%s\033\\\\" "❯ ${PWD}" >/dev/tty'
 
 # Clipboard (OSC-52)
 pbcopy() {

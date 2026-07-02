@@ -129,9 +129,6 @@ RUN go install github.com/sosedoff/pgweb@latest
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
-RUN echo 'export PATH="$HOME/go/bin:$PATH"' > /etc/profile.d/go_bin_path.sh
-
 RUN npm install -g @openai/codex@0.142.4
 
 COPY .vimrc /root/.vimrc
@@ -167,8 +164,7 @@ notARepository: quit
 EOF
 
 COPY dev/.bashrc /root/.bashrc
-RUN echo 'source /root/.bashrc' > /root/.bash_profile
 
 COPY AGENTS.md /root/AGENTS.md
 
-CMD ["/bin/bash", "--login"]
+CMD ["/bin/bash"]

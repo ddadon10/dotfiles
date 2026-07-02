@@ -39,6 +39,10 @@ ps1_arrow_icon=$'\u276F'
 
 PS1="${ps1_git_orange}${ps1_git_icon}${ps1_reset_attr} ${ps1_path_blue}\\w${ps1_reset_attr} ${ps1_arrow_yellow}${ps1_arrow_icon}${ps1_reset_attr} "
 
+# Terminal Title
+trap 'printf "\033]2;%s\033\\\\" "$BASH_COMMAND - $PWD" >/dev/tty' DEBUG
+PROMPT_COMMAND='printf "\033]2;%s\033\\\\" "$PWD" >/dev/tty'
+
 # Bash Completion
 source /usr/share/bash-completion/bash_completion
 EOF
