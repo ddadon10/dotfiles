@@ -3,6 +3,7 @@ alias rm='rm -i'
 alias ls='ls -aF'
 
 
+# Load git-related ssh keys into the default ssh agent
 if ! ssh-add -l >/dev/null 2>&1; then
   ssh-add --apple-use-keychain "${HOME}/.ssh/github_ed25519" "${HOME}/.ssh/azure_rsa"
 fi
@@ -10,6 +11,10 @@ fi
 # Dev Env
 d() {
   local dev_web_port
+  local dir_name
+  dir_name="$(basename ${PWD})"
+  printf '\033]2;%s\033\\' "❯ ${dir_name}"
+
   while :; do
     dev_web_port=$((RANDOM % 16384 + 49152))
     lsof -nP -iTCP:"$dev_web_port" -sTCP:LISTEN >/dev/null 2>&1 || break
@@ -35,6 +40,10 @@ d() {
 
 # Git Client
 g() {
+  local dir_name
+  dir_name="$(basename ${PWD})"
+  printf '\033]2;%s\033\\' "⇅ ${dir_name}"
+
   docker run \
     --rm \
     --interactive \
