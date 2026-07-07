@@ -6,13 +6,13 @@ autoload -Uz bashcompinit && bashcompinit
 alias rm='rm -i'
 alias ls='ls -aF'
 
+# Load git-related ssh keys into the default ssh agent
+if ! ssh-add -l >/dev/null 2>&1; then
+  ssh-add --apple-use-keychain "${HOME}/.ssh/github_ed25519" "${HOME}/.ssh/azure_rsa"
+fi
+
 # Git
-git() { echo "Calling git directly is disabled to avoid running hooks on the host. Use gclone, gfetch, glsremote, gpull, or gpush." >&2; return 1; }
-gclone() { /usr/bin/git clone "$@"; }
-gfetch() { /usr/bin/git fetch "$@"; }
-glsremote() { /usr/bin/git ls-remote "$@"; }
-gpull() { /usr/bin/git pull --no-verify "$@"; }
-gpush() { /usr/bin/git push --no-verify "$@"; }
+git() { echo "Git is disabled on the host. Use ggit to run git in a container" >&2; return 1; }
 
 # Dev Env
 dev() {
@@ -37,6 +37,18 @@ dev() {
     --mount "type=bind,src=${HOME}/.config/github-copilot,dst=/root/.config/github-copilot" \
     --workdir /workspace \
     "${DEV_NAME:-ddadon/dev}"
+}
+
+# Git Client
+ggit() {
+  docker run \
+    --rm \
+    --interactive \
+    --tty \
+    --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
+    --mount "type=bind,src=${PWD},dst=/workspace" \
+    --workdir /workspace \
+    "${GITCLIENT_NAME:-ddadon/gitclient}"
 }
 
 # Shell customization
