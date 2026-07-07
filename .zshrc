@@ -48,7 +48,7 @@ g() {
     --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
-    "${GITCLIENT_NAME:-ddadon/gitclient}"
+    "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
 
 # Shell customization
