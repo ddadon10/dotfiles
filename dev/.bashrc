@@ -43,8 +43,8 @@ HISTFILESIZE=20000
 HISTCONTROL=ignoreboth:erasedups
 
 # Terminal Title
-trap 'printf "\033]2;%s\033\\\\" "❯ ${BASH_COMMAND} - ${PWD}" >/dev/tty' DEBUG
-PROMPT_COMMAND='printf "\033]2;%s\033\\\\" "❯ ${PWD}" >/dev/tty'
+trap 'printf "\033]2;%s\033\\\\" "❯ ${BASH_COMMAND} - ${PWD}"' DEBUG
+PROMPT_COMMAND='printf "\033]2;%s\033\\\\" "❯ ${PWD}"'
 
 # Clipboard (OSC-52)
 pbcopy() {
