@@ -1,6 +1,17 @@
+# Autocomplete
+autoload -Uz compinit && compinit
+autoload -Uz bashcompinit && bashcompinit
+
 # Aliases
 alias rm='rm -i'
 alias ls='ls -aF'
+
+# Git
+git() { echo "Calling git directly is disabled to avoid running hooks on the host. Use gclone, gfetch, glsremote, or gpush." >&2; return 1; }
+gclone() { /usr/bin/git clone "$@"; }
+gfetch() { /usr/bin/git fetch "$@"; }
+glsremote() { /usr/bin/git ls-remote "$@"; }
+gpush() { /usr/bin/git push --no-verify "$@"; }
 
 # Dev Env
 dev() {
@@ -16,8 +27,8 @@ dev() {
     --rm \
     --interactive \
     --tty \
-    --env "GIT_USER_NAME=$(git config --global user.name)" \
-    --env "GIT_USER_EMAIL=$(git config --global user.email)" \
+    --env "GIT_USER_NAME=$(/usr/bin/git config --global user.name)" \
+    --env "GIT_USER_EMAIL=$(/usr/bin/git config --global user.email)" \
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
