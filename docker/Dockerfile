@@ -163,7 +163,7 @@ disableStartupPopups: true
 notARepository: quit
 EOF
 
-COPY dev/.bashrc /root/.bashrc
+COPY docker/.bashrc /root/.bashrc
 
 COPY AGENTS.md /root/AGENTS.md
 
