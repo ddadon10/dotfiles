@@ -12,7 +12,7 @@ if ! ssh-add -l >/dev/null 2>&1; then
 fi
 
 # Git
-git() { echo "Git is disabled on the host. Use ggit to run git in a container" >&2; return 1; }
+git() { echo "Git is disabled on the host. Use g to run git in a container" >&2; return 1; }
 
 # Dev Env
 dev() {
@@ -40,7 +40,7 @@ dev() {
 }
 
 # Git Client
-ggit() {
+g() {
   docker run \
     --rm \
     --interactive \
