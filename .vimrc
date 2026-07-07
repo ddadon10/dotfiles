@@ -331,7 +331,7 @@ endfunction
 " Vim and IdeaVim Configuration
 " ============================================================================
 set clipboard+=unnamed " https://vimhelp.org/options.txt.html#clipboard-unnamed
-set relativenumber " https://vimhelp.org/options.txt.html#%27relativenumber%27
+set norelativenumber " https://vimhelp.org/options.txt.html#%27relativenumber%27
 set number " https://vimhelp.org/options.txt.html#%27number%27
 set ignorecase " https://vimhelp.org/options.txt.html#%27ignorecase%27
 set incsearch " https://vimhelp.org/options.txt.html#%27incsearch%27
@@ -415,7 +415,6 @@ if has('ide')
     map <D-i> <C-i>
     map <D-d> <C-d>
     map <D-u> <C-u>
-    map <D-f> <C-f>
     map <D-b> <C-b>
     map <D-e> <C-e>
     map <D-y> <C-y>

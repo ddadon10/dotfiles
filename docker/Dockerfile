@@ -1,9 +1,12 @@
+# check=error=true
+
 FROM debian:sid
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=24.15.0
-ARG PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:/root/go/bin:${PATH}"
+ARG PATH="/root/go/bin:${PATH}"
+
+ENV LANG=C.UTF-8
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \
@@ -34,6 +37,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     ncdu \
     ncurses-term \
     neovim \
+    nodejs \
+    npm \
     openjdk-21-jdk-headless \
     procps \
     postgresql \
@@ -63,14 +68,6 @@ EOF
 
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
-
-RUN <<EOF
-    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-    . /root/.nvm/nvm.sh
-    nvm install ${NODE_VERSION}
-    node -v
-    npm -v
-EOF
 
 RUN npm install -g typescript
 
@@ -132,10 +129,7 @@ RUN go install github.com/sosedoff/pgweb@latest
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local_bin_path.sh
-RUN echo 'export PATH="$HOME/go/bin:$PATH"' > /etc/profile.d/go_bin_path.sh
-
-RUN npm install -g @openai/codex@0.141.0
+RUN npm install -g @openai/codex@0.142.4
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
@@ -160,7 +154,7 @@ git:
   autoForwardBranches: none
   fetchAll: false
   pagers:
-    - pager: delta --dark --paging=never
+    - pager: delta --paging=never
 
 update:
   method: never
@@ -169,9 +163,8 @@ disableStartupPopups: true
 notARepository: quit
 EOF
 
-COPY dev/.bashrc /root/.bashrc
-RUN echo 'source /root/.bashrc' > /root/.bash_profile
+COPY docker/.bashrc /root/.bashrc
 
 COPY AGENTS.md /root/AGENTS.md
 
-CMD ["/bin/bash", "--login"]
+CMD ["/bin/bash"]
