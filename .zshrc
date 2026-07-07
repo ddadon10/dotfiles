@@ -7,10 +7,11 @@ alias rm='rm -i'
 alias ls='ls -aF'
 
 # Git
-git() { echo "Calling git directly is disabled to avoid running hooks on the host. Use gclone, gfetch, glsremote, or gpush." >&2; return 1; }
+git() { echo "Calling git directly is disabled to avoid running hooks on the host. Use gclone, gfetch, glsremote, gpull, or gpush." >&2; return 1; }
 gclone() { /usr/bin/git clone "$@"; }
 gfetch() { /usr/bin/git fetch "$@"; }
 glsremote() { /usr/bin/git ls-remote "$@"; }
+gpull() { /usr/bin/git pull --no-verify "$@"; }
 gpush() { /usr/bin/git push --no-verify "$@"; }
 
 # Dev Env
