@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /root/.ssh
-RUN ssh-keyscan github.com ssh.dev.azure.com >> /root/.ssh/known_hosts
+RUN ssh-keyscan github.com vs-ssh.visualstudio.com >> /root/.ssh/known_hosts
 
 ENTRYPOINT ["/usr/bin/git"]
 CMD ["--help"]
