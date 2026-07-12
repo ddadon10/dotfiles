@@ -129,7 +129,7 @@ RUN go install github.com/sosedoff/pgweb@latest
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN npm install -g @openai/codex@0.142.4
+RUN npm install -g @openai/codex@0.144.1
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
