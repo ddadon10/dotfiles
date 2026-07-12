@@ -1,5 +1,6 @@
 # Aliases
 alias cat='bat --plain --paging never'
+alias codexplorer='codex --model gpt-5.6-sol --config model_reasoning_effort=max'
 alias grep='grep --color=auto'
 alias ls='ls -aF --color=auto'
 

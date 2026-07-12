@@ -21,8 +21,6 @@ dev() {
     lsof -nP -iTCP:"$dev_web_port" -sTCP:LISTEN >/dev/null 2>&1 || break
   done
 
-  mkdir -p "${HOME}/.codex"
-
   docker run \
     --rm \
     --interactive \
@@ -32,7 +30,7 @@ dev() {
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
-    --mount "type=bind,src=${HOME}/.codex,dst=/root/.codex" \
+    --mount "type=volume,src=codex,dst=/root/.codex" \
     --workdir /workspace \
     "${DEV_NAME:-ddadon/dev}"
 }

@@ -164,6 +164,8 @@ notARepository: quit
 EOF
 
 COPY docker/.bashrc /root/.bashrc
+COPY .codex/config.toml /etc/codex/config.toml
+COPY .codex/skills/ /etc/codex/skills/
 
 COPY AGENTS.md /root/AGENTS.md
 
