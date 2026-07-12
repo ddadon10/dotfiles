@@ -22,7 +22,6 @@ dev() {
   done
 
   mkdir -p "${HOME}/.codex"
-  mkdir -p "${HOME}/.config/github-copilot"
 
   docker run \
     --rm \
@@ -34,7 +33,6 @@ dev() {
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=bind,src=${HOME}/.codex,dst=/root/.codex" \
-    --mount "type=bind,src=${HOME}/.config/github-copilot,dst=/root/.config/github-copilot" \
     --workdir /workspace \
     "${DEV_NAME:-ddadon/dev}"
 }
