@@ -30,7 +30,7 @@ dev() {
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
-    --mount "type=volume,src=codex,dst=/root/.codex" \
+    --mount "type=volume,src=dev-codex-home,dst=/root/.codex" \
     --workdir /workspace \
     "${DEV_NAME:-ddadon/dev}"
 }
