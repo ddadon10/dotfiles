@@ -4,7 +4,7 @@ developer_instructions = "You are running in a Docker container.You cannot run D
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 web_search = "live"
-plan_mode_reasoning_effort = "ultra"
+plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
 service_tier = "fast"
 
