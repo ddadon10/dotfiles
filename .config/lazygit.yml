@@ -4,9 +4,6 @@ gui:
   tabWidth: 2
   mouseEvents: false
   nerdFontsVersion: "3"
-  theme:
-    selectedLineBgColor:
-      - bold
 
 git:
   autoFetch: false
