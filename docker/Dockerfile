@@ -144,24 +144,7 @@ EOF
 RUN chmod +x /usr/local/bin/nvim-editor
 
 RUN mkdir -p /root/.config/lazygit
-COPY <<EOF /root/.config/lazygit/config.yml
-gui:
-  showCommandLog: false
-  showRandomTip: false
-
-git:
-  autoFetch: false
-  autoForwardBranches: none
-  fetchAll: false
-  pagers:
-    - pager: delta --paging=never
-
-update:
-  method: never
-
-disableStartupPopups: true
-notARepository: quit
-EOF
+COPY .config/lazygit.yml /root/.config/lazygit/config.yml
 
 COPY docker/.bashrc /root/.bashrc
 COPY .codex/config.toml /etc/codex/config.toml
