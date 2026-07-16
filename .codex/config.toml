@@ -19,5 +19,4 @@ show_tooltips = false
 notifications = true
 notification_method = "osc9"
 theme = "gruvbox-dark"
-vim_mode_default = true
 status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "total-input-tokens", "total-output-tokens", "fast-mode"]
