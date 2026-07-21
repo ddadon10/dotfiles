@@ -7,6 +7,12 @@ web_search = "live"
 plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
 service_tier = "fast"
+suppress_unstable_features_warning = true
+
+[features]
+runtime_metrics = true
+default_mode_request_user_input = true
+apply_patch_streaming_events = true
 
 [projects."/workspace"]
 trust_level = "trusted"
