@@ -5,6 +5,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
 vim.o.expandtab = true
@@ -13,22 +14,24 @@ vim.o.foldenable = false
 vim.o.guicursor = 'n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:block'
 vim.o.ignorecase = true
 vim.o.laststatus = 3
+vim.o.linebreak = true
 vim.o.mouse = 'a'
 vim.o.mousescroll = 'ver:1,hor:1'
 vim.o.number = true
 vim.o.pumheight = 10
+vim.o.relativenumber = true
 vim.o.ruler = false
 vim.o.shiftwidth = 4
 vim.o.showcmd = false
 vim.o.showmode = false
-vim.o.signcolumn = 'no'
+vim.o.signcolumn = 'yes:1'
 vim.o.smartcase = true
 vim.o.smartindent = true
 vim.o.splitbelow = true
 vim.o.splitkeep = 'screen'
 vim.o.splitright = true
 vim.o.tabstop = 4
-vim.o.wrap = false
+vim.o.wrap = true
 
 vim.opt.shortmess:append('IscWa')
 
@@ -43,9 +46,21 @@ vim.api.nvim_create_autocmd('BufReadPost', {
     command = 'setlocal readonly nomodifiable',
 })
 
+vim.api.nvim_create_autocmd('InsertEnter', {
+    group = vim.api.nvim_create_augroup('ClearSearchHighlight', { clear = true }),
+    callback = function()
+        vim.schedule(function()
+            vim.cmd('nohlsearch')
+            vim.cmd('echo')
+        end)
+    end,
+})
+
+vim.g.qs_buftype_blacklist = { 'nofile', 'prompt', 'terminal' }
+vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
+
 vim.pack.add({
     'https://github.com/ellisonleao/gruvbox.nvim',
-    'https://github.com/folke/flash.nvim',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
     'https://github.com/neovim/nvim-lspconfig',
@@ -54,12 +69,28 @@ vim.pack.add({
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/stevearc/aerial.nvim',
     'https://github.com/stevearc/quicker.nvim',
+    'https://github.com/unblevable/quick-scope',
 }, {
     confirm = false,
 })
 
 -- Colorscheme
-require('gruvbox').setup()
+local gruvbox = require('gruvbox')
+local palette = gruvbox.palette
+
+gruvbox.setup({
+    overrides = {
+        QuickScopePrimary = {
+            bold = true,
+            fg = palette.bright_blue,
+            underline = true,
+        },
+        QuickScopeSecondary = {
+            fg = palette.neutral_red,
+            underline = true,
+        },
+    },
+})
 vim.cmd.colorscheme('gruvbox')
 vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d2021', fg = '#ebdbb2' })
 vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d2021', fg = '#1d2021' })
@@ -73,9 +104,6 @@ MiniIcons.tweak_lsp_kind('replace')
 require('mini.bufremove').setup()
 require('mini.pairs').setup()
 
--- Navigation
-require('flash').setup()
-
 -- Layout
 local buffers = {}
 local layout_windows = {}
@@ -83,22 +111,22 @@ local layout_windows = {}
 local function layout_dimensions()
     local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
     if vim.o.columns >= desktop_width then
-        -- Desktop: 68 explorer + 1 separator + 154 editor.
+        -- Desktop: 66 explorer + 1 separator + 2 sign gutter + 154 editor.
         return {
             aerial = { height = 16 },
             codex = { height = 16 },
-            explorer = { width = 68 },
+            explorer = { width = 66 },
             quickfix = { height = 16 },
             terminal = { height = 16 },
         }
     end
 
     -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
-    -- MacBook: 40 explorer + 1 separator + 134 editor.
+    -- MacBook: 38 explorer + 1 separator + 2 sign gutter + 134 editor.
     return {
         aerial = { height = 16 },
         codex = { height = 16 },
-        explorer = { width = 40 },
+        explorer = { width = 38 },
         quickfix = { height = 16 },
         terminal = { height = 16 },
     }
@@ -140,10 +168,12 @@ local function configure_terminal_panel(title)
     vim.bo.bufhidden = 'hide'
     vim.bo.buflisted = false
     vim.wo.number = false
+    vim.wo.relativenumber = false
     vim.wo.signcolumn = 'no'
     vim.wo.winbar = '%= ' .. title .. ' %='
     vim.wo.winhighlight = 'Normal:TerminalNormal,NormalNC:TerminalNormal,EndOfBuffer:TerminalEndOfBuffer'
     vim.wo.winfixheight = true
+    vim.wo.wrap = false
 end
 
 local function toggle_quickfix()
@@ -191,7 +221,7 @@ require('fzf-lua').setup({
 })
 
 -- Git
-require('gitsigns').setup({ numhl = true, signcolumn = false })
+require('gitsigns').setup({ numhl = false, signcolumn = true })
 
 -- Statusline
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
@@ -404,6 +434,14 @@ vim.lsp.enable({
 -- Completion
 require('mini.completion').setup({ delay = { completion = 250, info = 0, signature = 0 } })
 
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('ConfigCompletion', { clear = true }),
+    pattern = 'markdown',
+    callback = function(args)
+        vim.b[args.buf].minicompletion_disable = true
+    end,
+})
+
 local function toggle_terminal_panel(name, title, command)
     local dimensions = layout_dimensions()
 
@@ -441,16 +479,13 @@ end
 local fzf = require('fzf-lua')
 
 vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
-vim.keymap.set('n', 'f', '/', { desc = 'Search forward' })
-vim.keymap.set('n', 'F', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
+vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
+vim.keymap.set('n', 'S', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
 vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
 vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
-vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('flash').jump() end, { desc = 'Flash jump' })
-vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() require('flash').treesitter() end, { desc = 'Flash treesitter' })
-vim.keymap.set('o', 'r', function() require('flash').remote() end, { desc = 'Remote Flash' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
 vim.keymap.set('n', 'gd', function() fzf.lsp_definitions() end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
