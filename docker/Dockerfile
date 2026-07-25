@@ -96,7 +96,7 @@ RUN <<EOF
     curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com trixie main" > /etc/apt/sources.list.d/hashicorp.list
     apt-get update
-    apt-get install --yes --no-install-recommends terraform-ls
+    apt-get install --yes --no-install-recommends terraform terraform-ls
     rm -rf /var/lib/apt/lists/*
 EOF
 
@@ -129,6 +129,7 @@ RUN go install github.com/sosedoff/pgweb@latest
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
+RUN npm install -g ccusage
 RUN npm install -g @openai/codex@0.144.6
 
 COPY .vimrc /root/.vimrc

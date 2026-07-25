@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
+RUN git config --global push.autoSetupRemote true
+
 RUN mkdir -p /root/.ssh
 RUN ssh-keyscan github.com vs-ssh.visualstudio.com >> /root/.ssh/known_hosts
 
