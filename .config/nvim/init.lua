@@ -479,6 +479,7 @@ end
 local fzf = require('fzf-lua')
 
 vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
+vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
 vim.keymap.set('n', 'S', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
