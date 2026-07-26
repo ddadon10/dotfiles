@@ -1,6 +1,6 @@
 # check=error=true
 
-FROM debian:sid
+FROM debian:sid-20260713
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
