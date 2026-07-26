@@ -32,8 +32,12 @@ dev() {
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=volume,src=dev-codex-home,dst=/root/.codex" \
     --workdir /workspace \
-    "${DEV_NAME:-ddadon/dev}"
+    "${DEV_NAME:-ddadon/dev}" "$@"
 }
+
+alias cdx='dev codex'
+alias lg='dev lazygit'
+alias n='dev nvim'
 
 # Git Client
 g() {
