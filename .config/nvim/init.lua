@@ -168,6 +168,16 @@ end
 -- Quickfix
 require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
 
+vim.api.nvim_create_autocmd('FileType', {
+    group = layout_group,
+    pattern = 'qf',
+    callback = function()
+        layout_windows.quickfix = vim.api.nvim_get_current_win()
+        set_window_height('quickfix', layout_dimensions().quickfix.height)
+        vim.wo.winfixheight = true
+    end,
+})
+
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
@@ -296,16 +306,6 @@ end
 local function toggle_terminal()
     toggle_terminal_panel('terminal', 'Terminal')
 end
-
-vim.api.nvim_create_autocmd('FileType', {
-    group = layout_group,
-    pattern = 'qf',
-    callback = function()
-        layout_windows.quickfix = vim.api.nvim_get_current_win()
-        set_window_height('quickfix', layout_dimensions().quickfix.height)
-        vim.wo.winfixheight = true
-    end,
-})
 
 -- Full layout
 if not quick_edit then
