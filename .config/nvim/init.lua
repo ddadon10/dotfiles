@@ -97,6 +97,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 -- Layout
 local buffers = {}
 local layout_windows = {}
+local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
 
 local function layout_dimensions()
     local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
@@ -152,18 +153,6 @@ local function open_editor_bottom_split(height)
     vim.cmd('belowright ' .. height .. 'split')
     vim.wo.winfixheight = true
     return vim.api.nvim_get_current_win()
-end
-
-local function configure_terminal_panel(title)
-    vim.bo.bufhidden = 'hide'
-    vim.bo.buflisted = false
-    vim.wo.number = false
-    vim.wo.relativenumber = false
-    vim.wo.signcolumn = 'no'
-    vim.wo.winbar = '%= ' .. title .. ' %='
-    vim.wo.winhighlight = 'Normal:TerminalNormal,NormalNC:TerminalNormal,EndOfBuffer:TerminalEndOfBuffer'
-    vim.wo.winfixheight = true
-    vim.wo.wrap = false
 end
 
 local function toggle_quickfix()
@@ -257,13 +246,56 @@ require('mini.statusline').setup({ content = { active = statusline, inactive = s
 -- Terminal
 local terminal_group = vim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
 
+local function configure_terminal_panel(title)
+    vim.bo.bufhidden = 'hide'
+    vim.bo.buflisted = false
+    vim.wo.number = false
+    vim.wo.relativenumber = false
+    vim.wo.signcolumn = 'no'
+    vim.wo.winbar = '%= ' .. title .. ' %='
+    vim.wo.winhighlight = 'Normal:TerminalNormal,NormalNC:TerminalNormal,EndOfBuffer:TerminalEndOfBuffer'
+    vim.wo.winfixheight = true
+    vim.wo.wrap = false
+end
+
 vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
     group = terminal_group,
     pattern = 'term://*',
     command = 'startinsert',
 })
 
-local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
+local function toggle_terminal_panel(name, title, command)
+    local dimensions = layout_dimensions()
+
+    if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
+        vim.api.nvim_win_hide(layout_windows[name])
+        layout_windows[name] = nil
+        return
+    end
+
+    layout_windows[name] = open_editor_bottom_split(dimensions[name].height)
+
+    if buffers[name] and vim.api.nvim_buf_is_valid(buffers[name]) then
+        vim.api.nvim_win_set_buf(layout_windows[name], buffers[name])
+    else
+        if command then
+            vim.cmd.terminal(command)
+        else
+            vim.cmd.terminal()
+        end
+        buffers[name] = vim.api.nvim_get_current_buf()
+    end
+
+    configure_terminal_panel(title)
+end
+
+local function toggle_codex()
+    toggle_terminal_panel('codex', 'Codex', 'codex')
+end
+
+local function toggle_terminal()
+    toggle_terminal_panel('terminal', 'Terminal')
+end
 
 vim.api.nvim_create_autocmd('FileType', {
     group = layout_group,
@@ -443,40 +475,6 @@ vim.api.nvim_create_autocmd('FileType', {
         vim.b[args.buf].minicompletion_disable = true
     end,
 })
-
--- Terminal Panel
-local function toggle_terminal_panel(name, title, command)
-    local dimensions = layout_dimensions()
-
-    if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
-        vim.api.nvim_win_hide(layout_windows[name])
-        layout_windows[name] = nil
-        return
-    end
-
-    layout_windows[name] = open_editor_bottom_split(dimensions[name].height)
-
-    if buffers[name] and vim.api.nvim_buf_is_valid(buffers[name]) then
-        vim.api.nvim_win_set_buf(layout_windows[name], buffers[name])
-    else
-        if command then
-            vim.cmd.terminal(command)
-        else
-            vim.cmd.terminal()
-        end
-        buffers[name] = vim.api.nvim_get_current_buf()
-    end
-
-    configure_terminal_panel(title)
-end
-
-local function toggle_codex()
-    toggle_terminal_panel('codex', 'Codex', 'codex')
-end
-
-local function toggle_terminal()
-    toggle_terminal_panel('terminal', 'Terminal')
-end
 
 -- Keymaps
 local fzf = require('fzf-lua')
