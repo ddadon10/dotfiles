@@ -37,28 +37,6 @@ vim.o.wrap = true
 
 vim.opt.shortmess:append('IscWa')
 
--- Todo: Where to put them
-vim.api.nvim_create_autocmd('BufReadPost', {
-    pattern = {
-        '/go/pkg/mod/**',
-        '*/node_modules/**',
-        '/usr/lib/go/**',
-        '/usr/lib/go-*/**',
-        '/usr/share/nvim/runtime/**',
-    },
-    command = 'setlocal readonly nomodifiable',
-})
-
-vim.api.nvim_create_autocmd('InsertEnter', {
-    group = vim.api.nvim_create_augroup('ClearSearchHighlight', { clear = true }),
-    callback = function()
-        vim.schedule(function()
-            vim.cmd('nohlsearch')
-            vim.cmd('echo')
-        end)
-    end,
-})
-
 -- Plugins
 vim.pack.add({
     'https://github.com/ellisonleao/gruvbox.nvim',
@@ -104,6 +82,17 @@ MiniIcons.tweak_lsp_kind('replace')
 -- Editing
 require('mini.bufremove').setup()
 require('mini.pairs').setup()
+
+vim.api.nvim_create_autocmd('BufReadPost', {
+    pattern = {
+        '/go/pkg/mod/**',
+        '*/node_modules/**',
+        '/usr/lib/go/**',
+        '/usr/lib/go-*/**',
+        '/usr/share/nvim/runtime/**',
+    },
+    command = 'setlocal readonly nomodifiable',
+})
 
 -- Layout
 local buffers = {}
@@ -192,6 +181,16 @@ require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
 
 -- Search
 local fzf_actions = require('fzf-lua.actions')
+
+vim.api.nvim_create_autocmd('InsertEnter', {
+    group = vim.api.nvim_create_augroup('ClearSearchHighlight', { clear = true }),
+    callback = function()
+        vim.schedule(function()
+            vim.cmd('nohlsearch')
+            vim.cmd('echo')
+        end)
+    end,
+})
 
 require('fzf-lua').setup({
     actions = {
