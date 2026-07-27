@@ -5,6 +5,8 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+ENV LANG=C.UTF-8
+
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     apt-transport-https \
     bash-completion \
@@ -53,23 +55,22 @@ RUN kubectl completion bash > /etc/bash_completion.d/kubectl && \
     kubelogin completion bash > /etc/bash_completion.d/kubelogin && \
     k9s completion bash > /etc/bash_completion.d/k9s
 
-ENV AZURE_CONFIG_DIR=/data/config/.azure \
-    COLORTERM=truecolor \
-    EDITOR=vim \
-    HISTFILE=/data/state/bash/history \
-    LANG=C.UTF-8 \
-    SHELL=/bin/bash \
-    TERM=xterm-256color \
-    XDG_CACHE_HOME=/data/cache \
-    XDG_CONFIG_HOME=/data/config \
-    XDG_DATA_HOME=/data/share \
-    XDG_STATE_HOME=/data/state
-
 RUN mkdir -p /data/.kube /data/state/bash && ln -s /data/.kube /root/.kube
 
 COPY <<'EOF' /root/.bashrc
+export AZURE_CONFIG_DIR=/data/config/.azure
+export COLORTERM=truecolor
+export EDITOR=vim
+export SHELL=/bin/bash
+export TERM=xterm-256color
+export XDG_CACHE_HOME=/data/cache
+export XDG_CONFIG_HOME=/data/config
+export XDG_DATA_HOME=/data/share
+export XDG_STATE_HOME=/data/state
+
 PS1='\u@azure:\w\$ '
 shopt -s histappend
+HISTFILE=/data/state/bash/history
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTCONTROL=ignoreboth:erasedups
