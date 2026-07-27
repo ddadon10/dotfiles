@@ -84,6 +84,7 @@ require('mini.bufremove').setup()
 require('mini.pairs').setup()
 
 vim.api.nvim_create_autocmd('BufReadPost', {
+    group = vim.api.nvim_create_augroup('ConfigEditing', { clear = true }),
     pattern = {
         '/go/pkg/mod/**',
         '*/node_modules/**',
@@ -182,7 +183,7 @@ vim.api.nvim_create_autocmd('FileType', {
 local fzf_actions = require('fzf-lua.actions')
 
 vim.api.nvim_create_autocmd('InsertEnter', {
-    group = vim.api.nvim_create_augroup('ClearSearchHighlight', { clear = true }),
+    group = vim.api.nvim_create_augroup('ConfigSearch', { clear = true }),
     callback = function()
         vim.schedule(function()
             vim.cmd('nohlsearch')
@@ -330,27 +331,27 @@ if not quick_edit then
     })
 
     local function open_full_layout()
-            if #vim.api.nvim_list_uis() == 0 then return end
+        if #vim.api.nvim_list_uis() == 0 then return end
 
-            local editor_window = vim.api.nvim_get_current_win()
-            local dimensions = layout_dimensions()
-            layout_windows.editor = editor_window
+        local editor_window = vim.api.nvim_get_current_win()
+        local dimensions = layout_dimensions()
+        layout_windows.editor = editor_window
 
-            require('nvim-tree.api').tree.open()
-            layout_windows.explorer = vim.api.nvim_get_current_win()
-            vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
-            vim.wo[layout_windows.explorer].winbar = '%= Explorer %='
-            vim.wo[layout_windows.explorer].winfixwidth = true
+        require('nvim-tree.api').tree.open()
+        layout_windows.explorer = vim.api.nvim_get_current_win()
+        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
+        vim.wo[layout_windows.explorer].winbar = '%= Explorer %='
+        vim.wo[layout_windows.explorer].winfixwidth = true
 
-            vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
-            layout_windows.aerial = vim.api.nvim_get_current_win()
-            require('aerial').open_in_win(layout_windows.aerial, editor_window)
-            vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
-            vim.wo[layout_windows.aerial].winfixheight = true
-            vim.wo[layout_windows.aerial].winfixwidth = true
-            vim.w[layout_windows.aerial].aerial_set_width = true -- Prevent Aerial's deferred render from resizing the shared vertical split
+        vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
+        layout_windows.aerial = vim.api.nvim_get_current_win()
+        require('aerial').open_in_win(layout_windows.aerial, editor_window)
+        vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
+        vim.wo[layout_windows.aerial].winfixheight = true
+        vim.wo[layout_windows.aerial].winfixwidth = true
+        vim.w[layout_windows.aerial].aerial_set_width = true -- Prevent Aerial's deferred render from resizing the shared vertical split
 
-            vim.api.nvim_set_current_win(editor_window)
+        vim.api.nvim_set_current_win(editor_window)
     end
 
     vim.api.nvim_create_autocmd('VimEnter', {
