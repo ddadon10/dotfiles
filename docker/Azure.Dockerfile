@@ -1,4 +1,4 @@
-FROM debian:sid
+FROM debian:stable-20260713-slim
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \

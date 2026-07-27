@@ -1,6 +1,6 @@
 # check=error=true
 
-FROM debian:sid
+FROM debian:sid-20260713
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -96,7 +96,7 @@ RUN <<EOF
     curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com trixie main" > /etc/apt/sources.list.d/hashicorp.list
     apt-get update
-    apt-get install --yes --no-install-recommends terraform-ls
+    apt-get install --yes --no-install-recommends terraform terraform-ls
     rm -rf /var/lib/apt/lists/*
 EOF
 
@@ -129,7 +129,8 @@ RUN go install github.com/sosedoff/pgweb@latest
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN npm install -g @openai/codex@0.142.4
+RUN npm install -g ccusage
+RUN npm install -g @openai/codex@0.145.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
@@ -144,26 +145,11 @@ EOF
 RUN chmod +x /usr/local/bin/nvim-editor
 
 RUN mkdir -p /root/.config/lazygit
-COPY <<EOF /root/.config/lazygit/config.yml
-gui:
-  showCommandLog: false
-  showRandomTip: false
-
-git:
-  autoFetch: false
-  autoForwardBranches: none
-  fetchAll: false
-  pagers:
-    - pager: delta --paging=never
-
-update:
-  method: never
-
-disableStartupPopups: true
-notARepository: quit
-EOF
+COPY .config/lazygit.yml /root/.config/lazygit/config.yml
 
 COPY docker/.bashrc /root/.bashrc
+COPY .codex/config.toml /etc/codex/config.toml
+COPY .codex/skills/ /etc/codex/skills/
 
 COPY AGENTS.md /root/AGENTS.md
 

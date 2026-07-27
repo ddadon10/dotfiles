@@ -1,5 +1,5 @@
-model = "gpt-5.5"
-model_reasoning_effort = "xhigh"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
 developer_instructions = "You are running in a Docker container.You cannot run Docker."
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
@@ -7,6 +7,12 @@ web_search = "live"
 plan_mode_reasoning_effort = "xhigh"
 check_for_update_on_startup = false
 service_tier = "fast"
+suppress_unstable_features_warning = true
+
+[features]
+runtime_metrics = true
+default_mode_request_user_input = true
+apply_patch_streaming_events = true
 
 [projects."/workspace"]
 trust_level = "trusted"
@@ -18,4 +24,6 @@ inherit = "all"
 show_tooltips = false
 notifications = true
 notification_method = "osc9"
+theme = "gruvbox-dark"
+terminal_title = ["spinner", "app-name"]
 status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "total-input-tokens", "total-output-tokens", "fast-mode"]

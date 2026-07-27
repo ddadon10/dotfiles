@@ -1,0 +1,30 @@
+gui:
+  showCommandLog: false
+  showRandomTip: false
+  tabWidth: 2
+  mouseEvents: false
+  nerdFontsVersion: "3"
+
+git:
+  autoFetch: false
+  mainBranches:
+    - trunk
+    - main
+    - master
+  ignoreWhitespaceInDiffView: true
+  commitPrefix:
+    - pattern: '^([A-Z]+-[0-9]+).*'
+      replace: '[$1] '
+  pagers:
+    - pager: delta --paging=never --tabs=2
+
+os:
+  editPreset: "nvim"
+  copyToClipboardCmd: printf "\033]52;c;$(printf {{text}} | base64 -w 0)\a" > /dev/tty
+
+update:
+  method: never
+
+disableStartupPopups: true
+notARepository: quit
+promptToReturnFromSubprocess: false

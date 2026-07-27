@@ -1,6 +1,6 @@
 # check=skip=SecretsUsedInArgOrEnv;error=true
 
-FROM debian:stable-slim
+FROM debian:stable-20260713-slim
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     git \
     openssh-client \
     && rm -rf /var/lib/apt/lists/*
+
+RUN git config --global push.autoSetupRemote true
 
 RUN mkdir -p /root/.ssh
 RUN ssh-keyscan github.com vs-ssh.visualstudio.com >> /root/.ssh/known_hosts

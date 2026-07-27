@@ -1,13 +1,12 @@
 # Aliases
 alias cat='bat --plain --paging never'
+alias codexplorer='codex --model gpt-5.6-sol --config model_reasoning_effort=ultra'
 alias grep='grep --color=auto'
 alias ls='ls -aF --color=auto'
 
 # Environment
 export CGO_ENABLED=0
-export BAT_THEME=auto
-export BAT_THEME_DARK=gruvbox-dark
-export BAT_THEME_LIGHT=gruvbox-light
+export BAT_THEME=gruvbox-dark
 export COLORTERM=truecolor
 export EDITOR=/usr/local/bin/nvim-editor
 export IS_SANDBOX=1
