@@ -1,9 +1,11 @@
 local quick_edit = vim.env.NVIM_QUICK_EDIT == '1'
 
+-- Options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
 
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
@@ -35,6 +37,7 @@ vim.o.wrap = true
 
 vim.opt.shortmess:append('IscWa')
 
+-- Todo: Where to put them
 vim.api.nvim_create_autocmd('BufReadPost', {
     pattern = {
         '/go/pkg/mod/**',
@@ -56,9 +59,7 @@ vim.api.nvim_create_autocmd('InsertEnter', {
     end,
 })
 
-vim.g.qs_buftype_blacklist = { 'nofile', 'prompt', 'terminal' }
-vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
-
+-- Plugins
 vim.pack.add({
     'https://github.com/ellisonleao/gruvbox.nvim',
     'https://github.com/ibhagwan/fzf-lua',
@@ -444,6 +445,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
+-- Terminal Panel
 local function toggle_terminal_panel(name, title, command)
     local dimensions = layout_dimensions()
 
