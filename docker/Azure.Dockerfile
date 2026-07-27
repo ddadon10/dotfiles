@@ -1,73 +1,80 @@
+# check=error=true
+
 FROM debian:stable-20260713-slim
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install --yes --no-install-recommends \
+    apt-transport-https \
     bash-completion \
-    bat \
     bind9-dnsutils \
-    build-essential \
     ca-certificates \
     curl \
-    fd-find \
-    fzf \
-    git \
-    git-delta \
     gnupg \
-    gron \
-    htop \
-    httpie \
     iproute2 \
     jq \
     less \
-    locales \
-    lsof \
-    man-db \
-    manpages \
-    manpages-dev \
-    ncdu \
-    nginx \
-    procps \
-    postgresql-client \
-    psmisc \
-    python3 \
-    python3-pip \
-    ripgrep \
-    rsync \
-    shellcheck \
-    strace \
-    sudo \
-    tmux \
-    tree \
-    ttyd \
-    unzip \
+    lsb-release \
+    openssh-client \
     vim \
-    zip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Azure CLI
-RUN curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' | sudo bash
+RUN curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' | bash
 
 # Install kubectl and kubelogin
-RUN az aks install-cli
+RUN AZURE_CONFIG_DIR=/tmp/azure-cli az aks install-cli && rm -r /tmp/azure-cli
 
 # Install k9s
 RUN <<EOF
-    machine="$(uname -m)"
-    case "${machine}" in
-        x86_64) arch="amd64" ;;
-        aarch64) arch="arm64" ;;
-        *) exit 1 ;;
+    case "$(uname -m)" in
+        x86_64)
+            arch="amd64"
+            checksum="c3752ad51a5a4015a113819c4eeb6e55a4d0e4b8e652494797532f6fc8161dd7"
+            ;;
+        aarch64)
+            arch="arm64"
+            checksum="3ee05c82e5f9198928a4e86133608ba6a2c10a2244d6a7789e820f78319d640c"
+            ;;
+        *)
+            echo "Unsupported architecture: $(uname -m)" >&2
+            exit 1
+            ;;
     esac
-    curl -SsfL "https://github.com/derailed/k9s/releases/download/v0.50.18/k9s_Linux_${arch}.tar.gz" -o k9s.tar.gz
+
+    curl -fsSLo k9s.tar.gz "https://github.com/derailed/k9s/releases/download/v0.51.0/k9s_Linux_${arch}.tar.gz"
+    echo "${checksum}  k9s.tar.gz" | sha256sum --check -
     tar -xzf k9s.tar.gz -C /usr/local/bin k9s
-    rm -f k9s.tar.gz
+    rm k9s.tar.gz
 EOF
 
-# Setup .bashrc
-RUN cat > /root/.bashrc << 'EOF'
-    export LANG=C.UTF-8
-    export TERM=xterm-256color
-    alias fd='fdfind'
+RUN kubectl completion bash > /etc/bash_completion.d/kubectl && \
+    kubelogin completion bash > /etc/bash_completion.d/kubelogin && \
+    k9s completion bash > /etc/bash_completion.d/k9s
+
+ENV AZURE_CONFIG_DIR=/data/config/.azure \
+    COLORTERM=truecolor \
+    EDITOR=vim \
+    HISTFILE=/data/state/bash/history \
+    LANG=C.UTF-8 \
+    SHELL=/bin/bash \
+    TERM=xterm-256color \
+    XDG_CACHE_HOME=/data/cache \
+    XDG_CONFIG_HOME=/data/config \
+    XDG_DATA_HOME=/data/share \
+    XDG_STATE_HOME=/data/state
+
+RUN mkdir -p /data/.kube /data/state/bash && ln -s /data/.kube /root/.kube
+
+COPY <<'EOF' /root/.bashrc
+PS1='\u@azure:\w\$ '
+shopt -s histappend
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTCONTROL=ignoreboth:erasedups
+PROMPT_COMMAND='history -a; history -n'
+source /usr/share/bash-completion/bash_completion
 EOF
 
-ENTRYPOINT ["bash", "--login"]
+CMD ["/bin/bash"]
