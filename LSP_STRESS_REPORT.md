@@ -28,8 +28,8 @@ implementation.
 
 - Project: `/tmp/nvim-java-kotlin-spring-lsp-stress`
 - Headless harness: `/workspace/lsp-stress.lua`
-- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/lsp-stress-final-stable.json`
-- Earlier true-cold result: `/tmp/nvim-java-kotlin-spring-lsp-stress/lsp-stress-cold.json`
+- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/simplify-final-warm.json`
+- Cold-JDTLS result: `/tmp/nvim-java-kotlin-spring-lsp-stress/simplify-no-init-settings-cold.json`
 
 ## Environment and installation
 
@@ -93,9 +93,9 @@ loading, and repeated cold/warm client lifecycles.
 |---|---|---|
 | Initial Spring run | Both project caches absent | Both usable in about 39.4 s |
 | Clean JDTLS, warm Kotlin | JDTLS rebuilt, Kotlin reused | Both usable in about 9.3 s |
-| Final warm run | Both reused | Both usable in about 3.6 s |
+| Final simplified warm run | Both reused | Both usable in about 4.1 s |
 
-The final feature matrix took 21.6 seconds after startup and shut down
+The final feature matrix took 22.6 seconds after startup and shut down
 gracefully.
 
 An earlier harness version force-stopped clients with edited buffers attached.
@@ -119,7 +119,7 @@ Status meanings:
 | Feature | Language | How it was tested | Result |
 |---|---|---|---|
 | Server attachment and root | Java | Opened `JavaGreetingService.java`; inspected the attached client, root, command, and `-data` path. | PASS: one JDTLS client, correct root and hashed workspace. |
-| Server attachment and root | Kotlin | Opened `KotlinProbe.kt`; inspected client, root, command, and `--system-path`. | PASS: one Kotlin client, correct root and hashed system path. |
+| Server attachment and root | Kotlin | Opened `KotlinProbe.kt`; inspected the attached client, root, and command. | PASS: one Kotlin client, correct root, and stock `intellij-server --stdio` command. |
 | Clean baseline diagnostics | Java | Read published diagnostics for a compiled source buffer. | PASS: zero errors. |
 | Clean baseline diagnostics | Kotlin | Issued `textDocument/diagnostic` after project import. | PASS: zero errors; response in 1.76 s. |
 | Same-language definition | Java | Requested definition of `CustomerStatus` from `ActiveCustomerPolicy`. | PASS: `CustomerStatus.java`. |
