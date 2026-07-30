@@ -56,8 +56,16 @@ export XDG_CONFIG_HOME=/data/config
 export XDG_DATA_HOME=/data/share
 export XDG_STATE_HOME=/data/state
 
-PS1='\u@azure:\w\$ '
+ps1_azure_blue='\[\033[38;2;0;120;212m\]'
+ps1_path_blue='\[\033[38;2;69;133;136m\]'
+ps1_arrow_yellow='\[\033[38;2;215;153;33m\]'
+ps1_reset_attr='\[\033[0m\]'
+ps1_azure_icon=$'\U000F0805'
+ps1_arrow_icon=$'\u276F'
+
+PS1="${ps1_azure_blue}${ps1_azure_icon}${ps1_reset_attr} ${ps1_path_blue}\\w${ps1_reset_attr} ${ps1_arrow_yellow}${ps1_arrow_icon}${ps1_reset_attr} "
 shopt -s histappend
+shopt -s extglob
 HISTFILE=/data/state/bash/history
 HISTSIZE=10000
 HISTFILESIZE=20000
