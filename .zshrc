@@ -47,5 +47,17 @@ g() {
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
 
+# Azure Client
+azure() {
+  docker run \
+    --rm \
+    --interactive \
+    --tty \
+    --mount "type=bind,src=${PWD},dst=/workspace" \
+    --mount "type=volume,src=azureclient-data,dst=/data" \
+    --workdir /workspace \
+    "${AZURECLIENT_NAME:-ddadon/azureclient}"
+}
+
 # Shell customization
 export PS1="%n@mbp %~ %% "
