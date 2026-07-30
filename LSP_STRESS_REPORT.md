@@ -28,7 +28,7 @@ implementation.
 
 - Project: `/tmp/nvim-java-kotlin-spring-lsp-stress`
 - Headless harness: `/workspace/lsp-stress.lua`
-- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/simplify-final-warm.json`
+- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/conservative-simplification-final.json`
 - Cold-JDTLS result: `/tmp/nvim-java-kotlin-spring-lsp-stress/simplify-no-init-settings-cold.json`
 
 ## Environment and installation
@@ -93,9 +93,9 @@ loading, and repeated cold/warm client lifecycles.
 |---|---|---|
 | Initial Spring run | Both project caches absent | Both usable in about 39.4 s |
 | Clean JDTLS, warm Kotlin | JDTLS rebuilt, Kotlin reused | Both usable in about 9.3 s |
-| Final simplified warm run | Both reused | Both usable in about 4.1 s |
+| Final simplified warm run | Both reused | Both usable in about 4.7 s |
 
-The final feature matrix took 22.6 seconds after startup and shut down
+The final feature matrix took 23.7 seconds after startup and shut down
 gracefully.
 
 An earlier harness version force-stopped clients with edited buffers attached.
@@ -180,8 +180,8 @@ Status meanings:
 | Code lens | Kotlin | Checked capabilities. | UNSUPPORTED: not advertised. |
 | JDK class source | Java | Navigated `List` to a `jdt://` URI and opened it through `nvim-jdtls`. | PASS: 190 Java lines, nonmodifiable buffer. |
 | Spring class source | Java | Navigated `@Service` into `spring-context`. | PASS: 57 Java lines, nonmodifiable buffer. |
-| JDK decompilation | Kotlin | Navigated `UUID` to `jrt://` and executed Kotlin's `decompile` command. | PASS: 55 Java lines, readonly and nonmodifiable. |
-| Spring source/decompilation | Kotlin | Navigated `ResponseEntity` to `jar://` and opened it through the Kotlin bridge. | PASS: 667 Java lines, readonly and nonmodifiable. |
+| JDK decompilation | Kotlin | Navigated `UUID` to `jrt://` and executed Kotlin's `decompile` command. | PASS: 55 Java lines in a nonmodifiable virtual buffer. |
+| Spring source/decompilation | Kotlin | Navigated `ResponseEntity` to `jar://` and opened it through the Kotlin bridge. | PASS: 667 Java lines in a nonmodifiable virtual buffer. |
 | `nvim-jdtls` integration | Java | Inspected extended capabilities, server commands, and buffer-local commands. | PASS: 11 extended capabilities, 33 server commands, and `JdtCompile`, `JdtUpdateConfig`, `JdtRestart`. |
 | Concurrent request burst | Java | Sent 25 asynchronous hover requests before waiting. | PASS: 25/25 completed with nonempty results. |
 | Concurrent request burst | Kotlin | Sent 25 asynchronous hover requests before waiting. | PASS: 25/25 completed with nonempty results. |

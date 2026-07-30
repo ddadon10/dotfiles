@@ -458,18 +458,11 @@ local function start_jdtls(dispatchers, config)
     local project = vim.fs.basename(root_dir) .. '-' .. vim.fn.sha256(root_dir):sub(1, 12)
     local command = { 'jdtls', '-data', vim.fs.joinpath(vim.fn.stdpath('cache'), 'jdtls', project) }
     config.cmd = command -- Required by :JdtWipeDataAndRestart to locate the data directory.
-    return vim.lsp.rpc.start(command, dispatchers, {
-        cwd = config.cmd_cwd,
-        env = config.cmd_env,
-        detached = config.detached,
-    })
+    return vim.lsp.rpc.start(command, dispatchers)
 end
 
 vim.lsp.config('jdtls', {
     cmd = start_jdtls,
-    init_options = {
-        extendedClientCapabilities = require('jdtls.capabilities'),
-    },
     settings = {
         java = {
             eclipse = { downloadSources = true },
@@ -485,12 +478,12 @@ vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.par
 local function open_kotlin_archive_uri(args)
     local client = assert(vim.lsp.get_clients({
         name = 'kotlin_lsp',
-        bufnr = vim.fn.bufnr('#', -1),
+        bufnr = vim.fn.bufnr('#'),
     })[1], 'No kotlin_lsp client is attached to the source buffer')
     local response = assert(client:request_sync('workspace/executeCommand', {
         command = 'decompile',
         arguments = { args.match },
-    }, 10000, args.buf))
+    }, 10000))
     assert(not response.err, vim.inspect(response.err))
     local result = assert(response.result, 'kotlin_lsp returned no archive contents for ' .. args.match)
 
@@ -505,9 +498,7 @@ local function open_kotlin_archive_uri(args)
         vim.split(result.code:gsub('\r\n', '\n'), '\n', { plain = true })
     )
     vim.bo[args.buf].filetype = result.language
-    vim.bo[args.buf].modified = false
     vim.bo[args.buf].modifiable = false
-    vim.bo[args.buf].readonly = true
     vim.lsp.buf_attach_client(args.buf, client.id)
 end
 
@@ -517,9 +508,7 @@ local classfile_group = vim.api.nvim_create_augroup('ConfigClassfiles', { clear 
 vim.api.nvim_create_autocmd('LspAttach', {
     group = classfile_group,
     once = true,
-    callback = function()
-        vim.api.nvim_clear_autocmds({ event = 'BufReadCmd', group = 'jdtls', pattern = '*.class' })
-    end,
+    callback = function() vim.api.nvim_clear_autocmds({ group = 'jdtls', pattern = '*.class' }) end,
 })
 
 vim.api.nvim_create_autocmd('BufReadCmd', {
