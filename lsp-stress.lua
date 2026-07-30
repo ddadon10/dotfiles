@@ -443,10 +443,18 @@ local function whole_document_range(bufnr)
     }
 end
 
-local function test_archive_open(source_buf, uri, expected_text)
+local function test_archive_open(source_buf, uri, expected_text, open_uri)
     local original_window = vim.api.nvim_get_current_win()
     vim.api.nvim_set_current_buf(source_buf)
-    vim.cmd.edit(vim.fn.fnameescape(uri))
+    if open_uri then
+        open_uri()
+        expect(
+            vim.wait(10000, function() return vim.api.nvim_buf_get_name(0) == uri end, 20),
+            'Archive URI did not open'
+        )
+    else
+        vim.cmd.edit(vim.fn.fnameescape(uri))
+    end
     local archive_buf = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(archive_buf, 0, -1, false)
     local contents = table.concat(lines, '\n')
@@ -1469,7 +1477,10 @@ test('JDK definition and Kotlin decompilation', 'kotlin', 'textDocument/definiti
     local uris = location_uris(definition(kotlin, kotlin_probe, position))
     expect(uris[1] ~= nil, vim.inspect(uris))
     expect(uris[1]:match('^jrt://') ~= nil, vim.inspect(uris))
-    return test_archive_open(kotlin_probe, uris[1], 'class UUID')
+    return test_archive_open(kotlin_probe, uris[1], 'class UUID', function()
+        vim.api.nvim_win_set_cursor(0, { position.line + 1, position.character })
+        require('fzf-lua').lsp_definitions({ silent = true })
+    end)
 end)
 
 test('external Spring definition and Kotlin decompilation', 'kotlin', 'textDocument/definition + decompile', function()
@@ -1481,7 +1492,10 @@ test('external Spring definition and Kotlin decompilation', 'kotlin', 'textDocum
     local uris = location_uris(definition(kotlin, kotlin_controller, position))
     expect(uris[1] ~= nil, vim.inspect(uris))
     expect(uris[1]:match('^jar://') ~= nil, vim.inspect(uris))
-    return test_archive_open(kotlin_controller, uris[1], 'class ResponseEntity')
+    return test_archive_open(kotlin_controller, uris[1], 'class ResponseEntity', function()
+        vim.api.nvim_win_set_cursor(0, { position.line + 1, position.character })
+        require('fzf-lua').lsp_definitions({ silent = true })
+    end)
 end)
 
 test('nvim-jdtls extended capabilities and commands', 'java', 'client integration', function()

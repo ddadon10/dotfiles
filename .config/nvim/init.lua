@@ -476,10 +476,14 @@ vim.lsp.config('jdtls', {
 vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.parameters'] = true } } } })
 
 local function open_kotlin_archive_uri(args)
-    local client = assert(vim.lsp.get_clients({
+    local current_buf = vim.api.nvim_get_current_buf()
+    local source_buf = current_buf == args.buf and vim.fn.bufnr('#') or current_buf
+    local client = vim.lsp.get_clients({
         name = 'kotlin_lsp',
-        bufnr = vim.fn.bufnr('#'),
-    })[1], 'No kotlin_lsp client is attached to the source buffer')
+        bufnr = source_buf,
+    })[1] or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1]
+    -- fzf-lua preloads definition URIs without preserving their relationship to the source buffer.
+    assert(client, 'No kotlin_lsp client is available to decompile ' .. args.match)
     local response = assert(client:request_sync('workspace/executeCommand', {
         command = 'decompile',
         arguments = { args.match },
@@ -567,13 +571,13 @@ vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper windo
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
-vim.keymap.set('n', 'gd', function() fzf.lsp_definitions() end, { desc = 'Go to definition' })
+vim.keymap.set('n', 'gd', function() fzf.lsp_definitions({ silent = true }) end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
-vim.keymap.set('n', 'gi', function() fzf.lsp_implementations({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Implementations' } }) end, { desc = 'Go to implementation' })
-vim.keymap.set('n', 'gp', function() fzf.lsp_definitions({ jump1 = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.50, width = 0.60, title = 'Peek', preview = { layout = 'vertical', vertical = 'up:75%' } } }) end, { desc = 'Peek definition' })
-vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' } }) end, { desc = 'Go to type definition' })
-vim.keymap.set('n', 'gu', function() fzf.lsp_references({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' } }) end, { desc = 'Go to references' })
+vim.keymap.set('n', 'gi', function() fzf.lsp_implementations({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Implementations' } }) end, { desc = 'Go to implementation' })
+vim.keymap.set('n', 'gp', function() fzf.lsp_definitions({ silent = true, jump1 = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.50, width = 0.60, title = 'Peek', preview = { layout = 'vertical', vertical = 'up:75%' } } }) end, { desc = 'Peek definition' })
+vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' } }) end, { desc = 'Go to type definition' })
+vim.keymap.set('n', 'gu', function() fzf.lsp_references({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' } }) end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
