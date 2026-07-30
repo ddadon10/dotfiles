@@ -43,6 +43,7 @@ vim.pack.add({
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
     'https://github.com/neovim/nvim-lspconfig',
+    'https://github.com/mfussenegger/nvim-jdtls',
     'https://github.com/nvim-mini/mini.nvim',
     'https://github.com/nvim-tree/nvim-tree.lua',
     'https://github.com/nvim-treesitter/nvim-treesitter',
@@ -452,6 +453,212 @@ vim.lsp.config('lua_ls', {
     },
 })
 
+local function project_cache_dir(name, root_dir)
+    local project_name = vim.fs.basename(root_dir)
+    local project_hash = vim.fn.sha256(root_dir):sub(1, 12)
+    return vim.fs.joinpath(vim.fn.stdpath('cache'), name, project_name .. '-' .. project_hash)
+end
+
+local function start_language_server(command, dispatchers, config)
+    config.cmd = command
+    return vim.lsp.rpc.start(command, dispatchers, {
+        cwd = config.cmd_cwd,
+        env = config.cmd_env,
+        detached = config.detached,
+    })
+end
+
+local function start_jdtls(dispatchers, config)
+    local data_dir
+    if config.root_dir then
+        data_dir = project_cache_dir('jdtls', config.root_dir)
+    else
+        data_dir = vim.fs.joinpath(vim.fn.stdpath('cache'), 'jdtls', 'standalone')
+    end
+    vim.fn.mkdir(data_dir, 'p')
+
+    return start_language_server({ 'jdtls', '-data', data_dir }, dispatchers, config)
+end
+
+local jdtls_settings = {
+    java = {
+        eclipse = { downloadSources = true },
+        jdt = {
+            ls = {
+                kotlinSupport = { enabled = true },
+            },
+        },
+        maven = { downloadSources = true },
+        signatureHelp = { enabled = true },
+    },
+}
+
+vim.lsp.config('jdtls', {
+    cmd = start_jdtls,
+    init_options = {
+        extendedClientCapabilities = require('jdtls.capabilities'),
+        settings = jdtls_settings,
+    },
+    root_markers = {
+        { 'mvnw', 'gradlew', 'settings.gradle', 'settings.gradle.kts', '.git' },
+        { 'build.xml', 'pom.xml', 'build.gradle', 'build.gradle.kts' },
+    },
+    settings = jdtls_settings,
+})
+
+local function start_kotlin_lsp(dispatchers, config)
+    local root_dir = assert(config.root_dir, 'kotlin_lsp requires a project root')
+    local system_path = project_cache_dir('kotlin-lsp', root_dir)
+    vim.fn.mkdir(system_path, 'p')
+
+    return start_language_server({
+        'intellij-server',
+        '--stdio',
+        '--system-path',
+        system_path,
+    }, dispatchers, config)
+end
+
+vim.lsp.config('kotlin_lsp', {
+    cmd = start_kotlin_lsp,
+    settings = {
+        jetbrains = {
+            kotlin = {
+                ['hints.parameters'] = true,
+            },
+        },
+    },
+    workspace_required = true,
+})
+
+local function attached_kotlin_lsp_client(bufnr)
+    if bufnr < 1 or not vim.api.nvim_buf_is_valid(bufnr) then
+        return nil
+    end
+
+    local clients = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = bufnr })
+    if #clients > 1 then
+        return nil, 'Multiple kotlin_lsp clients are attached to buffer ' .. bufnr
+    end
+
+    return clients[1]
+end
+
+local function find_kotlin_lsp_client(bufnr)
+    local client, err = attached_kotlin_lsp_client(bufnr)
+    if client or err then
+        return client, err
+    end
+
+    local altbuf = vim.fn.bufnr('#', -1)
+    client, err = attached_kotlin_lsp_client(altbuf)
+    if client or err then
+        return client, err
+    end
+
+    local clients = vim.lsp.get_clients({ name = 'kotlin_lsp' })
+    if #clients == 1 then
+        return clients[1]
+    end
+    if #clients == 0 then
+        return nil, 'No kotlin_lsp client is available'
+    end
+
+    return nil, 'Multiple kotlin_lsp clients are running, but none is attached to the current or alternate buffer'
+end
+
+local function open_kotlin_archive_uri(args)
+    local uri = args.match ~= '' and args.match or args.file
+    vim.bo[args.buf].buftype = 'nofile'
+    vim.bo[args.buf].modifiable = false
+    vim.bo[args.buf].readonly = true
+    vim.bo[args.buf].swapfile = false
+
+    local client, client_error = find_kotlin_lsp_client(args.buf)
+    if not client then
+        vim.notify(client_error .. ': ' .. uri, vim.log.levels.WARN)
+        return
+    end
+
+    local response, request_error = client:request_sync('workspace/executeCommand', {
+        command = 'decompile',
+        arguments = { uri },
+    }, 10000, args.buf)
+    request_error = request_error or response and response.err
+    if request_error then
+        vim.notify(vim.inspect(request_error), vim.log.levels.ERROR)
+        return
+    end
+
+    local result = response and response.result
+    if type(result) ~= 'table' or type(result.code) ~= 'string' or type(result.language) ~= 'string' then
+        vim.notify('kotlin_lsp returned no archive contents for ' .. uri, vim.log.levels.ERROR)
+        return
+    end
+
+    local contents = result.code:gsub('\r\n', '\n')
+    vim.bo[args.buf].modifiable = true
+    local ok, buffer_error = pcall(
+        vim.api.nvim_buf_set_lines,
+        args.buf,
+        0,
+        -1,
+        false,
+        vim.split(contents, '\n', { plain = true })
+    )
+    vim.bo[args.buf].modifiable = false
+    if not ok then
+        vim.notify(vim.inspect(buffer_error), vim.log.levels.ERROR)
+        return
+    end
+
+    vim.bo[args.buf].filetype = result.language
+    vim.bo[args.buf].modified = false
+    vim.lsp.buf_attach_client(args.buf, client.id)
+end
+
+local kotlin_archive_group = vim.api.nvim_create_augroup('ConfigKotlinArchive', { clear = true })
+
+vim.api.nvim_create_autocmd('BufReadCmd', {
+    group = kotlin_archive_group,
+    pattern = { 'jar://*', 'jrt://*' },
+    callback = open_kotlin_archive_uri,
+})
+
+local function remove_jdtls_classfile_autocmd()
+    for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = 'BufReadCmd' })) do
+        if autocmd.group_name == 'jdtls' and autocmd.pattern == '*.class' then
+            vim.api.nvim_del_autocmd(autocmd.id)
+        end
+    end
+end
+
+remove_jdtls_classfile_autocmd()
+
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = kotlin_archive_group,
+    once = true,
+    callback = remove_jdtls_classfile_autocmd,
+})
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    group = kotlin_archive_group,
+    once = true,
+    callback = remove_jdtls_classfile_autocmd,
+})
+
+vim.api.nvim_create_autocmd('BufReadCmd', {
+    group = kotlin_archive_group,
+    pattern = '*.class',
+    callback = function(args)
+        local uri = args.match ~= '' and args.match or args.file
+        if vim.startswith(uri, 'jar://') or vim.startswith(uri, 'jrt://') then
+            return
+        end
+        require('jdtls').open_classfile(args.buf, uri)
+    end,
+})
+
 vim.lsp.enable({
     'bashls',
     'cssls',
@@ -459,6 +666,8 @@ vim.lsp.enable({
     'gopls',
     'html',
     'jsonls',
+    'jdtls',
+    'kotlin_lsp',
     'lua_ls',
     'tailwindcss',
     'terraformls',

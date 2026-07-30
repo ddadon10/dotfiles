@@ -4,6 +4,12 @@ FROM debian:sid-20260713
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG JDTLS_ARCHIVE=jdt-language-server-1.60.0-202606262232.tar.gz
+ARG JDTLS_SHA256=e94c303d8198f977930803582738771fd18c52c5492878410bf222b1aa81ef1d
+ARG JDTLS_VERSION=1.60.0
+ARG KOTLIN_LSP_SHA256_AMD64=2d99d8e198fbe4aa8f4481e37799724ce94803b4ea12a60b416040e3fcd7cc5e
+ARG KOTLIN_LSP_SHA256_ARM64=2317831c6e5607d05b7ebc1da655330125ce0e3d66fbf24517dfce442debc14e
+ARG KOTLIN_LSP_VERSION=262.9593.0
 ARG PATH="/root/go/bin:${PATH}"
 
 ENV LANG=C.UTF-8
@@ -90,6 +96,36 @@ RUN <<EOF
     mkdir -p /opt/lua-language-server
     curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${ver}/lua-language-server-${ver}-linux-${arch}.tar.gz" | tar -xzf - -C /opt/lua-language-server
     ln -s /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server
+EOF
+
+RUN <<EOF
+    curl -fsSL -o "/tmp/${JDTLS_ARCHIVE}" "https://download.eclipse.org/jdtls/milestones/${JDTLS_VERSION}/${JDTLS_ARCHIVE}"
+    printf '%s  %s\n' "${JDTLS_SHA256}" "/tmp/${JDTLS_ARCHIVE}" | sha256sum -c -
+    mkdir -p /opt/jdtls
+    tar --no-same-owner -xzf "/tmp/${JDTLS_ARCHIVE}" -C /opt/jdtls
+    rm "/tmp/${JDTLS_ARCHIVE}"
+    ln -s /opt/jdtls/bin/jdtls /usr/local/bin/jdtls
+EOF
+
+RUN <<EOF
+    machine=$(uname -m)
+    case "${machine}" in
+        x86_64)
+            archive="kotlin-server-${KOTLIN_LSP_VERSION}.tar.gz"
+            checksum="${KOTLIN_LSP_SHA256_AMD64}"
+            ;;
+        aarch64)
+            archive="kotlin-server-${KOTLIN_LSP_VERSION}-aarch64.tar.gz"
+            checksum="${KOTLIN_LSP_SHA256_ARM64}"
+            ;;
+        *) exit 1 ;;
+    esac
+    curl -fsSL -o "/tmp/${archive}" "https://download-cdn.jetbrains.com/language-server/kotlin-server/${KOTLIN_LSP_VERSION}/${archive}"
+    printf '%s  %s\n' "${checksum}" "/tmp/${archive}" | sha256sum -c -
+    mkdir -p /opt/kotlin-lsp
+    tar --no-same-owner --strip-components=1 -xzf "/tmp/${archive}" -C /opt/kotlin-lsp
+    rm "/tmp/${archive}"
+    ln -s /opt/kotlin-lsp/bin/intellij-server /usr/local/bin/intellij-server
 EOF
 
 RUN <<EOF
