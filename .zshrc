@@ -47,16 +47,16 @@ g() {
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
 
-# Azure
+# Azure Client
 azure() {
   docker run \
     --rm \
     --interactive \
     --tty \
     --mount "type=bind,src=${PWD},dst=/workspace" \
-    --mount "type=volume,src=azure-toolbox-data,dst=/data" \
+    --mount "type=volume,src=azureclient-data,dst=/data" \
     --workdir /workspace \
-    "${AZURE_NAME:-ddadon/azure}"
+    "${AZURECLIENT_NAME:-ddadon/azureclient}"
 }
 
 # Shell customization
