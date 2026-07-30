@@ -1479,7 +1479,7 @@ test('JDK definition and Kotlin decompilation', 'kotlin', 'textDocument/definiti
     expect(uris[1]:match('^jrt://') ~= nil, vim.inspect(uris))
     return test_archive_open(kotlin_probe, uris[1], 'class UUID', function()
         vim.api.nvim_win_set_cursor(0, { position.line + 1, position.character })
-        require('fzf-lua').lsp_definitions({ silent = true })
+        require('fzf-lua').lsp_definitions()
     end)
 end)
 
@@ -1494,7 +1494,7 @@ test('external Spring definition and Kotlin decompilation', 'kotlin', 'textDocum
     expect(uris[1]:match('^jar://') ~= nil, vim.inspect(uris))
     return test_archive_open(kotlin_controller, uris[1], 'class ResponseEntity', function()
         vim.api.nvim_win_set_cursor(0, { position.line + 1, position.character })
-        require('fzf-lua').lsp_definitions({ silent = true })
+        require('fzf-lua').lsp_definitions()
     end)
 end)
 

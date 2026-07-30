@@ -28,7 +28,7 @@ implementation.
 
 - Project: `/tmp/nvim-java-kotlin-spring-lsp-stress`
 - Headless harness: `/workspace/lsp-stress.lua`
-- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/fzf-archive-regression-final.json`
+- Final raw result: `/tmp/nvim-java-kotlin-spring-lsp-stress/no-silent-guard-final.json`
 - Cold-JDTLS result: `/tmp/nvim-java-kotlin-spring-lsp-stress/simplify-no-init-settings-cold.json`
 
 ## Environment and installation
@@ -94,9 +94,9 @@ lifecycles.
 |---|---|---|
 | Initial Spring run | Both project caches absent | Both usable in about 39.4 s |
 | Clean JDTLS, warm Kotlin | JDTLS rebuilt, Kotlin reused | Both usable in about 9.3 s |
-| Final simplified warm run | Both reused | Both usable in about 4.4 s |
+| Final simplified warm run | Both reused | Both usable in about 3.8 s |
 
-The final feature matrix took 23.5 seconds after startup and shut down
+The final feature matrix took 22.1 seconds after startup and shut down
 gracefully.
 
 An earlier harness version force-stopped clients with edited buffers attached.
