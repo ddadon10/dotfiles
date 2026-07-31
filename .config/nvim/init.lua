@@ -183,6 +183,24 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
+local function archive_location(value)
+    local container, entry = value:match('jdt://contents/([^/]+)/([^?]+)')
+
+    if not container then
+        local archive
+        archive, entry = value:match('jar://(.-)!/([^:]+)')
+        container = archive and vim.fs.basename(archive):gsub('%-sources%.jar$', '.jar')
+    end
+
+    if not container then return end
+
+    return {
+        container = container,
+        filename = vim.fs.basename(entry),
+        symbol = entry:gsub('/', '.'):gsub('%.[^.]+$', ''),
+    }
+end
+
 vim.api.nvim_create_autocmd('InsertEnter', {
     group = vim.api.nvim_create_augroup('ConfigSearch', { clear = true }),
     callback = function()
@@ -239,7 +257,9 @@ end
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
-    local filename = MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r'
+    local archive = archive_location(vim.api.nvim_buf_get_name(0))
+    local filename = archive and (archive.container .. ' › ' .. archive.symbol):gsub('%%', '%%%%') .. '%r'
+        or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
 
     return MiniStatusline.combine_groups({
@@ -312,7 +332,13 @@ end
 -- Full layout
 if not quick_edit then
     -- Tabline
-    require('mini.tabline').setup()
+    require('mini.tabline').setup({
+        format = function(buf_id, label)
+            local archive = archive_location(vim.api.nvim_buf_get_name(buf_id))
+            if archive then label = archive.filename end
+            return MiniTabline.default_format(buf_id, label)
+        end,
+    })
 
     -- Aerial
     require('aerial').setup({
@@ -560,6 +586,39 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Keymaps
 local fzf = require('fzf-lua')
+local fzf_field_separator = '\31'
+
+local function lsp_location_opts(overrides)
+    return vim.tbl_deep_extend('force', {
+        fzf_opts = {
+            ['--delimiter'] = fzf_field_separator,
+            ['--nth'] = '1',
+            ['--with-nth'] = '1',
+        },
+        regex_filter = function(item)
+            if vim.startswith(item.filename, 'jdt://')
+                and item.filename:find('/kotlin_generated=/true', 1, true) then
+                return false
+            end
+
+            local archive = archive_location(item.filename)
+            if archive then
+                item.filename = string.format(
+                    '%s %s:%d:%d%s%s',
+                    archive.filename, archive.container, item.lnum, item.col, fzf_field_separator, item.filename
+                )
+            end
+
+            return true
+        end,
+        _headers = { 'actions' },
+        _fmt = {
+            _from = function(entry)
+                return entry:match(fzf_field_separator .. '(.*)$') or entry
+            end,
+        },
+    }, overrides or {})
+end
 
 vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
@@ -571,13 +630,41 @@ vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper windo
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
-vim.keymap.set('n', 'gd', function() fzf.lsp_definitions() end, { desc = 'Go to definition' })
+vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_location_opts()) end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
-vim.keymap.set('n', 'gi', function() fzf.lsp_implementations({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Implementations' } }) end, { desc = 'Go to implementation' })
-vim.keymap.set('n', 'gp', function() fzf.lsp_definitions({ jump1 = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.50, width = 0.60, title = 'Peek', preview = { layout = 'vertical', vertical = 'up:75%' } } }) end, { desc = 'Peek definition' })
-vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' } }) end, { desc = 'Go to type definition' })
-vim.keymap.set('n', 'gu', function() fzf.lsp_references({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' } }) end, { desc = 'Go to references' })
+vim.keymap.set('n', 'gi', function()
+    fzf.lsp_implementations(lsp_location_opts({
+        previewer = false,
+        winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Implementations' },
+    }))
+end, { desc = 'Go to implementation' })
+vim.keymap.set('n', 'gp', function()
+    fzf.lsp_definitions(lsp_location_opts({
+        jump1 = false,
+        winopts = {
+            relative = 'cursor',
+            row = 1,
+            col = 0,
+            height = 0.50,
+            width = 0.60,
+            title = 'Peek',
+            preview = { layout = 'vertical', vertical = 'up:75%' },
+        },
+    }))
+end, { desc = 'Peek definition' })
+vim.keymap.set('n', 'gt', function()
+    fzf.lsp_typedefs(lsp_location_opts({
+        previewer = false,
+        winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' },
+    }))
+end, { desc = 'Go to type definition' })
+vim.keymap.set('n', 'gu', function()
+    fzf.lsp_references(lsp_location_opts({
+        previewer = false,
+        winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' },
+    }))
+end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
