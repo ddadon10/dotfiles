@@ -481,16 +481,7 @@ vim.lsp.config('lua_ls', {
     },
 })
 
-local function start_jdtls(dispatchers, config)
-    local root_dir = config.root_dir or vim.fn.getcwd()
-    local project = vim.fs.basename(root_dir) .. '-' .. vim.fn.sha256(root_dir):sub(1, 12)
-    local command = { 'jdtls', '-data', vim.fs.joinpath(vim.fn.stdpath('cache'), 'jdtls', project) }
-    config.cmd = command -- Required by :JdtWipeDataAndRestart to locate the data directory.
-    return vim.lsp.rpc.start(command, dispatchers)
-end
-
 vim.lsp.config('jdtls', {
-    cmd = start_jdtls,
     settings = {
         java = {
             eclipse = { downloadSources = true },
