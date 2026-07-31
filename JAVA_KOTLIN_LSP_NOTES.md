@@ -19,15 +19,17 @@ exact URI they returned.
 
 ### LSP picker implementation
 
-The structured LSP-item filter builds a reversible two-field fzf row before fzf-lua serializes the location:
+The structured LSP-item filter gives fzf-lua a synthetic path ending in the archive entry's real filename, followed by
+a reversible hidden field:
 
 ```text
-visible archive label <unit separator> original LSP entry
+archive.jar/Service.java:line:column <unit separator> original LSP entry
 ```
 
-Fzf displays and searches the first field. Its `_fmt._from` hook restores the second field before the existing
-`path.filename_first` reverse formatter, previewer, navigation action, or quickfix action sees the entry. Ordinary
-physical file results keep their existing formatting.
+The normal `path.filename_first` formatter displays this as `Service.java archive.jar:line:column` and selects the Java
+or Kotlin icon from the filename extension. Fzf displays and searches only that first field. Its `_fmt._from` hook
+restores the second field before the existing reverse formatter, previewer, navigation action, or quickfix action sees
+the entry. Ordinary physical file results keep their existing formatting.
 
 This shared behavior applies to the configured definition, peek, reference, implementation, and type-definition pickers.
 

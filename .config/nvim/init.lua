@@ -335,8 +335,10 @@ if not quick_edit then
     require('mini.tabline').setup({
         format = function(buf_id, label)
             local archive = archive_location(vim.api.nvim_buf_get_name(buf_id))
-            if archive then label = archive.filename end
-            return MiniTabline.default_format(buf_id, label)
+            if not archive then return MiniTabline.default_format(buf_id, label) end
+
+            local icon = MiniIcons.get('file', archive.filename)
+            return string.format(' %s %s ', icon, archive.filename)
         end,
     })
 
@@ -603,10 +605,12 @@ local function lsp_location_opts(overrides)
 
             local archive = archive_location(item.filename)
             if archive then
+                local original = string.format('%s:%d:%d:', item.filename, item.lnum, item.col)
                 item.filename = string.format(
-                    '%s %s:%d:%d%s%s',
-                    archive.filename, archive.container, item.lnum, item.col, fzf_field_separator, item.filename
+                    '%s/%s:%d:%d%s%s',
+                    archive.container, archive.filename, item.lnum, item.col, fzf_field_separator, original
                 )
+                item.lnum, item.col = nil, nil
             end
 
             return true
