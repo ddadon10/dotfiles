@@ -495,29 +495,27 @@ vim.lsp.config('jdtls', {
 vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.parameters'] = true } } } })
 
 local function open_kotlin_archive_uri(args)
-    local current_buf = vim.api.nvim_get_current_buf()
-    local source_buf = current_buf == args.buf and vim.fn.bufnr('#') or current_buf
-    local client = vim.lsp.get_clients({
-        name = 'kotlin_lsp',
-        bufnr = source_buf,
-    })[1] or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1]
-    -- fzf-lua preloads definition URIs without preserving their relationship to the source buffer.
+    -- Archive buffers may be opened directly or preloaded by fzf-lua.
+    local client = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = 0 })[1]
+        or vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = vim.fn.bufnr('#') })[1]
+        or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1]
     assert(client, 'No kotlin_lsp client is available to decompile ' .. args.match)
-    local response = assert(client:request_sync('workspace/executeCommand', {
-        command = 'decompile',
-        arguments = { args.match },
-    }, 10000))
-    assert(not response.err, vim.inspect(response.err))
-    local result = assert(response.result, 'kotlin_lsp returned no archive contents for ' .. args.match)
+
+    local response = assert(client:request_sync(
+        'workspace/executeCommand',
+        { command = 'decompile', arguments = { args.match } },
+        10000
+    ))
+    local result = assert(
+        response.result,
+        response.err and vim.inspect(response.err) or 'kotlin_lsp returned no archive contents for ' .. args.match
+    )
 
     vim.bo[args.buf].buftype = 'nofile'
     vim.bo[args.buf].swapfile = false
     vim.bo[args.buf].modifiable = true
     vim.api.nvim_buf_set_lines(
-        args.buf,
-        0,
-        -1,
-        false,
+        args.buf, 0, -1, false,
         vim.split(result.code:gsub('\r\n', '\n'), '\n', { plain = true })
     )
     vim.bo[args.buf].filetype = result.language
@@ -581,38 +579,29 @@ vim.api.nvim_create_autocmd('FileType', {
 local fzf = require('fzf-lua')
 
 local function lsp_location_opts(title, jump1)
-    local fzf_field_separator = '\31'
+    local separator = '\31'
     return {
-        fzf_opts = {
-            ['--delimiter'] = fzf_field_separator,
-            ['--nth'] = '1',
-            ['--with-nth'] = '1',
-        },
+        fzf_opts = { ['--delimiter'] = separator, ['--with-nth'] = '1' },
         jump1 = jump1,
         regex_filter = function(item)
-            if vim.startswith(item.filename, 'jdt://')
-                and item.filename:find('/kotlin_generated=/true', 1, true) then
+            local filename = item.filename
+            if vim.startswith(filename, 'jdt://') and filename:find('/kotlin_generated=/true', 1, true) then
                 return false
             end
 
-            local archive = archive_location(item.filename)
-            if archive then
-                local original = string.format('%s:%d:%d:', item.filename, item.lnum, item.col)
-                item.filename = string.format(
-                    '%s/%s:%d:%d%s%s',
-                    archive.container, archive.filename, item.lnum, item.col, fzf_field_separator, original
-                )
-                item.lnum, item.col = nil, nil
-            end
+            local archive = archive_location(filename)
+            if not archive then return true end
 
+            item.filename = string.format(
+                '%s/%s:%d:%d%s%s:%d:%d:',
+                archive.container, archive.filename, item.lnum, item.col,
+                separator, filename, item.lnum, item.col
+            )
+            item.lnum, item.col = nil, nil
             return true
         end,
         _headers = { 'actions' },
-        _fmt = {
-            _from = function(entry)
-                return entry:match(fzf_field_separator .. '(.*)$') or entry
-            end,
-        },
+        _fmt = { _from = function(entry) return entry:match(separator .. '(.*)$') or entry end },
         winopts = { title = title },
     }
 end
