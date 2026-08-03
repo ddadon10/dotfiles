@@ -183,19 +183,18 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
-local function archive_location(value)
-    local container, entry = value:match('jdt://contents/([^/]+)/([^?]+)')
+local function library_info(uri)
+    local library, entry = uri:match('jdt://contents/([^/]+)/([^?]+)')
 
-    if not container then
-        local archive
-        archive, entry = value:match('jar://(.-)!/([^:]+)')
-        container = archive and vim.fs.basename(archive):gsub('%-sources%.jar$', '.jar')
+    if not library then
+        library, entry = uri:match('jar://(.-)!/([^:]+)')
+        library = library and vim.fs.basename(library):gsub('%-sources%.jar$', '.jar')
     end
 
-    if not container then return end
+    if not library then return end
 
     return {
-        container = container,
+        library = library,
         filename = vim.fs.basename(entry),
         symbol = entry:gsub('/', '.'):gsub('%.[^.]+$', ''),
     }
@@ -257,8 +256,8 @@ end
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
-    local archive = archive_location(vim.api.nvim_buf_get_name(0))
-    local filename = archive and (archive.container .. ' › ' .. archive.symbol):gsub('%%', '%%%%') .. '%r'
+    local info = library_info(vim.api.nvim_buf_get_name(0))
+    local filename = info and (info.library .. ' › ' .. info.symbol):gsub('%%', '%%%%') .. '%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
 
@@ -334,11 +333,11 @@ if not quick_edit then
     -- Tabline
     require('mini.tabline').setup({
         format = function(buf_id, label)
-            local archive = archive_location(vim.api.nvim_buf_get_name(buf_id))
-            if not archive then return MiniTabline.default_format(buf_id, label) end
+            local info = library_info(vim.api.nvim_buf_get_name(buf_id))
+            if not info then return MiniTabline.default_format(buf_id, label) end
 
-            local icon = MiniIcons.get('file', archive.filename)
-            return string.format(' %s %s ', icon, archive.filename)
+            local icon = MiniIcons.get('file', info.filename)
+            return string.format(' %s %s ', icon, info.filename)
         end,
     })
 
@@ -588,12 +587,12 @@ local function lsp_location_opts(title, jump1)
                 return false
             end
 
-            local archive = archive_location(filename)
-            if not archive then return true end
+            local info = library_info(filename)
+            if not info then return true end
 
             item.filename = string.format(
                 '%s/%s:%d:%d%s%s:%d:%d:',
-                archive.container, archive.filename, item.lnum, item.col,
+                info.library, info.filename, item.lnum, item.col,
                 separator, filename, item.lnum, item.col
             )
             item.lnum, item.col = nil, nil
