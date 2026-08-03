@@ -542,9 +542,8 @@ vim.api.nvim_create_autocmd('BufReadCmd', {
     group = classfile_group,
     pattern = '*.class',
     callback = function(args)
-        if not vim.startswith(args.match, 'jar://') and not vim.startswith(args.match, 'jrt://') then
-            require('jdtls').open_classfile(args.buf, args.match)
-        end
+        if args.match:find('://', 1, true) then return end
+        require('jdtls').open_classfile(args.buf, args.match)
     end,
 })
 
