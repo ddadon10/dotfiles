@@ -581,7 +581,7 @@ local function lsp_location_opts(title, jump1)
         end,
         _headers = { 'actions' },
         _fmt = { _from = function(entry) return entry:match(separator .. '(.*)$') or entry end },
-        winopts = { title = title },
+        winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = title },
     }
 end
 
