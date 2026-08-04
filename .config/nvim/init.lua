@@ -257,7 +257,7 @@ local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
     local info = library_info(vim.api.nvim_buf_get_name(0))
-    local filename = info and (info.library .. ' › ' .. info.symbol):gsub('%%', '%%%%') .. '%r'
+    local filename = info and info.library .. ' › ' .. info.symbol .. '%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
 
@@ -480,6 +480,7 @@ vim.lsp.config('lua_ls', {
     },
 })
 
+-- Java and Kotlin LSP
 vim.lsp.config('jdtls', {
     settings = {
         java = {
@@ -511,8 +512,7 @@ end
 
 local classfile_group = vim.api.nvim_create_augroup('ConfigClassfiles', { clear = true })
 
--- nvim-jdtls's *.class autocmd also matches Kotlin's jar:// and jrt:// URIs.
-vim.api.nvim_create_autocmd('LspAttach', {
+vim.api.nvim_create_autocmd('LspAttach', { -- nvim-jdtls's *.class autocmd also matches Kotlin's jar:// and jrt:// URIs.
     group = classfile_group,
     once = true,
     callback = function() vim.api.nvim_clear_autocmds({ group = 'jdtls', pattern = '*.class' }) end,
@@ -569,20 +569,14 @@ local function lsp_location_opts(title, jump1)
         fzf_opts = { ['--delimiter'] = separator, ['--with-nth'] = '1' },
         jump1 = jump1,
         regex_filter = function(item)
-            local filename = item.filename
-            if vim.startswith(filename, 'jdt://') and filename:find('/kotlin_generated=/true', 1, true) then
+            if vim.startswith(item.filename, 'jdt://') and item.filename:find('/kotlin_generated=/true', 1, true) then
                 return false
             end
 
-            local info = library_info(filename)
+            local info = library_info(item.filename)
             if not info then return true end
 
-            item.filename = string.format(
-                '%s/%s:%d:%d%s%s:%d:%d:',
-                info.library, info.filename, item.lnum, item.col,
-                separator, filename, item.lnum, item.col
-            )
-            item.lnum, item.col = nil, nil
+            item.filename = string.format('%s/%s:%d:%d%s%s', info.library, info.filename, item.lnum, item.col, separator, item.filename)
             return true
         end,
         _headers = { 'actions' },
