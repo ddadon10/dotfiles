@@ -494,31 +494,18 @@ vim.lsp.config('jdtls', {
 vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.parameters'] = true } } } })
 
 local function open_kotlin_archive_uri(args)
-    -- Archive buffers may be opened directly or preloaded by fzf-lua.
-    local client = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = 0 })[1]
-        or vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = vim.fn.bufnr('#') })[1]
-        or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1]
+    local client = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = 0 })[1] -- Current source during preview
+        or vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = vim.fn.bufnr('#') })[1] -- Source before archive jump
+        or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1] -- Fallback without source context
     assert(client, 'No kotlin_lsp client is available to decompile ' .. args.match)
 
-    local response = assert(client:request_sync(
-        'workspace/executeCommand',
-        { command = 'decompile', arguments = { args.match } },
-        10000
-    ))
-    local result = assert(
-        response.result,
-        response.err and vim.inspect(response.err) or 'kotlin_lsp returned no archive contents for ' .. args.match
-    )
+    local res = assert(client:request_sync('workspace/executeCommand', { command = 'decompile', arguments = { args.match } }, 10000))
+    local result = assert(res.result, res.err and vim.inspect(res.err) or 'No archive contents for ' .. args.match)
 
-    vim.bo[args.buf].buftype = 'nofile'
-    vim.bo[args.buf].swapfile = false
-    vim.bo[args.buf].modifiable = true
-    vim.api.nvim_buf_set_lines(
-        args.buf, 0, -1, false,
-        vim.split(result.code:gsub('\r\n', '\n'), '\n', { plain = true })
-    )
-    vim.bo[args.buf].filetype = result.language
-    vim.bo[args.buf].modifiable = false
+    local bo = vim.bo[args.buf]
+    bo.buftype, bo.swapfile, bo.modifiable = 'nofile', false, true
+    vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, vim.split(result.code, '\n'))
+    bo.filetype, bo.modifiable = result.language, false
     vim.lsp.buf_attach_client(args.buf, client.id)
 end
 
