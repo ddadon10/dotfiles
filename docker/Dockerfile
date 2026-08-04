@@ -93,6 +93,24 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+    mkdir -p /opt/jdtls
+    curl -fsSL "https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz" | tar -xzf - -C /opt/jdtls
+    ln -s /opt/jdtls/bin/jdtls /usr/local/bin/jdtls
+EOF
+
+RUN <<EOF
+    version="$(curl -fsSL https://api.github.com/repos/Kotlin/kotlin-lsp/releases/latest | jq -er '.name | ltrimstr("v")')"
+    case "$(uname -m)" in
+        x86_64) archive="kotlin-server-${version}.tar.gz" ;;
+        aarch64) archive="kotlin-server-${version}-aarch64.tar.gz" ;;
+        *) exit 1 ;;
+    esac
+    mkdir -p /opt/kotlin-lsp
+    curl -fsSL "https://download-cdn.jetbrains.com/language-server/kotlin-server/${version}/${archive}" | tar --strip-components=1 -xzf - -C /opt/kotlin-lsp
+    ln -s /opt/kotlin-lsp/bin/intellij-server /usr/local/bin/intellij-server
+EOF
+
+RUN <<EOF
     curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com trixie main" > /etc/apt/sources.list.d/hashicorp.list
     apt-get update

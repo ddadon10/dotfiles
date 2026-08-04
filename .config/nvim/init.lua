@@ -43,6 +43,7 @@ vim.pack.add({
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
     'https://github.com/neovim/nvim-lspconfig',
+    'https://github.com/mfussenegger/nvim-jdtls',
     'https://github.com/nvim-mini/mini.nvim',
     'https://github.com/nvim-tree/nvim-tree.lua',
     'https://github.com/nvim-treesitter/nvim-treesitter',
@@ -182,6 +183,23 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
+local function library_info(uri)
+    local library, entry = uri:match('jdt://contents/([^/]+)/([^?]+)')
+
+    if not library then
+        library, entry = uri:match('jar://(.-)!/([^:]+)')
+        library = library and vim.fs.basename(library):gsub('%-sources%.jar$', '.jar')
+    end
+
+    if not library then return end
+
+    return {
+        library = library,
+        filename = vim.fs.basename(entry),
+        symbol = entry:gsub('/', '.'):gsub('%.[^.]+$', ''),
+    }
+end
+
 vim.api.nvim_create_autocmd('InsertEnter', {
     group = vim.api.nvim_create_augroup('ConfigSearch', { clear = true }),
     callback = function()
@@ -238,7 +256,9 @@ end
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
-    local filename = MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r'
+    local info = library_info(vim.api.nvim_buf_get_name(0))
+    local filename = info and info.library .. ' › ' .. info.symbol .. '%r'
+        or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
 
     return MiniStatusline.combine_groups({
@@ -311,7 +331,15 @@ end
 -- Full layout
 if not quick_edit then
     -- Tabline
-    require('mini.tabline').setup()
+    require('mini.tabline').setup({
+        format = function(buf_id, label)
+            local info = library_info(vim.api.nvim_buf_get_name(buf_id))
+            if not info then return MiniTabline.default_format(buf_id, label) end
+
+            local icon = MiniIcons.get('file', info.filename)
+            return string.format(' %s %s ', icon, info.filename)
+        end,
+    })
 
     -- Aerial
     require('aerial').setup({
@@ -452,6 +480,59 @@ vim.lsp.config('lua_ls', {
     },
 })
 
+-- Java and Kotlin LSP
+vim.lsp.config('jdtls', {
+    settings = {
+        java = {
+            eclipse = { downloadSources = true },
+            jdt = { ls = { kotlinSupport = { enabled = true } } },
+            maven = { downloadSources = true },
+            signatureHelp = { enabled = true },
+        },
+    },
+})
+
+vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.parameters'] = true } } } })
+
+local function open_kotlin_archive_uri(args)
+    local client = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = 0 })[1] -- Current source during preview
+        or vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = vim.fn.bufnr('#') })[1] -- Source before archive jump
+        or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1] -- Fallback without source context
+    assert(client, 'No kotlin_lsp client is available to decompile ' .. args.match)
+
+    local res = assert(client:request_sync('workspace/executeCommand', { command = 'decompile', arguments = { args.match } }, 10000))
+    local result = assert(res.result, res.err and vim.inspect(res.err) or 'No archive contents for ' .. args.match)
+
+    local bo = vim.bo[args.buf]
+    bo.buftype, bo.swapfile, bo.modifiable = 'nofile', false, true
+    vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, vim.split(result.code, '\n'))
+    bo.filetype, bo.modifiable = result.language, false
+    vim.lsp.buf_attach_client(args.buf, client.id)
+end
+
+local classfile_group = vim.api.nvim_create_augroup('ConfigClassfiles', { clear = true })
+
+vim.api.nvim_create_autocmd('LspAttach', { -- nvim-jdtls's *.class autocmd also matches Kotlin's jar:// and jrt:// URIs.
+    group = classfile_group,
+    once = true,
+    callback = function() vim.api.nvim_clear_autocmds({ group = 'jdtls', pattern = '*.class' }) end,
+})
+
+vim.api.nvim_create_autocmd('BufReadCmd', {
+    group = classfile_group,
+    pattern = { 'jar://*', 'jrt://*' },
+    callback = open_kotlin_archive_uri,
+})
+
+vim.api.nvim_create_autocmd('BufReadCmd', {
+    group = classfile_group,
+    pattern = '*.class',
+    callback = function(args)
+        if args.match:find('://', 1, true) then return end
+        require('jdtls').open_classfile(args.buf, args.match)
+    end,
+})
+
 vim.lsp.enable({
     'bashls',
     'cssls',
@@ -459,6 +540,8 @@ vim.lsp.enable({
     'gopls',
     'html',
     'jsonls',
+    'jdtls',
+    'kotlin_lsp',
     'lua_ls',
     'tailwindcss',
     'terraformls',
@@ -480,6 +563,28 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Keymaps
 local fzf = require('fzf-lua')
 
+local function lsp_opts(title, jump1)
+    local separator = '\31' -- Unit Separator
+    return {
+        fzf_opts = { ['--delimiter'] = separator, ['--with-nth'] = '1' },
+        jump1 = jump1,
+        regex_filter = function(item)
+            if vim.startswith(item.filename, 'jdt://') and item.filename:find('/kotlin_generated=/true', 1, true) then
+                return false
+            end
+
+            local info = library_info(item.filename)
+            if not info then return true end
+
+            item.filename = string.format('%s/%s:%d:%d%s%s', info.library, info.filename, item.lnum, item.col, separator, item.filename)
+            return true
+        end,
+        _headers = { 'actions' },
+        _fmt = { _from = function(entry) return entry:match(separator .. '(.*)$') or entry end },
+        winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = title },
+    }
+end
+
 vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
@@ -489,14 +594,14 @@ vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower windo
 vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
-vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ silent = true, previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
-vim.keymap.set('n', 'gd', function() fzf.lsp_definitions() end, { desc = 'Go to definition' })
+vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
+vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')) end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
-vim.keymap.set('n', 'gi', function() fzf.lsp_implementations({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Implementations' } }) end, { desc = 'Go to implementation' })
-vim.keymap.set('n', 'gp', function() fzf.lsp_definitions({ jump1 = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.50, width = 0.60, title = 'Peek', preview = { layout = 'vertical', vertical = 'up:75%' } } }) end, { desc = 'Peek definition' })
-vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Type Definitions' } }) end, { desc = 'Go to type definition' })
-vim.keymap.set('n', 'gu', function() fzf.lsp_references({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Usage' } }) end, { desc = 'Go to references' })
+vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_opts('Implementations')) end, { desc = 'Go to implementation' })
+vim.keymap.set('n', 'gp', function() fzf.lsp_definitions(lsp_opts('Peek', false)) end, { desc = 'Peek definition' })
+vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions')) end, { desc = 'Go to type definition' })
+vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_opts('Usage')) end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
