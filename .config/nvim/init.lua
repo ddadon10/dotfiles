@@ -563,8 +563,8 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Keymaps
 local fzf = require('fzf-lua')
 
-local function lsp_location_opts(title, jump1)
-    local separator = '\31'
+local function lsp_opts(title, jump1)
+    local separator = '\31' -- Unit Separator
     return {
         fzf_opts = { ['--delimiter'] = separator, ['--with-nth'] = '1' },
         jump1 = jump1,
@@ -595,13 +595,13 @@ vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper windo
 vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
-vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_location_opts('Definitions')) end, { desc = 'Go to definition' })
+vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')) end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
-vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_location_opts('Implementations')) end, { desc = 'Go to implementation' })
-vim.keymap.set('n', 'gp', function() fzf.lsp_definitions(lsp_location_opts('Peek', false)) end, { desc = 'Peek definition' })
-vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_location_opts('Type Definitions')) end, { desc = 'Go to type definition' })
-vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_location_opts('Usage')) end, { desc = 'Go to references' })
+vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_opts('Implementations')) end, { desc = 'Go to implementation' })
+vim.keymap.set('n', 'gp', function() fzf.lsp_definitions(lsp_opts('Peek', false)) end, { desc = 'Peek definition' })
+vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions')) end, { desc = 'Go to type definition' })
+vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_opts('Usage')) end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
