@@ -183,14 +183,8 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
-local function library_info(uri)
+local function jdt_info(uri)
     local library, entry = uri:match('jdt://contents/([^/]+)/([^?]+)')
-
-    if not library then
-        library, entry = uri:match('jar://(.-)!/([^:]+)')
-        library = library and vim.fs.basename(library):gsub('%-sources%.jar$', '.jar')
-    end
-
     if not library then return end
 
     return {
@@ -256,7 +250,7 @@ end
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
-    local info = library_info(vim.api.nvim_buf_get_name(0))
+    local info = jdt_info(vim.api.nvim_buf_get_name(0))
     local filename = info and info.library .. ' › ' .. info.symbol .. '%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
     local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
@@ -333,7 +327,7 @@ if not quick_edit then
     -- Tabline
     require('mini.tabline').setup({
         format = function(buf_id, label)
-            local info = library_info(vim.api.nvim_buf_get_name(buf_id))
+            local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
             if not info then return MiniTabline.default_format(buf_id, label) end
 
             local icon = MiniIcons.get('file', info.filename)
@@ -410,6 +404,7 @@ local treesitter_parsers = {
     'gosum',
     'gotmpl',
     'gowork',
+    'groovy',
     'hcl',
     'html',
     'java',
@@ -480,8 +475,20 @@ vim.lsp.config('lua_ls', {
     },
 })
 
--- Java and Kotlin LSP
+-- Java LSP
+local project_root = vim.env.DEV_PROJECT_ROOT or vim.fn.getcwd()
+
 vim.lsp.config('jdtls', {
+    cmd = {
+        'jdtls',
+        '-data',
+        vim.fs.joinpath(
+            vim.fn.stdpath('cache'),
+            'jdtls',
+            'workspace',
+            vim.fs.basename(project_root) .. '-' .. vim.fn.sha256(project_root):sub(1, 12)
+        ),
+    },
     settings = {
         java = {
             eclipse = { downloadSources = true },
@@ -492,47 +499,6 @@ vim.lsp.config('jdtls', {
     },
 })
 
-vim.lsp.config('kotlin_lsp', { settings = { jetbrains = { kotlin = { ['hints.parameters'] = true } } } })
-
-local function open_kotlin_archive_uri(args)
-    local client = vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = 0 })[1] -- Current source during preview
-        or vim.lsp.get_clients({ name = 'kotlin_lsp', bufnr = vim.fn.bufnr('#') })[1] -- Source before archive jump
-        or vim.lsp.get_clients({ name = 'kotlin_lsp' })[1] -- Fallback without source context
-    assert(client, 'No kotlin_lsp client is available to decompile ' .. args.match)
-
-    local res = assert(client:request_sync('workspace/executeCommand', { command = 'decompile', arguments = { args.match } }, 10000))
-    local result = assert(res.result, res.err and vim.inspect(res.err) or 'No archive contents for ' .. args.match)
-
-    local bo = vim.bo[args.buf]
-    bo.buftype, bo.swapfile, bo.modifiable = 'nofile', false, true
-    vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, vim.split(result.code, '\n'))
-    bo.filetype, bo.modifiable = result.language, false
-    vim.lsp.buf_attach_client(args.buf, client.id)
-end
-
-local classfile_group = vim.api.nvim_create_augroup('ConfigClassfiles', { clear = true })
-
-vim.api.nvim_create_autocmd('LspAttach', { -- nvim-jdtls's *.class autocmd also matches Kotlin's jar:// and jrt:// URIs.
-    group = classfile_group,
-    once = true,
-    callback = function() vim.api.nvim_clear_autocmds({ group = 'jdtls', pattern = '*.class' }) end,
-})
-
-vim.api.nvim_create_autocmd('BufReadCmd', {
-    group = classfile_group,
-    pattern = { 'jar://*', 'jrt://*' },
-    callback = open_kotlin_archive_uri,
-})
-
-vim.api.nvim_create_autocmd('BufReadCmd', {
-    group = classfile_group,
-    pattern = '*.class',
-    callback = function(args)
-        if args.match:find('://', 1, true) then return end
-        require('jdtls').open_classfile(args.buf, args.match)
-    end,
-})
-
 vim.lsp.enable({
     'bashls',
     'cssls',
@@ -541,7 +507,6 @@ vim.lsp.enable({
     'html',
     'jsonls',
     'jdtls',
-    'kotlin_lsp',
     'lua_ls',
     'tailwindcss',
     'terraformls',
@@ -573,7 +538,7 @@ local function lsp_opts(title, jump1)
                 return false
             end
 
-            local info = library_info(item.filename)
+            local info = jdt_info(item.filename)
             if not info then return true end
 
             item.filename = string.format('%s/%s:%d:%d%s%s', info.library, info.filename, item.lnum, item.col, separator, item.filename)
@@ -602,7 +567,7 @@ vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_opts('Implement
 vim.keymap.set('n', 'gp', function() fzf.lsp_definitions(lsp_opts('Peek', false)) end, { desc = 'Peek definition' })
 vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions')) end, { desc = 'Go to type definition' })
 vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_opts('Usage')) end, { desc = 'Go to references' })
-vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
+vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
 vim.keymap.set('n', ']q', '<cmd>cnext<cr>', { desc = 'Next quickfix item' })

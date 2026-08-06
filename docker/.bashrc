@@ -9,14 +9,18 @@ export CGO_ENABLED=0
 export BAT_THEME=gruvbox-dark
 export COLORTERM=truecolor
 export EDITOR=/usr/local/bin/nvim-editor
+export GOMODCACHE=/data/cache/gomod
+export GRADLE_USER_HOME=/data/gradle
 export IS_SANDBOX=1
 export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"
 export LANG=C.UTF-8
 export MANPAGER="bat --plain --language man"
+export NPM_CONFIG_CACHE=/data/cache/npm
 export NODE_ENV=production
 export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
 export SHELL=/bin/bash
 export TERM=xterm-ghostty
+export XDG_CACHE_HOME=/data/cache
 
 # Git
 [ "$(git config --global --get user.name 2>/dev/null || true)" = "$GIT_USER_NAME" ] || git config --global user.name "$GIT_USER_NAME"
