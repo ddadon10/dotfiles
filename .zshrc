@@ -27,10 +27,13 @@ dev() {
     --tty \
     --env "GIT_USER_NAME=$(/usr/bin/git config --global user.name)" \
     --env "GIT_USER_EMAIL=$(/usr/bin/git config --global user.email)" \
+    --env "DEV_PROJECT_ROOT=${PWD}" \
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=volume,src=dev-codex-home,dst=/root/.codex" \
+    --mount "type=volume,src=dev-data,dst=/data" \
+    --mount "type=volume,src=dev-maven,dst=/root/.m2" \
     --workdir /workspace \
     "${DEV_NAME:-ddadon/dev}"
 }

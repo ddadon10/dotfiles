@@ -159,4 +159,6 @@ COPY .codex/skills/ /etc/codex/skills/
 
 COPY AGENTS.md /root/AGENTS.md
 
+RUN mkdir -p /data/cache/gomod /data/cache/npm /data/gradle
+
 CMD ["/bin/bash"]

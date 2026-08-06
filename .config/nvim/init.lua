@@ -475,7 +475,19 @@ vim.lsp.config('lua_ls', {
 })
 
 -- Java LSP
+local project_root = vim.env.DEV_PROJECT_ROOT or vim.fn.getcwd()
+
 vim.lsp.config('jdtls', {
+    cmd = {
+        'jdtls',
+        '-data',
+        vim.fs.joinpath(
+            vim.fn.stdpath('cache'),
+            'jdtls',
+            'workspace',
+            vim.fs.basename(project_root) .. '-' .. vim.fn.sha256(project_root):sub(1, 12)
+        ),
+    },
     settings = {
         java = {
             eclipse = { downloadSources = true },
