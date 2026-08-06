@@ -25,6 +25,7 @@ dev() {
     --rm \
     --interactive \
     --tty \
+    --detach-keys "ctrl-_" \
     --env "GIT_USER_NAME=$(/usr/bin/git config --global user.name)" \
     --env "GIT_USER_EMAIL=$(/usr/bin/git config --global user.email)" \
     --env "DEV_PROJECT_ROOT=${PWD}" \
@@ -44,6 +45,7 @@ g() {
     --rm \
     --interactive \
     --tty \
+    --detach-keys "ctrl-_" \
     --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
@@ -56,6 +58,7 @@ azure() {
     --rm \
     --interactive \
     --tty \
+    --detach-keys "ctrl-_" \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=volume,src=azureclient-data,dst=/data" \
     --workdir /workspace \
