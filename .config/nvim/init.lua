@@ -134,7 +134,7 @@ require('fzf-lua').setup({
     actions = {
         files = {
             true,
-            ['ctrl-q'] = { fn = fzf_actions.file_sel_to_qf, prefix = 'select-all' },
+            ['alt-q'] = { fn = fzf_actions.file_sel_to_qf, prefix = 'select-all' },
         },
     },
     defaults = {
@@ -469,10 +469,14 @@ vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
 vim.keymap.set('n', 'S', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
-vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
-vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
-vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
-vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
+vim.keymap.set('n', '<A-h>', '<C-w>h', { desc = 'Move to left window' })
+vim.keymap.set('n', '<A-j>', '<C-w>j', { desc = 'Move to lower window' })
+vim.keymap.set('n', '<A-k>', '<C-w>k', { desc = 'Move to upper window' })
+vim.keymap.set('n', '<A-l>', '<C-w>l', { desc = 'Move to right window' })
+vim.keymap.set('t', '<A-h>', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
+vim.keymap.set('t', '<A-j>', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
+vim.keymap.set('t', '<A-k>', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
+vim.keymap.set('t', '<A-l>', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
 vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')) end, { desc = 'Go to definition' })
