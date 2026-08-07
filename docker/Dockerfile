@@ -142,14 +142,6 @@ COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
 RUN nvim --headless "+qa"
 
-COPY <<EOF /usr/local/bin/nvim-editor
-#!/usr/bin/env bash
-set -euo pipefail
-NVIM_QUICK_EDIT=1 exec nvim "\$@"
-EOF
-
-RUN chmod +x /usr/local/bin/nvim-editor
-
 RUN mkdir -p /root/.config/lazygit
 COPY .config/lazygit.yml /root/.config/lazygit/config.yml
 

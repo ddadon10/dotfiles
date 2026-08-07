@@ -13,7 +13,7 @@ alias ls='ls -aF --color=auto'
 export CGO_ENABLED=0
 export BAT_THEME=gruvbox-dark
 export COLORTERM=truecolor
-export EDITOR=/usr/local/bin/nvim-editor
+export EDITOR=nvim
 export GOMODCACHE=/data/cache/gomod
 export GRADLE_USER_HOME=/data/gradle
 export IS_SANDBOX=1

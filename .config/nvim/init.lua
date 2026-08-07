@@ -1,5 +1,3 @@
-local quick_edit = vim.env.NVIM_QUICK_EDIT == '1'
-
 -- Options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -101,70 +99,12 @@ local buffers = {}
 local layout_windows = {}
 local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
 
-local function layout_dimensions()
-    local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
-    if vim.o.columns >= desktop_width then
-        -- Desktop: 66 explorer + 1 separator + 2 sign gutter + 154 editor.
-        return {
-            aerial = { height = 16 },
-            codex = { height = 16 },
-            explorer = { width = 66 },
-            quickfix = { height = 16 },
-            terminal = { height = 16 },
-        }
-    end
-
-    -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
-    -- MacBook: 38 explorer + 1 separator + 2 sign gutter + 134 editor.
-    return {
-        aerial = { height = 16 },
-        codex = { height = 16 },
-        explorer = { width = 38 },
-        quickfix = { height = 16 },
-        terminal = { height = 16 },
-    }
-end
-
-local function set_window_width(name, width)
-    local window = layout_windows[name]
-    if not window or not vim.api.nvim_win_is_valid(window) then return end
-    vim.api.nvim_win_set_width(window, width)
-end
-
-local function set_window_height(name, height)
-    local window = layout_windows[name]
-    if not window or not vim.api.nvim_win_is_valid(window) then return end
-    vim.api.nvim_win_set_height(window, height)
-end
-
-local function apply_layout_dimensions()
-    local dimensions = layout_dimensions()
-
-    set_window_width('explorer', dimensions.explorer.width)
-    set_window_height('aerial', dimensions.aerial.height)
-    set_window_height('quickfix', dimensions.quickfix.height)
-    set_window_height('terminal', dimensions.terminal.height)
-    set_window_height('codex', dimensions.codex.height)
-end
-
-local function open_editor_bottom_split(height)
-    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
-        vim.api.nvim_set_current_win(layout_windows.editor)
-    end
-
-    vim.cmd('belowright ' .. height .. 'split')
-    vim.wo.winfixheight = true
-    return vim.api.nvim_get_current_win()
-end
-
 local function toggle_quickfix()
-    local dimensions = layout_dimensions()
-
     if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
         vim.api.nvim_set_current_win(layout_windows.editor)
     end
 
-    require('quicker').toggle({ height = dimensions.quickfix.height, open_cmd_mods = { split = 'belowright' } })
+    require('quicker').toggle({ height = 16, open_cmd_mods = { split = 'belowright' } })
 end
 
 -- Quickfix
@@ -173,11 +113,7 @@ require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
 vim.api.nvim_create_autocmd('FileType', {
     group = layout_group,
     pattern = 'qf',
-    callback = function()
-        layout_windows.quickfix = vim.api.nvim_get_current_win()
-        set_window_height('quickfix', layout_dimensions().quickfix.height)
-        vim.wo.winfixheight = true
-    end,
+    callback = function() vim.api.nvim_win_set_height(0, 16) end,
 })
 
 -- Search
@@ -212,7 +148,7 @@ require('fzf-lua').setup({
         },
     },
     defaults = {
-        copen = 'belowright copen ' .. layout_dimensions().quickfix.height,
+        copen = 'belowright copen 16',
         file_icons = 'mini',
         formatter = 'path.filename_first',
     },
@@ -290,15 +226,18 @@ vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
 })
 
 local function toggle_terminal_panel(name, title, command)
-    local dimensions = layout_dimensions()
-
     if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
         vim.api.nvim_win_hide(layout_windows[name])
         layout_windows[name] = nil
         return
     end
 
-    layout_windows[name] = open_editor_bottom_split(dimensions[name].height)
+    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
+        vim.api.nvim_set_current_win(layout_windows.editor)
+    end
+
+    vim.cmd('belowright 16split')
+    layout_windows[name] = vim.api.nvim_get_current_win()
 
     if buffers[name] and vim.api.nvim_buf_is_valid(buffers[name]) then
         vim.api.nvim_win_set_buf(layout_windows[name], buffers[name])
@@ -323,7 +262,7 @@ local function toggle_terminal()
 end
 
 -- Full layout
-if not quick_edit then
+do
     -- Tabline
     require('mini.tabline').setup({
         format = function(buf_id, label)
@@ -340,7 +279,14 @@ if not quick_edit then
         attach_mode = 'global',
         disable_max_lines = 1000000,
         highlight_on_hover = true,
-        layout = { resize_to_content = false, win_opts = { winbar = '%= Symbols %=' } },
+        layout = {
+            default_direction = 'right',
+            max_width = 40,
+            placement = 'edge',
+            resize_to_content = false,
+            width = 40,
+            win_opts = { winbar = '%= Symbols %=' },
+        },
         show_guides = true,
     })
 
@@ -349,46 +295,24 @@ if not quick_edit then
         filters = { git_ignored = false },
         prefer_startup_root = true,
         update_focused_file = { enable = true, update_root = { enable = true } },
-        view = { side = 'left' },
+        view = { width = 45 },
     })
-
-    local function open_full_layout()
-        if #vim.api.nvim_list_uis() == 0 then return end
-
-        local editor_window = vim.api.nvim_get_current_win()
-        local dimensions = layout_dimensions()
-        layout_windows.editor = editor_window
-
-        require('nvim-tree.api').tree.open()
-        layout_windows.explorer = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
-        vim.wo[layout_windows.explorer].winbar = '%= Explorer %='
-        vim.wo[layout_windows.explorer].winfixwidth = true
-
-        vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
-        layout_windows.aerial = vim.api.nvim_get_current_win()
-        require('aerial').open_in_win(layout_windows.aerial, editor_window)
-        vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
-        vim.wo[layout_windows.aerial].winfixheight = true
-        vim.wo[layout_windows.aerial].winfixwidth = true
-        vim.w[layout_windows.aerial].aerial_set_width = true -- Prevent Aerial's deferred render from resizing the shared vertical split
-
-        vim.api.nvim_set_current_win(editor_window)
-    end
 
     vim.api.nvim_create_autocmd('VimEnter', {
         group = layout_group,
-        callback = open_full_layout,
+        callback = function()
+            if #vim.api.nvim_list_uis() == 0 then return end
+
+            local editor_window = vim.api.nvim_get_current_win()
+            layout_windows.editor = editor_window
+
+            require('nvim-tree.api').tree.open()
+            vim.wo.winbar = '%= Explorer %='
+
+            vim.api.nvim_set_current_win(editor_window)
+        end,
     })
 end
-
-vim.api.nvim_create_autocmd('VimResized', {
-    group = layout_group,
-    callback = function()
-        if #vim.api.nvim_list_uis() == 0 then return end
-        apply_layout_dimensions()
-    end,
-})
 
 -- Treesitter
 local treesitter_parsers = {
@@ -604,4 +528,5 @@ vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winop
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
 vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>s', function() require('aerial').toggle() end, { desc = 'Toggle symbols' })
 vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })
