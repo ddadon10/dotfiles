@@ -582,6 +582,24 @@ vim.keymap.set('n', '<Leader>a', function() fzf.builtin({ previewer = false, win
 vim.keymap.set('n', '<Leader>b', function() require('gitsigns').blame() end, { desc = 'Blame' })
 vim.keymap.set('n', '<Leader>c', toggle_codex, { desc = 'Toggle Codex' })
 vim.keymap.set('n', '<Leader>d', function() require('gitsigns').diffthis() end, { desc = 'Git diff' })
+vim.keymap.set('n', '<Leader>D', function()
+    local source_window = vim.api.nvim_get_current_win()
+    fzf.buffers({
+        actions = {
+            ['enter'] = function(selected, opts)
+                vim.cmd('diffthis')
+                fzf_actions.buf_vsplit(selected, opts)
+                vim.cmd('diffthis')
+                if vim.api.nvim_win_is_valid(source_window) then vim.api.nvim_set_current_win(source_window) end
+            end,
+        },
+        fzf_opts = { ['--no-multi'] = true },
+        ignore_current_buffer = true,
+        previewer = false,
+        show_unloaded = false,
+        winopts = { height = 0.50, title = 'Diff Buffer' },
+    })
+end, { desc = 'Diff buffer' })
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
