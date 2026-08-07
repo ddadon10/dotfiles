@@ -12,7 +12,7 @@ if ! ssh-add -l >/dev/null 2>&1; then
 fi
 
 # Git
-git() { echo "Git is disabled on the host. Use g to run git in a container" >&2; return 1; }
+git() { echo "Git is disabled on the host. Use gclone, gfetch, glsremote, gpull, or gpush" >&2; return 1; }
 
 # Dev Env
 dev() {
@@ -40,7 +40,7 @@ dev() {
 }
 
 # Git Client
-g() {
+_gitclient() {
   docker run \
     --rm \
     --interactive \
@@ -51,6 +51,12 @@ g() {
     --workdir /workspace \
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
+
+alias gclone='_gitclient clone'
+alias gfetch='_gitclient fetch'
+alias glsremote='_gitclient ls-remote'
+alias gpull='_gitclient pull'
+alias gpush='_gitclient push'
 
 # Azure Client
 azure() {
