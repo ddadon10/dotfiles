@@ -264,58 +264,56 @@ local function toggle_terminal()
 end
 
 -- Full layout
-do
-    -- Tabline
-    require('mini.tabline').setup({
-        format = function(buf_id, label)
-            local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
-            if not info then return MiniTabline.default_format(buf_id, label) end
+-- Tabline
+require('mini.tabline').setup({
+    format = function(buf_id, label)
+        local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
+        if not info then return MiniTabline.default_format(buf_id, label) end
 
-            local icon = MiniIcons.get('file', info.filename)
-            return string.format(' %s %s ', icon, info.filename)
-        end,
-    })
+        local icon = MiniIcons.get('file', info.filename)
+        return string.format(' %s %s ', icon, info.filename)
+    end,
+})
 
-    -- Aerial
-    require('aerial').setup({
-        attach_mode = 'global',
-        autojump = true,
-        disable_max_lines = 1000000,
-        highlight_on_hover = true,
-        layout = {
-            default_direction = 'right',
-            max_width = 40,
-            placement = 'edge',
-            resize_to_content = false,
-            width = 40,
-            win_opts = { winbar = '%= Symbols %=' },
-        },
-        show_guides = true,
-    })
+-- Aerial
+require('aerial').setup({
+    attach_mode = 'global',
+    autojump = true,
+    disable_max_lines = 1000000,
+    highlight_on_hover = true,
+    layout = {
+        default_direction = 'right',
+        max_width = 40,
+        placement = 'edge',
+        resize_to_content = false,
+        width = 40,
+        win_opts = { winbar = '%= Symbols %=' },
+    },
+    show_guides = true,
+})
 
-    -- NvimTree
-    require('nvim-tree').setup({
-        filters = { git_ignored = false },
-        prefer_startup_root = true,
-        update_focused_file = { enable = true, update_root = { enable = true } },
-        view = { width = 45 },
-    })
+-- NvimTree
+require('nvim-tree').setup({
+    filters = { git_ignored = false },
+    prefer_startup_root = true,
+    update_focused_file = { enable = true, update_root = { enable = true } },
+    view = { width = 45 },
+})
 
-    vim.api.nvim_create_autocmd('VimEnter', {
-        group = layout_group,
-        callback = function()
-            if #vim.api.nvim_list_uis() == 0 then return end
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = layout_group,
+    callback = function()
+        if #vim.api.nvim_list_uis() == 0 then return end
 
-            local editor_window = vim.api.nvim_get_current_win()
-            layout_windows.editor = editor_window
+        local editor_window = vim.api.nvim_get_current_win()
+        layout_windows.editor = editor_window
 
-            require('nvim-tree.api').tree.open()
-            vim.wo.winbar = '%= Explorer %='
+        require('nvim-tree.api').tree.open()
+        vim.wo.winbar = '%= Explorer %='
 
-            vim.api.nvim_set_current_win(editor_window)
-        end,
-    })
-end
+        vim.api.nvim_set_current_win(editor_window)
+    end,
+})
 
 -- Treesitter
 local treesitter_parsers = {
