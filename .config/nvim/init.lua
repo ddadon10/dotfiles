@@ -110,12 +110,6 @@ end
 -- Quickfix
 require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
 
-vim.api.nvim_create_autocmd('FileType', {
-    group = layout_group,
-    pattern = 'qf',
-    callback = function() vim.api.nvim_win_set_height(0, 16) end,
-})
-
 -- Search
 local fzf_actions = require('fzf-lua.actions')
 
@@ -277,6 +271,7 @@ do
     -- Aerial
     require('aerial').setup({
         attach_mode = 'global',
+        autojump = true,
         disable_max_lines = 1000000,
         highlight_on_hover = true,
         layout = {
