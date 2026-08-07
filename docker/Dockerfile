@@ -1,6 +1,6 @@
 # check=error=true
 
-FROM debian:sid-20260713
+FROM debian:sid-20260803
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -136,19 +136,11 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN npm install -g ccusage
-RUN npm install -g @openai/codex@0.145.0
+RUN npm install -g @openai/codex@0.147.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
 RUN nvim --headless "+qa"
-
-COPY <<EOF /usr/local/bin/nvim-editor
-#!/usr/bin/env bash
-set -euo pipefail
-NVIM_QUICK_EDIT=1 exec nvim "\$@"
-EOF
-
-RUN chmod +x /usr/local/bin/nvim-editor
 
 RUN mkdir -p /root/.config/lazygit
 COPY .config/lazygit.yml /root/.config/lazygit/config.yml

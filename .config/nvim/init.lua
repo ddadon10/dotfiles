@@ -1,5 +1,3 @@
-local quick_edit = vim.env.NVIM_QUICK_EDIT == '1'
-
 -- Options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -55,25 +53,37 @@ vim.pack.add({
 })
 
 -- Colorscheme
-local gruvbox = require('gruvbox')
-local palette = gruvbox.palette
+vim.api.nvim_create_autocmd('ColorSchemePre', {
+    group = vim.api.nvim_create_augroup('ConfigColorscheme', { clear = true }),
+    pattern = 'gruvbox',
+    callback = function()
+        local pal = require('gruvbox').palette
+        local bg = vim.o.background
+        local fg = bg == 'dark' and 'light' or 'dark'
+        local accent = bg == 'dark' and 'bright' or 'faded'
 
-gruvbox.setup({
-    overrides = {
-        QuickScopePrimary = {
-            bold = true,
-            fg = palette.bright_blue,
-            underline = true,
-        },
-        QuickScopeSecondary = {
-            fg = palette.neutral_red,
-            underline = true,
-        },
-    },
+        require('gruvbox').setup({
+            overrides = {
+                QuickScopePrimary = { bold = true, fg = pal[accent .. '_blue'], underline = true },
+                QuickScopeSecondary = { fg = pal.neutral_red, underline = true },
+                MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
+                MiniTablineFill = { bg = pal[bg .. '0_soft'] },
+                MiniTablineHidden = { fg = pal.gray },
+                MiniTablineModifiedCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_orange'] },
+                MiniTablineModifiedHidden = { bg = pal[bg .. '1'], fg = pal.neutral_orange },
+                MiniTablineModifiedVisible = { bg = pal[bg .. '1'], fg = pal[accent .. '_orange'] },
+                MiniTablineVisible = { fg = pal[fg .. '3'] },
+                SignColumn = { bg = pal[bg .. '0'] },
+                WinBar = { bold = true, fg = pal.gray },
+                WinBarNC = { bg = pal[bg .. '0'], bold = true, fg = pal[bg .. '4'] },
+                WinSeparator = { fg = pal[bg .. '1'] },
+                TerminalNormal = { bg = pal[bg .. '0_hard'], fg = pal[fg .. '1'] },
+                TerminalEndOfBuffer = { bg = pal[bg .. '0_hard'], fg = pal[bg .. '0_hard'] },
+            },
+        })
+    end,
 })
 vim.cmd.colorscheme('gruvbox')
-vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d2021', fg = '#ebdbb2' })
-vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d2021', fg = '#1d2021' })
 
 -- Icons
 require('mini.icons').setup()
@@ -101,83 +111,11 @@ local buffers = {}
 local layout_windows = {}
 local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
 
-local function layout_dimensions()
-    local desktop_width = 223 -- 1920x1080 with JetBrains Mono 14px Bold.
-    if vim.o.columns >= desktop_width then
-        -- Desktop: 66 explorer + 1 separator + 2 sign gutter + 154 editor.
-        return {
-            aerial = { height = 16 },
-            codex = { height = 16 },
-            explorer = { width = 66 },
-            quickfix = { height = 16 },
-            terminal = { height = 16 },
-        }
-    end
-
-    -- Macbook Pro 14" has 175 columns with Jetbrains Mono 14px Bold.
-    -- MacBook: 38 explorer + 1 separator + 2 sign gutter + 134 editor.
-    return {
-        aerial = { height = 16 },
-        codex = { height = 16 },
-        explorer = { width = 38 },
-        quickfix = { height = 16 },
-        terminal = { height = 16 },
-    }
-end
-
-local function set_window_width(name, width)
-    local window = layout_windows[name]
-    if not window or not vim.api.nvim_win_is_valid(window) then return end
-    vim.api.nvim_win_set_width(window, width)
-end
-
-local function set_window_height(name, height)
-    local window = layout_windows[name]
-    if not window or not vim.api.nvim_win_is_valid(window) then return end
-    vim.api.nvim_win_set_height(window, height)
-end
-
-local function apply_layout_dimensions()
-    local dimensions = layout_dimensions()
-
-    set_window_width('explorer', dimensions.explorer.width)
-    set_window_height('aerial', dimensions.aerial.height)
-    set_window_height('quickfix', dimensions.quickfix.height)
-    set_window_height('terminal', dimensions.terminal.height)
-    set_window_height('codex', dimensions.codex.height)
-end
-
-local function open_editor_bottom_split(height)
-    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
-        vim.api.nvim_set_current_win(layout_windows.editor)
-    end
-
-    vim.cmd('belowright ' .. height .. 'split')
-    vim.wo.winfixheight = true
-    return vim.api.nvim_get_current_win()
-end
-
-local function toggle_quickfix()
-    local dimensions = layout_dimensions()
-
-    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
-        vim.api.nvim_set_current_win(layout_windows.editor)
-    end
-
-    require('quicker').toggle({ height = dimensions.quickfix.height, open_cmd_mods = { split = 'belowright' } })
-end
-
 -- Quickfix
-require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
-
-vim.api.nvim_create_autocmd('FileType', {
-    group = layout_group,
-    pattern = 'qf',
-    callback = function()
-        layout_windows.quickfix = vim.api.nvim_get_current_win()
-        set_window_height('quickfix', layout_dimensions().quickfix.height)
-        vim.wo.winfixheight = true
-    end,
+require('quicker').setup({
+    max_filename_width = function() return 45 end,
+    opts = { winbar = '%= Quickfix %=' },
+    trim_leading_whitespace = 'all',
 })
 
 -- Search
@@ -208,11 +146,11 @@ require('fzf-lua').setup({
     actions = {
         files = {
             true,
-            ['ctrl-q'] = { fn = fzf_actions.file_sel_to_qf, prefix = 'select-all' },
+            ['alt-q'] = { fn = fzf_actions.file_sel_to_qf, prefix = 'select-all' },
         },
     },
     defaults = {
-        copen = 'belowright copen ' .. layout_dimensions().quickfix.height,
+        copen = function() require('quicker').open({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end,
         file_icons = 'mini',
         formatter = 'path.filename_first',
     },
@@ -290,15 +228,18 @@ vim.api.nvim_create_autocmd({ 'TermOpen', 'BufEnter' }, {
 })
 
 local function toggle_terminal_panel(name, title, command)
-    local dimensions = layout_dimensions()
-
     if layout_windows[name] and vim.api.nvim_win_is_valid(layout_windows[name]) then
         vim.api.nvim_win_hide(layout_windows[name])
         layout_windows[name] = nil
         return
     end
 
-    layout_windows[name] = open_editor_bottom_split(dimensions[name].height)
+    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
+        vim.api.nvim_set_current_win(layout_windows.editor)
+    end
+
+    vim.cmd('belowright 16split')
+    layout_windows[name] = vim.api.nvim_get_current_win()
 
     if buffers[name] and vim.api.nvim_buf_is_valid(buffers[name]) then
         vim.api.nvim_win_set_buf(layout_windows[name], buffers[name])
@@ -323,70 +264,54 @@ local function toggle_terminal()
 end
 
 -- Full layout
-if not quick_edit then
-    -- Tabline
-    require('mini.tabline').setup({
-        format = function(buf_id, label)
-            local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
-            if not info then return MiniTabline.default_format(buf_id, label) end
+-- Tabline
+require('mini.tabline').setup({
+    format = function(buf_id, label)
+        local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
+        if not info then return MiniTabline.default_format(buf_id, label) end
 
-            local icon = MiniIcons.get('file', info.filename)
-            return string.format(' %s %s ', icon, info.filename)
-        end,
-    })
+        local icon = MiniIcons.get('file', info.filename)
+        return string.format(' %s %s ', icon, info.filename)
+    end,
+})
 
-    -- Aerial
-    require('aerial').setup({
-        attach_mode = 'global',
-        disable_max_lines = 1000000,
-        highlight_on_hover = true,
-        layout = { resize_to_content = false, win_opts = { winbar = '%= Symbols %=' } },
-        show_guides = true,
-    })
+-- Aerial
+require('aerial').setup({
+    attach_mode = 'global',
+    autojump = true,
+    disable_max_lines = 1000000,
+    highlight_on_hover = true,
+    layout = {
+        default_direction = 'right',
+        max_width = 40,
+        placement = 'edge',
+        resize_to_content = false,
+        width = 40,
+        win_opts = { winbar = '%= Symbols %=' },
+    },
+    show_guides = true,
+})
 
-    -- NvimTree
-    require('nvim-tree').setup({
-        filters = { git_ignored = false },
-        prefer_startup_root = true,
-        update_focused_file = { enable = true, update_root = { enable = true } },
-        view = { side = 'left' },
-    })
+-- NvimTree
+require('nvim-tree').setup({
+    filters = { git_ignored = false },
+    prefer_startup_root = true,
+    update_focused_file = { enable = true, update_root = { enable = true } },
+    view = { width = 45 },
+})
 
-    local function open_full_layout()
-        if #vim.api.nvim_list_uis() == 0 then return end
-
-        local editor_window = vim.api.nvim_get_current_win()
-        local dimensions = layout_dimensions()
-        layout_windows.editor = editor_window
-
-        require('nvim-tree.api').tree.open()
-        layout_windows.explorer = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_width(layout_windows.explorer, dimensions.explorer.width)
-        vim.wo[layout_windows.explorer].winbar = '%= Explorer %='
-        vim.wo[layout_windows.explorer].winfixwidth = true
-
-        vim.cmd('belowright ' .. dimensions.aerial.height .. 'split')
-        layout_windows.aerial = vim.api.nvim_get_current_win()
-        require('aerial').open_in_win(layout_windows.aerial, editor_window)
-        vim.api.nvim_win_set_height(layout_windows.aerial, dimensions.aerial.height)
-        vim.wo[layout_windows.aerial].winfixheight = true
-        vim.wo[layout_windows.aerial].winfixwidth = true
-        vim.w[layout_windows.aerial].aerial_set_width = true -- Prevent Aerial's deferred render from resizing the shared vertical split
-
-        vim.api.nvim_set_current_win(editor_window)
-    end
-
-    vim.api.nvim_create_autocmd('VimEnter', {
-        group = layout_group,
-        callback = open_full_layout,
-    })
-end
-
-vim.api.nvim_create_autocmd('VimResized', {
+vim.api.nvim_create_autocmd('VimEnter', {
     group = layout_group,
     callback = function()
         if #vim.api.nvim_list_uis() == 0 then return end
-        apply_layout_dimensions()
+
+        local editor_window = vim.api.nvim_get_current_win()
+        layout_windows.editor = editor_window
+
+        require('nvim-tree.api').tree.open()
+        vim.wo.winbar = '%= Explorer %='
+
+        vim.api.nvim_set_current_win(editor_window)
     end,
 })
 
@@ -554,10 +479,14 @@ vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
 vim.keymap.set('n', 'S', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
-vim.keymap.set('t', '<C-w>h', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
-vim.keymap.set('t', '<C-w>j', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
-vim.keymap.set('t', '<C-w>k', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
-vim.keymap.set('t', '<C-w>l', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
+vim.keymap.set('n', '<A-h>', '<C-w>h', { desc = 'Move to left window' })
+vim.keymap.set('n', '<A-j>', '<C-w>j', { desc = 'Move to lower window' })
+vim.keymap.set('n', '<A-k>', '<C-w>k', { desc = 'Move to upper window' })
+vim.keymap.set('n', '<A-l>', '<C-w>l', { desc = 'Move to right window' })
+vim.keymap.set('t', '<A-h>', '<C-\\><C-n><C-w>h', { desc = 'Move to left window' })
+vim.keymap.set('t', '<A-j>', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window' })
+vim.keymap.set('t', '<A-k>', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
+vim.keymap.set('t', '<A-l>', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
 vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')) end, { desc = 'Go to definition' })
@@ -603,5 +532,6 @@ end, { desc = 'Diff buffer' })
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
-vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>s', function() require('aerial').toggle() end, { desc = 'Toggle symbols' })
 vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })

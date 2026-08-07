@@ -2,7 +2,6 @@ gui:
   showCommandLog: false
   showRandomTip: false
   tabWidth: 2
-  mouseEvents: false
   nerdFontsVersion: "3"
 
 git:
