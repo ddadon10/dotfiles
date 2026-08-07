@@ -53,25 +53,37 @@ vim.pack.add({
 })
 
 -- Colorscheme
-local gruvbox = require('gruvbox')
-local palette = gruvbox.palette
+vim.api.nvim_create_autocmd('ColorSchemePre', {
+    group = vim.api.nvim_create_augroup('ConfigColorscheme', { clear = true }),
+    pattern = 'gruvbox',
+    callback = function()
+        local pal = require('gruvbox').palette
+        local bg = vim.o.background
+        local fg = bg == 'dark' and 'light' or 'dark'
+        local accent = bg == 'dark' and 'bright' or 'faded'
 
-gruvbox.setup({
-    overrides = {
-        QuickScopePrimary = {
-            bold = true,
-            fg = palette.bright_blue,
-            underline = true,
-        },
-        QuickScopeSecondary = {
-            fg = palette.neutral_red,
-            underline = true,
-        },
-    },
+        require('gruvbox').setup({
+            overrides = {
+                QuickScopePrimary = { bold = true, fg = pal[accent .. '_blue'], underline = true },
+                QuickScopeSecondary = { fg = pal.neutral_red, underline = true },
+                MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
+                MiniTablineFill = { bg = pal[bg .. '0_soft'] },
+                MiniTablineHidden = { fg = pal.gray },
+                MiniTablineModifiedCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_orange'] },
+                MiniTablineModifiedHidden = { bg = pal[bg .. '1'], fg = pal.neutral_orange },
+                MiniTablineModifiedVisible = { bg = pal[bg .. '1'], fg = pal[accent .. '_orange'] },
+                MiniTablineVisible = { fg = pal[fg .. '3'] },
+                SignColumn = { bg = pal[bg .. '0'] },
+                WinBar = { bold = true, fg = pal.gray },
+                WinBarNC = { bg = pal[bg .. '0'], bold = true, fg = pal[bg .. '4'] },
+                WinSeparator = { fg = pal[bg .. '1'] },
+                TerminalNormal = { bg = pal[bg .. '0_hard'], fg = pal[fg .. '1'] },
+                TerminalEndOfBuffer = { bg = pal[bg .. '0_hard'], fg = pal[bg .. '0_hard'] },
+            },
+        })
+    end,
 })
 vim.cmd.colorscheme('gruvbox')
-vim.api.nvim_set_hl(0, 'TerminalNormal', { bg = '#1d2021', fg = '#ebdbb2' })
-vim.api.nvim_set_hl(0, 'TerminalEndOfBuffer', { bg = '#1d2021', fg = '#1d2021' })
 
 -- Icons
 require('mini.icons').setup()
