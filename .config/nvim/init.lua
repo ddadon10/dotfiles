@@ -99,16 +99,12 @@ local buffers = {}
 local layout_windows = {}
 local layout_group = vim.api.nvim_create_augroup('ConfigLayout', { clear = true })
 
-local function toggle_quickfix()
-    if layout_windows.editor and vim.api.nvim_win_is_valid(layout_windows.editor) then
-        vim.api.nvim_set_current_win(layout_windows.editor)
-    end
-
-    require('quicker').toggle({ height = 16, open_cmd_mods = { split = 'belowright' } })
-end
-
 -- Quickfix
-require('quicker').setup({ opts = { winbar = '%= Quickfix %=' } })
+require('quicker').setup({
+    max_filename_width = function() return 45 end,
+    opts = { winbar = '%= Quickfix %=' },
+    trim_leading_whitespace = 'all',
+})
 
 -- Search
 local fzf_actions = require('fzf-lua.actions')
@@ -142,7 +138,7 @@ require('fzf-lua').setup({
         },
     },
     defaults = {
-        copen = 'belowright copen 16',
+        copen = function() require('quicker').open({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end,
         file_icons = 'mini',
         formatter = 'path.filename_first',
     },
@@ -522,6 +518,6 @@ end, { desc = 'Diff buffer' })
 vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
-vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = 'Toggle quickfix' })
+vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Toggle quickfix' })
 vim.keymap.set('n', '<Leader>s', function() require('aerial').toggle() end, { desc = 'Toggle symbols' })
 vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })
