@@ -1,11 +1,10 @@
-# check=skip=SecretsUsedInArgOrEnv;error=true
+# check=error=true
 
-FROM debian:stable-20260803-slim
+FROM debian@sha256:0d97731c59efdde181e19c4a5ec22d16e9eefcb73175598b9b7bae712c7214eb
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
 ENV LANG=C.UTF-8
 ENV COLORTERM=truecolor
 ENV TERM=xterm-256color

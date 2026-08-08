@@ -1,18 +1,6 @@
-# Autocomplete
-autoload -Uz compinit && compinit
-autoload -Uz bashcompinit && bashcompinit
-
-# Aliases
+# General Aliases
 alias rm='rm -i'
 alias ls='ls -aF'
-
-# Load git-related ssh keys into the default ssh agent
-if ! ssh-add -l >/dev/null 2>&1; then
-  ssh-add --apple-use-keychain "${HOME}/.ssh/github_ed25519" "${HOME}/.ssh/azure_rsa"
-fi
-
-# Git
-git() { echo "Git is disabled on the host. Use gclone, gfetch, glsremote, gpull, or gpush" >&2; return 1; }
 
 # Dev Env
 dev() {
@@ -21,6 +9,7 @@ dev() {
     lsof -nP -iTCP:"$dev_web_port" -sTCP:LISTEN >/dev/null 2>&1 || break
   done
 
+  docker network create dev >/dev/null 2>&1 || true
   docker run \
     --rm \
     --interactive \
@@ -31,6 +20,7 @@ dev() {
     --env "DEV_PROJECT_ROOT=${PWD}" \
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
+    --network dev \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=volume,src=dev-codex-home,dst=/root/.codex" \
     --mount "type=volume,src=dev-data,dst=/data" \
@@ -40,18 +30,22 @@ dev() {
 }
 
 # Git Client
+git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
+
 _gitclient() {
-  docker run \
+  container network create git >/dev/null 2>&1 || true
+  SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" container run \
     --rm \
     --interactive \
     --tty \
-    --detach-keys "ctrl-_" \
-    --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
+    --ssh \
+    --network git \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
 
+alias gcheckout='_gitclient checkout'
 alias gclone='_gitclient clone'
 alias gfetch='_gitclient fetch'
 alias glsremote='_gitclient ls-remote'
@@ -60,14 +54,12 @@ alias gpush='_gitclient push'
 
 # Azure Client
 azure() {
+  docker network create azure >/dev/null 2>&1 || true
   docker run \
     --rm \
     --interactive \
     --tty \
-    --detach-keys "ctrl-_" \
-    --mount "type=bind,src=${PWD},dst=/workspace" \
-    --mount "type=volume,src=azureclient-data,dst=/data" \
-    --workdir /workspace \
+    --network azure \
     "${AZURECLIENT_NAME:-ddadon/azureclient}"
 }
 

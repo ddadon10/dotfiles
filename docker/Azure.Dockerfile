@@ -1,6 +1,6 @@
 # check=error=true
 
-FROM debian:stable-20260803-slim
+FROM debian@sha256:0d97731c59efdde181e19c4a5ec22d16e9eefcb73175598b9b7bae712c7214eb
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 RUN curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' | bash
 
 # Install kubectl and kubelogin
-RUN AZURE_CONFIG_DIR=/tmp/azure-cli az aks install-cli && rm -r /tmp/azure-cli
+RUN az aks install-cli
 
 # Install k9s
 RUN <<EOF
@@ -43,18 +43,11 @@ RUN kubectl completion bash > /etc/bash_completion.d/kubectl && \
     kubelogin completion bash > /etc/bash_completion.d/kubelogin && \
     k9s completion bash > /etc/bash_completion.d/k9s
 
-RUN mkdir -p /data/.kube /data/state/bash && ln -s /data/.kube /root/.kube
-
 COPY <<'EOF' /root/.bashrc
-export AZURE_CONFIG_DIR=/data/config/.azure
 export COLORTERM=truecolor
 export EDITOR=vim
 export SHELL=/bin/bash
 export TERM=xterm-256color
-export XDG_CACHE_HOME=/data/cache
-export XDG_CONFIG_HOME=/data/config
-export XDG_DATA_HOME=/data/share
-export XDG_STATE_HOME=/data/state
 
 ps1_azure_blue='\[\033[38;2;0;120;212m\]'
 ps1_path_blue='\[\033[38;2;69;133;136m\]'
@@ -66,11 +59,9 @@ ps1_arrow_icon=$'\u276F'
 PS1="${ps1_azure_blue}${ps1_azure_icon}${ps1_reset_attr} ${ps1_path_blue}\\w${ps1_reset_attr} ${ps1_arrow_yellow}${ps1_arrow_icon}${ps1_reset_attr} "
 shopt -s histappend
 shopt -s extglob
-HISTFILE=/data/state/bash/history
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTCONTROL=ignoreboth:erasedups
-PROMPT_COMMAND='history -a; history -n'
 source /usr/share/bash-completion/bash_completion
 EOF
 

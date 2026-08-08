@@ -1,6 +1,7 @@
 # Aliases
 alias cat='bat --plain --paging never'
 alias codexplorer='codex --model gpt-5.6-sol --config model_reasoning_effort=ultra'
+alias gcheckout='git checkout'
 alias gclone='git clone'
 alias gfetch='git fetch'
 alias glsremote='git ls-remote'
