@@ -1,18 +1,6 @@
-# Autocomplete
-autoload -Uz compinit && compinit
-autoload -Uz bashcompinit && bashcompinit
-
 # Aliases
 alias rm='rm -i'
 alias ls='ls -aF'
-
-# Load git-related ssh keys into the default ssh agent
-if ! ssh-add -l >/dev/null 2>&1; then
-  ssh-add --apple-use-keychain "${HOME}/.ssh/github_ed25519" "${HOME}/.ssh/azure_rsa"
-fi
-
-# Git
-git() { echo "Git is disabled on the host. Use gclone, gfetch, glsremote, gpull, or gpush" >&2; return 1; }
 
 # Dev Env
 dev() {
@@ -39,20 +27,24 @@ dev() {
     "${DEV_NAME:-ddadon/dev}"
 }
 
-# Git Client
+# Git
+git() { echo "Git is disabled on the host. Use gcheckout, gclone, gcommit, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
+
 _gitclient() {
-  docker run \
+  SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" \
+  container run \
     --rm \
     --interactive \
     --tty \
-    --detach-keys "ctrl-_" \
-    --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
+    --ssh \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
 }
 
+alias gcheckout='_gitclient checkout'
 alias gclone='_gitclient clone'
+alias gcommit='_gitclient commit'
 alias gfetch='_gitclient fetch'
 alias glsremote='_gitclient ls-remote'
 alias gpull='_gitclient pull'
