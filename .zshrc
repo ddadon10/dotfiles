@@ -31,7 +31,7 @@ dev() {
 git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
 
 _gitclient() {
-  container network create git 2>/dev/null || true
+  container network create git >/dev/null 2>&1 || true
   SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" container run \
     --rm \
     --interactive \
@@ -52,7 +52,7 @@ alias gpush='_gitclient push'
 
 # Azure Client
 azure() {
-  container network create azure 2>/dev/null || true
+  container network create azure >/dev/null 2>&1 || true
   container run \
     --rm \
     --interactive \
