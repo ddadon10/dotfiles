@@ -31,12 +31,13 @@ dev() {
 git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
 
 _gitclient() {
-  SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" \
-  container run \
+  container network create git 2>/dev/null || true
+  SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" container run \
     --rm \
     --interactive \
     --tty \
     --ssh \
+    --network git \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
     "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
@@ -51,13 +52,13 @@ alias gpush='_gitclient push'
 
 # Azure Client
 azure() {
-  docker run \
+  container network create azure 2>/dev/null || true
+  container run \
     --rm \
     --interactive \
     --tty \
-    --detach-keys "ctrl-_" \
+    --network azure \
     --mount "type=bind,src=${PWD},dst=/workspace" \
-    --mount "type=volume,src=azureclient-data,dst=/data" \
     --workdir /workspace \
     "${AZURECLIENT_NAME:-ddadon/azureclient}"
 }
