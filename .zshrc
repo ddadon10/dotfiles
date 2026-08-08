@@ -1,4 +1,4 @@
-# Aliases
+# General Aliases
 alias rm='rm -i'
 alias ls='ls -aF'
 
@@ -27,8 +27,8 @@ dev() {
     "${DEV_NAME:-ddadon/dev}"
 }
 
-# Git
-git() { echo "Git is disabled on the host. Use gcheckout, gclone, gcommit, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
+# Git Client
+git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
 
 _gitclient() {
   SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" \
@@ -44,7 +44,6 @@ _gitclient() {
 
 alias gcheckout='_gitclient checkout'
 alias gclone='_gitclient clone'
-alias gcommit='_gitclient commit'
 alias gfetch='_gitclient fetch'
 alias glsremote='_gitclient ls-remote'
 alias gpull='_gitclient pull'
