@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 RUN curl -fsSL 'https://azurecliprod.blob.core.windows.net/$root/deb_install.sh' | bash
 
 # Install kubectl and kubelogin
-RUN az aks install-cli && rm -rf "$HOME/.azure"
+RUN az aks install-cli
 
 # Install k9s
 RUN <<EOF

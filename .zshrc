@@ -9,6 +9,7 @@ dev() {
     lsof -nP -iTCP:"$dev_web_port" -sTCP:LISTEN >/dev/null 2>&1 || break
   done
 
+  docker network create dev >/dev/null 2>&1 || true
   docker run \
     --rm \
     --interactive \
@@ -19,6 +20,7 @@ dev() {
     --env "DEV_PROJECT_ROOT=${PWD}" \
     --env "DEV_WEB_PORT=${dev_web_port}" \
     --publish "127.0.0.1:${dev_web_port}:${dev_web_port}" \
+    --network dev
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --mount "type=volume,src=dev-codex-home,dst=/root/.codex" \
     --mount "type=volume,src=dev-data,dst=/data" \
@@ -52,14 +54,12 @@ alias gpush='_gitclient push'
 
 # Azure Client
 azure() {
-  container network create azure >/dev/null 2>&1 || true
-  container run \
+  docker network create azure >/dev/null 2>&1 || true
+  docker run \
     --rm \
     --interactive \
     --tty \
     --network azure \
-    --mount "type=bind,src=${PWD},dst=/workspace" \
-    --workdir /workspace \
     "${AZURECLIENT_NAME:-ddadon/azureclient}"
 }
 
