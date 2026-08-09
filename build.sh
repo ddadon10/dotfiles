@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-docker build --file docker/Dockerfile --tag "${DEV_NAME:-ddadon/dev}" .
-container build --file docker/Git.Dockerfile --tag "${GITCLIENT_NAME:-ddadon/gitclient}" .
-docker build --file docker/Azure.Dockerfile --tag "${AZURECLIENT_NAME:-ddadon/azureclient}" .
+docker tag ddadon/dev ddadon/dev:previous >/dev/null 2>&1 || true
+docker build --file docker/Dockerfile --tag ddadon/dev .
+
+container image tag ddadon/gitclient ddadon/gitclient:previous >/dev/null 2>&1 || true
+container build --file docker/Git.Dockerfile --tag ddadon/gitclient .
+
+docker tag ddadon/azureclient ddadon/azureclient:previous >/dev/null 2>&1 || true
+docker build --file docker/Azure.Dockerfile --tag ddadon/azureclient .
