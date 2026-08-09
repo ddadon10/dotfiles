@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     bind9-dnsutils \
     build-essential \
     ca-certificates \
+    chromium \
     curl \
     fd-find \
     fzf \
@@ -26,6 +27,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     htop \
     httpie \
     iproute2 \
+    iputils-ping \
     jq \
     less \
     libsimdjson33 \
@@ -149,7 +151,7 @@ COPY docker/.bashrc /root/.bashrc
 COPY .codex/config.toml /etc/codex/config.toml
 COPY .codex/skills/ /etc/codex/skills/
 
-COPY AGENTS.md /root/AGENTS.md
+COPY AGENTS.md /etc/codex/AGENTS.md
 
 RUN mkdir -p /data/cache/gomod /data/cache/npm /data/gradle
 

@@ -28,6 +28,9 @@ export SHELL=/bin/bash
 export TERM=xterm-ghostty
 export XDG_CACHE_HOME=/data/cache
 
+# Codex
+cp /etc/codex/AGENTS.md /root/.codex/AGENTS.md
+
 # Git
 [ "$(git config --global --get user.name 2>/dev/null || true)" = "$GIT_USER_NAME" ] || git config --global user.name "$GIT_USER_NAME"
 [ "$(git config --global --get user.email 2>/dev/null || true)" = "$GIT_USER_EMAIL" ] || git config --global user.email "$GIT_USER_EMAIL"
