@@ -1,6 +1,5 @@
 model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
-developer_instructions = "You are running in a Docker container.You cannot run Docker."
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 web_search = "live"
