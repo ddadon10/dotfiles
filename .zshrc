@@ -31,7 +31,7 @@ dev() {
     --mount "type=volume,src=dev-data,dst=/data" \
     --mount "type=volume,src=dev-maven,dst=/root/.m2" \
     --workdir /workspace \
-    "${DEV_NAME:-ddadon/dev}"
+    ddadon/dev:current
 }
 
 # Git Client
@@ -48,7 +48,7 @@ _gitclient() {
     --network git \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
-    "${GITCLIENT_NAME:-ddadon/gitclient}" "$@"
+    ddadon/gitclient:current "$@"
 }
 
 alias gcheckout='_gitclient checkout'
@@ -66,7 +66,7 @@ azure() {
     --interactive \
     --tty \
     --network azure \
-    "${AZURECLIENT_NAME:-ddadon/azureclient}"
+    ddadon/azureclient:current
 }
 
 # Shell customization
