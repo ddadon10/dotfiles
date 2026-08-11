@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-docker tag ddadon/dev ddadon/dev:previous >/dev/null 2>&1 || true
-docker build --file docker/Dockerfile --tag ddadon/dev .
+docker tag ddadon/dev:current ddadon/dev:previous
+docker build --file docker/Dockerfile --tag ddadon/dev:current .
+docker push ddadon/dev:previous
+docker push ddadon/dev:current
 
-docker tag ddadon/gitclient ddadon/gitclient:previous >/dev/null 2>&1 || true
-docker build --file docker/Git.Dockerfile --tag ddadon/gitclient .
+docker tag ddadon/gitclient:current ddadon/gitclient:previous
+docker build --file docker/Git.Dockerfile --tag ddadon/gitclient:current .
+docker push ddadon/gitclient:previous
+docker push ddadon/gitclient:current
 
-docker tag ddadon/azureclient ddadon/azureclient:previous >/dev/null 2>&1 || true
-docker build --file docker/Azure.Dockerfile --tag ddadon/azureclient .
+docker tag ddadon/azureclient:current ddadon/azureclient:previous
+docker build --file docker/Azure.Dockerfile --tag ddadon/azureclient:current .
+docker push ddadon/azureclient:previous
+docker push ddadon/azureclient:current
+
+docker image prune --force
