@@ -2,6 +2,11 @@
 alias rm='rm -i'
 alias ls='ls -aF'
 
+# Load git-related ssh keys into the default ssh agent
+if ! ssh-add -l >/dev/null 2>&1; then
+  ssh-add --apple-load-keychain "${HOME}/.ssh/github_ed25519" "${HOME}/.ssh/azure_rsa"
+fi
+
 # Dev Env
 dev() {
   while :; do
@@ -33,12 +38,13 @@ dev() {
 git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
 
 _gitclient() {
-  container network create git >/dev/null 2>&1 || true
-  SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" container run \
+  docker network create git >/dev/null 2>&1 || true
+  docker run \
     --rm \
     --interactive \
     --tty \
-    --ssh \
+    --detach-keys "ctrl-_" \
+    --mount "type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock" \
     --network git \
     --mount "type=bind,src=${PWD},dst=/workspace" \
     --workdir /workspace \
