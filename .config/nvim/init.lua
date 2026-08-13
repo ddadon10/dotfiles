@@ -8,6 +8,7 @@ vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
+vim.o.cursorline = true
 vim.o.expandtab = true
 vim.o.fillchars = 'eob: '
 vim.o.foldenable = false
@@ -16,7 +17,7 @@ vim.o.ignorecase = true
 vim.o.laststatus = 3
 vim.o.linebreak = true
 vim.o.mouse = 'a'
-vim.o.mousescroll = 'ver:1,hor:1'
+vim.o.mousescroll = 'ver:1,hor:0'
 vim.o.number = true
 vim.o.pumheight = 10
 vim.o.relativenumber = true
@@ -64,8 +65,11 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
 
         require('gruvbox').setup({
             overrides = {
-                QuickScopePrimary = { bold = true, fg = pal[accent .. '_blue'], underline = true },
-                QuickScopeSecondary = { fg = pal.neutral_red, underline = true },
+                LspReferenceRead = { bg = pal[bg .. '2'], fg = pal[accent .. '_blue'] },
+                LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
+                LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
+                QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
+                QuickScopeSecondary = { fg = pal[accent .. '_aqua'], underline = true },
                 MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
                 MiniTablineFill = { bg = pal[bg .. '0_soft'] },
                 MiniTablineHidden = { fg = pal.gray },
@@ -493,6 +497,12 @@ vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
 vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_opts('Implementations')) end, { desc = 'Go to implementation' })
+vim.keymap.set('n', 'gl', function()
+    if #vim.lsp.get_clients({ bufnr = 0, method = 'textDocument/documentHighlight' }) == 0 then return end
+
+    if vim.b.symbol_highlighted then vim.lsp.buf.clear_references() else vim.lsp.buf.document_highlight() end
+    vim.b.symbol_highlighted = not vim.b.symbol_highlighted
+end, { desc = 'Toggle local symbol highlight' })
 vim.keymap.set('n', 'gp', function() fzf.lsp_definitions(lsp_opts('Peek', false)) end, { desc = 'Peek definition' })
 vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions')) end, { desc = 'Go to type definition' })
 vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_opts('Usage')) end, { desc = 'Go to references' })
