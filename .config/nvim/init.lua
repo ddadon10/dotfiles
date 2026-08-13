@@ -4,7 +4,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
-
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
 vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
@@ -20,7 +19,6 @@ vim.o.mouse = 'a'
 vim.o.mousescroll = 'ver:1,hor:0'
 vim.o.number = true
 vim.o.pumheight = 10
-vim.o.relativenumber = true
 vim.o.ruler = false
 vim.o.shiftwidth = 4
 vim.o.showcmd = false
@@ -65,11 +63,12 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
 
         require('gruvbox').setup({
             overrides = {
+                IncSearch = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'], reverse = false },
                 LspReferenceRead = { bg = pal[bg .. '2'], fg = pal[accent .. '_blue'] },
                 LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
-                QuickScopeSecondary = { fg = pal[accent .. '_aqua'], underline = true },
+                QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
                 MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
                 MiniTablineFill = { bg = pal[bg .. '0_soft'] },
                 MiniTablineHidden = { fg = pal.gray },
@@ -77,6 +76,7 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 MiniTablineModifiedHidden = { bg = pal[bg .. '1'], fg = pal.neutral_orange },
                 MiniTablineModifiedVisible = { bg = pal[bg .. '1'], fg = pal[accent .. '_orange'] },
                 MiniTablineVisible = { fg = pal[fg .. '3'] },
+                NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
                 SignColumn = { bg = pal[bg .. '0'] },
                 WinBar = { bold = true, fg = pal.gray },
                 WinBarNC = { bg = pal[bg .. '0'], bold = true, fg = pal[bg .. '4'] },
@@ -479,10 +479,19 @@ local function lsp_opts(title, jump1)
     }
 end
 
-vim.keymap.set('n', 'qq', '<cmd>quitall<cr>', { desc = 'Quit Neovim' })
+vim.keymap.set('n', 'qq', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
-vim.keymap.set('n', 'S', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
+vim.keymap.set('n', 'S', '?', { desc = 'Search backward' })
+vim.keymap.set('c', '<CR>', function()
+    if vim.fn.getcmdtype() == '/' or vim.fn.getcmdtype() == '?' then
+        vim.schedule(function()
+            vim.cmd.nohlsearch()
+            vim.cmd('echo')
+        end)
+    end
+    return '<CR>'
+end, { expr = true })
 vim.keymap.set('n', '<A-h>', '<C-w>h', { desc = 'Move to left window' })
 vim.keymap.set('n', '<A-j>', '<C-w>j', { desc = 'Move to lower window' })
 vim.keymap.set('n', '<A-k>', '<C-w>k', { desc = 'Move to upper window' })
@@ -510,6 +519,7 @@ vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { relative = 'cu
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
 vim.keymap.set('n', ']q', '<cmd>cnext<cr>', { desc = 'Next quickfix item' })
+vim.keymap.set('n', '+', '<cmd>buffer #<cr>', { desc = 'Alternate buffer' })
 vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', '|', function() MiniBufremove.delete() end, { desc = 'Close buffer' })
 vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
@@ -543,5 +553,5 @@ vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winop
 vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
 vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
 vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Toggle quickfix' })
-vim.keymap.set('n', '<Leader>s', function() require('aerial').toggle() end, { desc = 'Toggle symbols' })
+vim.keymap.set('n', '<Leader>s', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
 vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })
