@@ -49,8 +49,9 @@ user changes, and never push. After compaction, reread the entire ExecPlan and i
 ## Explore
 
 When I ask you to explore, inspect relevant local code and evidence, and research official documentation and original
-upstream repositories. Keep a concise journal in `/tmp`, report its path, and clone relevant repositories there when
-useful.
+upstream repositories. Create a temporary directory under `/tmp` for the exploration, keep a concise journal inside it,
+and report the journal's path. You may use that directory without asking to store files and subdirectories, clone
+relevant repositories, and write and run exploratory code when useful.
 
 Return a direct synthesis backed by precise local references and official HTTPS links. For external source code, link
 to exact lines in the original repository (GitHub, GitLab, Codeberg, etc.), preferably at a fixed commit, never to the
