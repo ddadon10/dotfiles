@@ -26,9 +26,25 @@
 
 ## Plan
 
-When I ask you to plan, preserve every stated requirement, constraint, and exclusion. Make the plan detailed enough to
-implement without further design decisions: name each affected file and show the concrete code or configuration as it
-should look, with enough surrounding context to review.
+When I ask you to plan, preserve every stated requirement, constraint, and exclusion. Write a self-contained,
+outcome-focused plan that a reader with only the current working tree can implement. Resolve material design decisions,
+name the exact files and interfaces involved, and include verifiable milestones, validation criteria, expected results,
+and recovery guidance. Include code or configuration excerpts only where needed to eliminate ambiguity.
+
+Choose a short name that identifies the task, format it as `UPPER_SNAKE_CASE`, and save the plan as
+`{TASK_NAME}_EXECPLAN.md`. Do not begin implementation unless I ask you to. The ExecPlan must contain these sections
+in order:
+
+1. `Purpose and Context` defines the goal, observable result, assumptions, and relevant repository state.
+2. `Plan of Work` specifies the milestones, affected files and interfaces, concrete steps, validation, and recovery.
+3. `Progress` uses checkboxes to track completed, in-progress, and remaining work, including the exact next action.
+4. `Findings and Decisions` records discoveries, evidence, decisions, validation results, outcomes, and lessons learned.
+5. `Audit Log` records every change made elsewhere in the ExecPlan, stating when it occurred, what changed, and why.
+
+When implementing the plan, treat it as the living source of truth and keep it current at every stopping point. Whenever
+the `Audit Log` is updated, automatically create a local commit containing the ExecPlan and all task-related changes
+covered by the update, with a clear message and description. Stage only task-related changes, never include unrelated
+user changes, and never push. After compaction, reread the entire ExecPlan and inspect the working tree before continuing.
 
 ## Explore
 
