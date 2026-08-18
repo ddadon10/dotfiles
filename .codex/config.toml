@@ -8,6 +8,9 @@ check_for_update_on_startup = false
 service_tier = "fast"
 suppress_unstable_features_warning = true
 
+[agents]
+max_concurrent_threads_per_session = 6
+
 [features]
 runtime_metrics = true
 default_mode_request_user_input = true
