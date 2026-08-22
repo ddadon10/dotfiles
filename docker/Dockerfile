@@ -148,6 +148,7 @@ RUN mkdir -p /root/.config/lazygit
 COPY .config/lazygit.yml /root/.config/lazygit/config.yml
 
 COPY docker/.bashrc /root/.bashrc
+COPY .npmrc /root/.npmrc
 COPY .codex/config.toml /etc/codex/config.toml
 COPY .codex/skills/ /etc/codex/skills/
 
