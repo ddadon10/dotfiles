@@ -138,7 +138,7 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN npm install -g ccusage
-RUN npm install -g @openai/codex@0.147.0
+RUN npm install -g @openai/codex@0.153.2
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
