@@ -26,10 +26,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   `Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
 - The statusline retains mode, Git, filename/status, cursor location, total lines, line-ending format, indentation,
-  and filetype while omitting diagnostics/LSP state, search count, encoding, and buffer size. The right metadata,
-  including Git, uses an adaptive purple background; Normal mode uses a subdued adaptive neutral, and location remains
-  stable as line or column digits change. Location uses the path's neutral background and expands left as one grouped
-  value; unpadded `│` separators divide every right-side entry, ending with a Nerd Font icon and branch name only.
+  and filetype while omitting diagnostics/LSP state, search count, encoding, and buffer size. Every non-mode field
+  uses the path's neutral adaptive background; only mode remains colored. Location expands left as one grouped value,
+  and unpadded `│` separators divide every right-side entry, ending with a Nerd Font icon and branch name only.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -883,6 +882,30 @@ Expected result: the compact far-right Git field identifies only the current bra
 Recovery: restore the removed status string only if change counts are explicitly requested again; retain the branch
 field's far-right position and conditional divider.
 
+### Milestone 18: Unify the non-mode statusline background
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Gruvbox Mini Statusline overrides and the right-side highlight selection.
+
+Steps:
+
+1. Remove the adaptive purple `MiniStatuslineDevinfo` and `MiniStatuslineFileinfo` overrides. They are no longer
+   required because the statusline has no development-info group and the right side will use the filename group.
+2. Keep `MiniStatuslineFilename` as the sole non-mode statusline highlight, using adaptive Gruvbox `dark1` in dark
+   mode or `light1` in light mode with the existing contrasting foreground. Apply it continuously from filename
+   through the far-right branch; preserve the separate mode-dependent highlight.
+3. Validate with `git diff --check`, headless startup, and the focused UI fixture. Confirm the non-mode statusline
+   references neither development-info nor file-info highlights, uses the expected neutral background in both
+   Gruvbox modes, and retains every approved field, separator, and conditional branch behavior.
+4. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: mode remains visually distinct while filename, location, metadata, and branch share one quiet
+neutral background without a purple region.
+
+Recovery: restore a dedicated right-side highlight only if a separate metadata color is explicitly requested again;
+do not change content or ordering to compensate for a color preference.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -932,6 +955,7 @@ field's far-right position and conditional divider.
   purple boundary, compacted later separators, and passed focused rendering checks.
 - [x] Milestone 16: removed spaces around every metadata divider and passed exact rendered-spacing checks.
 - [x] Milestone 17: removed Git change counts so the far-right field contains only the icon and branch name.
+- [x] Milestone 18: removed the purple metadata region and verified one neutral background across every non-mode field.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1086,6 +1110,10 @@ physical terminal UI checks remain downstream.
 - Milestone 17 passed focused validation on 2026-09-11. A buffer with mocked Gitsigns branch and count data rendered
   `│ main` at the far right without `+3`, `~1`, or `-2`; branchless output retained no orphan icon or divider.
   Whitespace, headless startup, and the remainder of the focused UI fixture remain passing.
+- Milestone 18 passed focused validation on 2026-09-11. `MiniStatuslineFilename` resolves to Gruvbox `dark1` in dark
+  mode and `light1` in light mode, and the complete non-mode statusline uses that group continuously. The unused
+  development-info/file-info overrides and references are absent; startup, whitespace, content, spacing, and the
+  remainder of the focused UI fixture remain passing.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1195,9 +1223,9 @@ Temporary exploration material is intentionally uncommitted:
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the statusline shape with this logical order: mode, filename/status, then location, `%L lines`, friendly
   LF/CRLF/CR label, indentation, icon/filetype, and `` plus the branch name only at the far right. Render location
-  on the filename's neutral background as right-aligned `%8(%l:%c%)`, followed immediately by the purple block's
-  first `│`; use bare `│` separators for its later entries as well. Remove search, diagnostics/LSP state, size,
-  and encoding, and give Normal mode a subdued `dark2`/`light2` adaptive background.
+  as right-aligned `%8(%l:%c%)`, use bare `│` separators, and keep every non-mode field on the filename's adaptive
+  neutral background. Remove search, diagnostics/LSP state, size, and encoding; only mode retains a distinct color,
+  with Normal mode using the subdued `dark2`/`light2` adaptive background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1363,3 +1391,7 @@ Temporary exploration material is intentionally uncommitted:
 - 2026-09-11 UTC — Completed Milestone 17: reduced the far-right Git field to the conditional ``-prefixed branch
   name and removed the single-use branch/count helper. Whitespace, headless startup, and focused UI checks passed with
   mocked change counts absent from rendered output and no orphan branch divider in branchless output.
+- 2026-09-11 UTC — Completed Milestone 18: removed the purple development-info and file-info overrides and rendered
+  the entire non-mode statusline with the adaptive neutral filename highlight. Whitespace, headless startup, and the
+  focused UI fixture passed exact dark/light neutral colors, highlight selection, content, spacing, and conditional
+  branch checks while preserving the distinct mode highlight.
