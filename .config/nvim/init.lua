@@ -265,7 +265,7 @@ local function statusline()
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
     local encoding = (vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding):upper()
     local indentation = vim.bo.expandtab and 'Spaces:' .. vim.bo.shiftwidth or 'Tabs:' .. vim.bo.tabstop
-    local metadata = { 'Ln %l, Col %c', encoding, fileformat, indentation, filetype }
+    local metadata = { 'Ln:%l Col:%c', encoding, fileformat, indentation, filetype }
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
