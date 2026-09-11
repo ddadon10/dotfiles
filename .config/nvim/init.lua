@@ -284,7 +284,7 @@ local function statusline()
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        '%#MiniStatuslineFilename#%8(%l:%c%)%#MiniStatuslineFileinfo#│' .. table.concat(metadata, ' │ ') .. ' ',
+        '%#MiniStatuslineFilename#%8(%l:%c%)%#MiniStatuslineFileinfo#│' .. table.concat(metadata, '│') .. ' ',
     })
 end
 
