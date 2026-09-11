@@ -710,9 +710,9 @@ end
 vim.keymap.set('n', '{', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Buffer: previous' })
 vim.keymap.set('n', '}', '<cmd>BufferLineCycleNext<cr>', { desc = 'Buffer: next' })
 vim.keymap.set('n', '|', close_current_buffer, { desc = 'Buffer: close current' })
-vim.keymap.set('n', '<Leader>pe', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Panel: Explorer' })
-vim.keymap.set('n', '<Leader>po', '<cmd>AerialToggle!<cr>', { desc = 'Panel: outline' })
-vim.keymap.set('n', '<Leader>pt', toggle_terminal, { desc = 'Panel: terminal' })
+vim.keymap.set('n', '<Leader>e', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Panel: Explorer' })
+vim.keymap.set('n', '<Leader>o', '<cmd>AerialToggle!<cr>', { desc = 'Panel: outline' })
+vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Panel: terminal' })
 vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Quickfix: toggle' })
 
 local miniclue = require('mini.clue')
@@ -720,7 +720,6 @@ miniclue.setup({
     clues = {
         { mode = 'n', keys = '<Space>g', desc = '+Git search' },
         { mode = 'n', keys = '<Leader>g', desc = '+Git actions' },
-        { mode = 'n', keys = '<Leader>p', desc = '+Panels' },
     },
     triggers = {
         { mode = 'n', keys = '<Leader>' },

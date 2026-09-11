@@ -15,8 +15,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 - The flat Space picker layer includes direct common Fzf Lua pickers plus a `<Space>g` Git-search subgroup.
 - Gitsigns actions live only in relevant buffers under `\g`; the blame drawer is a same-key `\gb` toggle and
   literal `|` closes the current ordinary buffer, special panel, or active diff comparison.
-- Panels use `\p`: Explorer, Aerial outline, and one reusable shell terminal. The redundant Codex launcher and state
-  are absent. Quickfix uses direct `\q` for toggling and `<Space>q` for selecting entries.
+- Panels are direct leader actions: `\e` toggles Explorer, `\o` toggles the Aerial outline, and `\t` toggles one
+  reusable shell terminal. The `\p` group and redundant Codex launcher/state are absent. Quickfix uses direct `\q`
+  for toggling and `<Space>q` for selecting entries.
 - NvimTree has no inherited plugin defaults. Its buffer-local mappings treat the selected Explorer node as the noun
   and expose mnemonic actions and small Open/Clipboard groups through Mini Clue.
 - Mini Clue describes the project-owned `g`, literal-Space, and backslash families, including mappings added later by
@@ -1051,6 +1052,30 @@ discarding all metadata except one author letter.
 Recovery: remove `blame_formatter` to restore Gitsigns' completely default full-author layout; do not reintroduce the
 one-letter formatter or summary suppression.
 
+### Milestone 25: Flatten panel shortcuts
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: global panel mappings and Mini Clue's explicit group catalog.
+
+Steps:
+
+1. Move Explorer from `\pe` to direct `\e`, Aerial outline from `\po` to direct `\o`, and terminal from `\pt` to
+   direct `\t`. Preserve their existing callbacks, descriptions, focus behavior, and reusable terminal state.
+2. Remove the explicit `<Leader>p = +Panels` clue and leave no `\p`, `\pe`, `\po`, or `\pt` project mapping. Mini
+   Clue discovers the three direct leaves from their mapping descriptions.
+3. Preserve NvimTree's buffer-local `\o...` Open group. It intentionally overrides global `\o` only while Explorer
+   supplies the noun; direct `\e` remains available there to close Explorer.
+4. Validate with `git diff --check`, headless startup, exact effective-map and clue assertions, and real open/close
+   cycles for Explorer, Aerial, and the reusable terminal. Rerun the touched Milestone 7 configuration fixture.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: all three panels are one leader key away in ordinary buffers, Mini Clue shows them as direct actions,
+and the unnecessary Panels submenu no longer exists.
+
+Recovery: restore the three `\p...` mappings and explicit Panels clue together if the direct leader namespace becomes
+too crowded; do not leave both flat and grouped aliases active.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1110,6 +1135,8 @@ one-letter formatter or summary suppression.
   preserving the four semantic regions.
 - [x] Milestone 24: restored blame commit/date/summary information and shortened only the author to their first name;
   focused formatter and real-drawer checks pass.
+- [x] Milestone 25: flattened Explorer, outline, and terminal to `\e`, `\o`, and `\t`; removed the `\p` group and
+  passed exact mapping/clue, real panel-cycle, startup, and touched-regression checks.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1223,6 +1250,10 @@ physical terminal UI checks remain downstream.
   suppressed the summary. Milestone 24 now emits abbreviated SHA, first name, and ISO date without a false second
   return, so Gitsigns keeps the summary. Functional ASCII/Unicode/uncommitted checks and the real Git drawer passed;
   the fixture rendered `Codex` rather than only `C`.
+- Milestone 25's focused fixture verified exact direct mappings for `\e`, `\o`, and `\t`, no remaining global `\p`
+  family or Panels clue, and real open/close cycles for NvimTree, Aerial with source focus retained, and the reusable
+  terminal returning to its source window. NvimTree's intentional buffer-local `\o...` Open group remains contextual;
+  `\e` closes Explorer from its own buffer.
 - Remaining manual checks are limited to appearance and physical input: inspect both Gruvbox modes interactively;
   confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
   physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
@@ -1407,7 +1438,9 @@ Temporary exploration material is intentionally uncommitted:
 - Keep the full blame drawer's abbreviated commit, date, summary, and renderer-owned graph/heatmap; shorten only the
   author to their first whitespace-delimited name and use `?` for an uncommitted line.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
-  terminal panel under `\pt` without an otherwise unnecessary refactor.
+  terminal panel under direct `\t` without an otherwise unnecessary refactor.
+- Expose the three global panels directly as `\e` Explorer, `\o` outline, and `\t` terminal; remove the `\p` group.
+  Let NvimTree's buffer-local `\o...` Open group retain precedence while that contextual buffer is active.
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
   Clue's delay to 250 ms. Validate the mapping deterministically with `vim.fn.complete()` rather than an asynchronous
   LSP fixture; production completion remains LSP-backed.
@@ -1597,3 +1630,7 @@ Temporary exploration material is intentionally uncommitted:
   uncommitted lines and Gitsigns' graph/heatmap. Whitespace, startup, functional ASCII/Unicode/uncommitted formatting,
   and a real two-commit drawer all passed. The drawer now renders `Codex` rather than `C`; no width/truncation helper
   or additional plugin was added.
+- 2026-09-11 UTC — Completed Milestone 25: moved Explorer, Aerial outline, and terminal from `\pe`/`\po`/`\pt` to
+  direct `\e`/`\o`/`\t`, and removed the explicit Panels Mini Clue group. Exact effective-map/clue assertions, real
+  open/close cycles for all three panels, headless startup, whitespace, and the touched Milestone 7 fixture passed.
+  Preserved NvimTree's contextual buffer-local `\o...` Open group and the existing terminal implementation.
