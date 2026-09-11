@@ -695,11 +695,12 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
   generic special-buffer diff detection to keep the implementation small and decoupled.
 - [x] Milestone 7: refined and validated Bufferline navigation/theme/title, statusline, blame, terminal, completion,
   and clue timing.
-- [ ] Milestone 8: make native split diffs easy to close and add inline hunk preview.
+- [x] Milestone 8: made native split diffs easy to close and added inline hunk preview; focused Git, selected-buffer,
+  option-restoration, context, and preview checks pass.
 - [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
 
-Exact next action: implement Milestone 8's shared native-diff close callback and `\gi` mapping in
-`.config/nvim/init.lua`, run its disposable Git and selected-buffer checks, update this log, and commit those changes.
+Exact next action: reread this complete plan from the Milestone 8 commit, inspect the worktree, and run Milestone 9's
+focused follow-up and touched-surface regression checks.
 
 ## Findings and Decisions
 
@@ -789,6 +790,14 @@ Exact next action: implement Milestone 8's shared native-diff close callback and
 - The generic terminal helper remained unchanged while Codex code and `\pc` disappeared; `\pt` opened and reused the
   shell terminal. Mini Clue reported exactly 250 ms. A deterministic `vim.fn.complete()` fixture proved initial
   no-selection, forward/reverse Tab cycling, and ordinary four-space Tab fallback without starting an LSP.
+- Milestone 8 passed its disposable two-commit fixture on 2026-09-11. `\gd` compared the worktree to the index and
+  `\gD` compared it to the previous commit, both retained source focus, and a second press closed the comparison.
+  `\bd` and `|` closed either split from source focus without deleting it; both also closed a focused Gitsigns
+  special comparison generically through non-empty `buftype` rather than a plugin buffer name or exact type.
+- Every close path retained an unrelated nofile split and restored source `diff`, `scrollbind`, `cursorbind`, `wrap`,
+  and `foldenable`. A mocked Fzf selection exercised the real `\bD` action and proved both universal close keys work
+  for ordinary selected-buffer comparisons. Inline `\gi` produced Gitsigns preview extmarks/virtual lines and cleared
+  on CursorMoved, InsertEnter, and BufLeave; popup `\gp` and the complete thirteen-leaf Mini Clue map inventory remain.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1006,3 +1015,8 @@ Temporary exploration material is intentionally uncommitted:
   Bufferline colors; the approved blue/neutral/purple statusline with friendly line endings and cursor position;
   one-character blame headers; Codex-only removal; Mini Keymap Tab selection; and 250 ms Mini Clue. Focused startup,
   static, palette/order/statusline/Explorer/terminal, real blame, and deterministic completion checks all passed.
+- 2026-09-11 UTC — Completed Milestone 8 in `.config/nvim/init.lua`: added one generic current-tab diff closer;
+  converted `\gd`/`\gD` into same-key native-split toggles; routed `\bd` and `|` through the same cleanup; and added
+  buffer-local `\gi` inline hunk preview. A disposable two-commit Git fixture and ordinary selected-buffer fixture
+  passed base-selection, source-focus, special-comparison, unrelated-window, complete option-restoration, all close
+  paths, inline-preview lifecycle, retained popup preview, contextual-map inventory, startup, and whitespace checks.

@@ -173,6 +173,25 @@ require('fzf-lua').setup({
 })
 
 -- Git
+local function close_active_diff()
+    local current_window = vim.api.nvim_get_current_win()
+    if not vim.wo[current_window].diff then return false end
+
+    local diff_windows = vim.iter(vim.api.nvim_tabpage_list_wins(0))
+        :filter(function(win) return vim.wo[win].diff end)
+        :totable()
+    if vim.bo[vim.api.nvim_win_get_buf(current_window)].buftype ~= '' then
+        if #vim.api.nvim_tabpage_list_wins(0) > 1 then vim.api.nvim_win_close(current_window, false) end
+    else
+        for _, win in ipairs(diff_windows) do
+            if win ~= current_window and vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, false) end
+        end
+    end
+
+    vim.cmd('diffoff!')
+    return true
+end
+
 local function toggle_git_blame()
     for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
         if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == 'gitsigns-blame' then
@@ -206,8 +225,13 @@ require('gitsigns').setup({
         end
 
         map('n', '<Leader>gb', toggle_git_blame, 'toggle blame drawer')
-        map('n', '<Leader>gd', function() gitsigns.diffthis() end, 'diff against index')
-        map('n', '<Leader>gD', function() gitsigns.diffthis('~') end, 'diff against previous commit')
+        map('n', '<Leader>gd', function()
+            if not close_active_diff() then gitsigns.diffthis() end
+        end, 'diff against index')
+        map('n', '<Leader>gD', function()
+            if not close_active_diff() then gitsigns.diffthis('~') end
+        end, 'diff against previous commit')
+        map('n', '<Leader>gi', function() gitsigns.preview_hunk_inline() end, 'preview hunk inline')
         map('n', '<Leader>gj', function() gitsigns.nav_hunk('next') end, 'next hunk')
         map('n', '<Leader>gk', function() gitsigns.nav_hunk('prev') end, 'previous hunk')
         map('n', '<Leader>gl', function() gitsigns.blame_line({ full = true }) end, 'blame line')
@@ -682,6 +706,7 @@ vim.keymap.set('n', '<Leader>s', '<cmd>write<cr>', { desc = 'Save buffer' })
 vim.keymap.set('n', '<Leader>x', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
 vim.keymap.set('n', '<Leader>ba', '<cmd>buffer #<cr>', { desc = 'Buffer: alternate' })
 local function close_current_buffer()
+    if close_active_diff() then return end
     if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
         vim.api.nvim_win_close(0, false)
     else
