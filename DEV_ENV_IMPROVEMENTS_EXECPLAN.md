@@ -494,13 +494,13 @@ limitation.
 - [x] Revised this self-contained ExecPlan with the selected graph and began implementation from a clean worktree.
 - [x] Milestone 1: updated container packages, npm policy, and both alias surfaces; focused source checks pass.
 - [x] Milestone 2: implemented and validated the global keymap graph, panels, JSON format mapping, and Mini Clue.
-- [ ] Milestone 3: implement and validate contextual Gitsigns actions and blame closing.
+- [x] Milestone 3: implemented and validated contextual Gitsigns actions and blame closing.
 - [ ] Milestone 4: replace and validate NvimTree's buffer-local mappings.
 - [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
 - [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
-Exact next action: implement Milestone 3 in `.config/nvim/init.lua`, beginning with the shared blame-toggle callback
-and Gitsigns `on_attach`, then validate contextual maps and Git behavior in a disposable repository.
+Exact next action: implement Milestone 4 in `.config/nvim/init.lua`, beginning with NvimTree's custom `on_attach` and
+complete replacement map set, then validate effective maps and operations only in a disposable filesystem fixture.
 
 ## Findings and Decisions
 
@@ -524,6 +524,17 @@ and Gitsigns `on_attach`, then validate contextual maps and Git behavior in a di
 - Neovim 0.12 itself supplies `[q` and `]q` with `:cprevious` and `:cnext` descriptions. The former project mappings
   are removed from `init.lua`; the built-in mappings remain intentionally because default-key removal is outside the
   approved project-map graph.
+- Milestone 3 passed a disposable two-commit Git fixture on 2026-09-11. A tracked source buffer exposed exactly the
+  twelve approved Normal leaves plus Visual stage/reset, while a non-Git buffer exposed none and every omitted leaf
+  remained absent. Mini Clue's leader trigger remained buffer-local after attachment.
+- The Git fixture exercised next/previous hunk, popup preview, current-buffer and repository quickfix population,
+  index and previous-commit diffs, full line blame, stage, undo-stage, reset, and separate Visual range stage/reset.
+  It restored the disposable index and worktree after the checks.
+- The blame drawer opened and closed with `\gb` from both source and drawer buffers, and `\bd` closed it as the
+  universal special-buffer action. Closing restored the source window's `scrollbind`, `wrap`, and `foldenable`
+  values and did not raise `E1513`.
+- Gitsigns publishes its initial status dictionary before it invokes `on_attach`; contextual-map tests must wait for
+  the actual `\gb` buffer mapping (and hunk counts) rather than treating the first status metadata as full attachment.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -660,3 +671,8 @@ Temporary exploration material is intentionally uncommitted:
   the initial buffer after discovering setup events can already have passed. Recorded passing effective-map, macro,
   Comment, JSON LSP formatting, universal close, real panel-toggle, Fzf-provider, and Mini Clue checks, including the
   distinction between removed project quickfix maps and Neovim's own `[q`/`]q` defaults.
+- 2026-09-11 UTC — Completed Milestone 3: added the shared current-tab blame drawer toggle, attached only the twelve
+  approved Gitsigns actions to Git source buffers, attached the same toggle to blame buffers, and refreshed Mini Clue
+  triggers after each late buffer-local map set. Recorded passing isolation, effective-map, hunk navigation/preview,
+  both quickfix scopes, both diffs, blame-line, Normal and Visual stage/reset, undo-stage, same-key drawer toggle,
+  universal drawer close, option restoration, and disposable-repository cleanup checks.

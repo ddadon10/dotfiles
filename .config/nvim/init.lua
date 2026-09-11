@@ -175,7 +175,52 @@ require('fzf-lua').setup({
 })
 
 -- Git
-require('gitsigns').setup({ numhl = false, signcolumn = true })
+local function toggle_git_blame()
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == 'gitsigns-blame' then
+            vim.api.nvim_win_close(win, false)
+            return
+        end
+    end
+
+    require('gitsigns').blame()
+end
+
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('ConfigGitsigns', { clear = true }),
+    pattern = 'gitsigns-blame',
+    callback = function(args)
+        vim.keymap.set('n', '<Leader>gb', toggle_git_blame, { buffer = args.buf, desc = 'Git: toggle blame drawer' })
+        if _G.MiniClue then MiniClue.ensure_buf_triggers(args.buf) end
+    end,
+})
+
+require('gitsigns').setup({
+    numhl = false,
+    on_attach = function(bufnr)
+        local gitsigns = require('gitsigns')
+        local function map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = 'Git: ' .. desc })
+        end
+
+        map('n', '<Leader>gb', toggle_git_blame, 'toggle blame drawer')
+        map('n', '<Leader>gd', function() gitsigns.diffthis() end, 'diff against index')
+        map('n', '<Leader>gD', function() gitsigns.diffthis('~') end, 'diff against previous commit')
+        map('n', '<Leader>gj', function() gitsigns.nav_hunk('next') end, 'next hunk')
+        map('n', '<Leader>gk', function() gitsigns.nav_hunk('prev') end, 'previous hunk')
+        map('n', '<Leader>gl', function() gitsigns.blame_line({ full = true }) end, 'blame line')
+        map('n', '<Leader>gp', function() gitsigns.preview_hunk() end, 'preview hunk')
+        map('n', '<Leader>gq', function() gitsigns.setqflist('attached') end, 'buffer hunks to quickfix')
+        map('n', '<Leader>gQ', function() gitsigns.setqflist('all') end, 'repository hunks to quickfix')
+        map('n', '<Leader>gr', function() gitsigns.reset_hunk() end, 'reset hunk')
+        map('x', '<Leader>gr', function() gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end, 'reset selection')
+        map('n', '<Leader>gs', function() gitsigns.stage_hunk() end, 'stage or unstage hunk')
+        map('x', '<Leader>gs', function() gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end, 'stage or unstage selection')
+        map('n', '<Leader>gu', function() gitsigns.undo_stage_hunk() end, 'undo staged hunk')
+        if _G.MiniClue then MiniClue.ensure_buf_triggers(bufnr) end
+    end,
+    signcolumn = true,
+})
 
 -- Statusline
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
