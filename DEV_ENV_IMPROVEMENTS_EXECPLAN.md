@@ -25,10 +25,10 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
   `Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
-- The statusline retains mode, Git, filename/status, cursor location, total lines, line-ending format, indentation,
-  and filetype while omitting diagnostics/LSP state, search count, encoding, and buffer size. Every non-mode field
-  uses the path's neutral adaptive background; only mode remains colored. Location expands left as one grouped value,
-  and unpadded light vertical bars (`❘`) divide every right-side entry, ending with a Nerd Font icon and branch name.
+- The statusline retains mode, branch, filename/status, labeled current line/column, encoding, line-ending format,
+  indentation, and filetype while omitting diagnostics/LSP state, search count, total lines, and buffer size. The
+  branch follows mode with trunk's default `MiniStatuslineDevinfo` background; filename and all right metadata use
+  the path's neutral adaptive background. No separator glyphs appear.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -925,6 +925,38 @@ Expected result: the right side uses a less visually tall divider, as in
 
 Recovery: restore `│` if the configured terminal font lacks a readable `❘` glyph; do not add an icon dependency.
 
+### Milestone 20: Restore the branch block and simplify metadata
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Gruvbox statusline highlights and Mini Statusline content/order.
+
+Steps:
+
+1. Restore the branch immediately after mode as its own `MiniStatuslineDevinfo` group. Match trunk by defining no
+   custom override for it, leaving its default link to `StatusLine`; keep only `` plus the branch name and do not
+   restore Git change counts.
+2. Remove `%L lines` and all statusline separator glyphs. Use Mini Statusline's normal single-space separation inside
+   the neutral right metadata group.
+3. Replace composite `%8(%l:%c%)` with the clearer `Ln %l, Col %c`. Since the right group remains anchored by `%=`,
+   changing digit counts grows the complete group leftward without manual padding.
+4. Restore effective encoding after location using `vim.bo.fileencoding` when set, otherwise `vim.o.encoding`. Keep
+   friendly LF/CRLF/CR, indentation, and filetype after it.
+5. Validate with `git diff --check`, headless startup, and the focused UI fixture:
+   - Order is mode, purple branch, filename, then labeled location, `utf-8`, CRLF, indentation, and filetype.
+   - No total-line field, Git counts, `❘`, or `│` remains in rendered output.
+   - `Ln 99, Col 1`, `Ln 111, Col 1`, `Ln 111, Col 99`, and `Ln 111, Col 120` render correctly.
+   - In dark and light modes, the branch resolves to trunk's default `StatusLine` colors; the neutral metadata and
+     branchless behavior remain correct.
+6. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the statusline resembles
+`MODE   branch  filename                         Ln 111, Col 1 utf-8 LF spaces:4 lua`, with trunk's original
+branch-group background.
+
+Recovery: if encoding is unexpectedly empty, retain the global-encoding fallback rather than introducing a fixed
+label. Restore a divider only if explicitly requested again.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -976,6 +1008,8 @@ Recovery: restore `│` if the configured terminal font lacks a readable `❘` g
 - [x] Milestone 17: removed Git change counts so the far-right field contains only the icon and branch name.
 - [x] Milestone 18: removed the purple metadata region and verified one neutral background across every non-mode field.
 - [x] Milestone 19: replaced statusline box-drawing dividers with unpadded light vertical bars and passed rendering checks.
+- [x] Milestone 20: restored trunk's default branch block after mode, removed total lines and dividers, restored
+  encoding, and labeled current line and column.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1137,6 +1171,11 @@ physical terminal UI checks remain downstream.
 - Milestone 19 passed focused validation on 2026-09-11. The populated statusline renders exactly five unpadded `❘`
   (`U+2758 LIGHT VERTICAL BAR`) dividers in place of `│`. Grouped line/column padding, content order, conditional
   branch behavior, whitespace, startup, and the remainder of the focused UI fixture remain passing.
+- Milestone 20 passed focused validation on 2026-09-11. Inspection of local `trunk` and `origin/trunk` confirmed the
+  branch uses `MiniStatuslineDevinfo` with no custom override; its upstream default links to `StatusLine`. The branch
+  is again immediately after mode and omits Gitsigns counts. Right metadata renders labeled line/column, effective
+  `utf-8`, CRLF, indentation, and filetype on the neutral background. Total lines and both prior divider glyphs are
+  absent; all four location cases, branchless behavior, resolved dark/light colors, startup, and the fixture pass.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1244,11 +1283,11 @@ Temporary exploration material is intentionally uncommitted:
   title.
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
-- Preserve the statusline shape with this logical order: mode, filename/status, then location, `%L lines`, friendly
-  LF/CRLF/CR label, indentation, icon/filetype, and `` plus the branch name only at the far right. Render location
-  as right-aligned `%8(%l:%c%)`, use bare `❘` separators, and keep every non-mode field on the filename's adaptive
-  neutral background. Remove search, diagnostics/LSP state, size, and encoding; only mode retains a distinct color,
-  with Normal mode using the subdued `dark2`/`light2` adaptive background.
+- Preserve this logical order: mode, trunk-default `MiniStatuslineDevinfo` `` branch block, filename/status, then
+  `Ln %l, Col %c`, effective
+  encoding, friendly LF/CRLF/CR, indentation, and icon/filetype on the neutral background. Use Mini Statusline's
+  native spacing and no divider glyphs. Remove search, diagnostics/LSP state, size, total lines, and Git change counts;
+  keep Normal mode on its subdued `dark2`/`light2` adaptive background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1421,3 +1460,9 @@ Temporary exploration material is intentionally uncommitted:
 - 2026-09-11 UTC — Completed Milestone 19: replaced all five compact statusline `│` dividers with Unicode `❘`
   light vertical bars. Whitespace, headless startup, and focused UI checks passed the exact glyph count, absent
   surrounding spaces, grouped location stability, field order, and conditional branch behavior.
+- 2026-09-11 UTC — Completed Milestone 20: returned the branch-only field after mode with trunk's unoverridden
+  `MiniStatuslineDevinfo` link to `StatusLine`; removed total lines and every divider; restored effective encoding;
+  and changed location to `Ln %l, Col %c`. Whitespace, headless startup, and focused UI checks passed order/content,
+  four location values, resolved trunk-default dark/light branch colors, absent counts/total/dividers, and branchless
+  behavior. Recorded that the statusline's terminal-row height never changed; the short divider, compressed spacing,
+  and removed branch block only reduced visual weight.

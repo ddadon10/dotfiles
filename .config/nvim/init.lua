@@ -268,16 +268,17 @@ local function statusline()
         filetype = (icon and icon .. ' ' or '') .. filetype
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
-    local metadata = { '%L lines', fileformat, statusline_indent() }
+    local encoding = vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding
+    local metadata = { 'Ln %l, Col %c', encoding, fileformat, statusline_indent() }
     if filetype ~= '' then table.insert(metadata, filetype) end
-    if git ~= '' then table.insert(metadata, git) end
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
+        { hl = 'MiniStatuslineDevinfo', strings = { git } },
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        '%#MiniStatuslineFilename#%8(%l:%c%)❘' .. table.concat(metadata, '❘') .. ' ',
+        { hl = 'MiniStatuslineFilename', strings = metadata },
     })
 end
 
