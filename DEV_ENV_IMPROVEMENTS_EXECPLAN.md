@@ -697,10 +697,11 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
   and clue timing.
 - [x] Milestone 8: made native split diffs easy to close and added inline hunk preview; focused Git, selected-buffer,
   option-restoration, context, and preview checks pass.
-- [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
+- [x] Milestone 9: reran focused follow-up and touched-surface regressions from the committed configuration; all
+  automated checks pass and all disposable mutations are restored.
 
-Exact next action: reread this complete plan from the Milestone 8 commit, inspect the worktree, and run Milestone 9's
-focused follow-up and touched-surface regression checks.
+Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
+physical terminal UI checks remain downstream.
 
 ## Findings and Decisions
 
@@ -798,6 +799,19 @@ focused follow-up and touched-surface regression checks.
   and `foldenable`. A mocked Fzf selection exercised the real `\bD` action and proved both universal close keys work
   for ordinary selected-buffer comparisons. Inline `\gi` produced Gitsigns preview extmarks/virtual lines and cleared
   on CursorMoved, InsertEnter, and BufLeave; popup `\gp` and the complete thirteen-leaf Mini Clue map inventory remain.
+- Milestone 9's committed-config regression run passed on 2026-09-11: whitespace and startup; Milestone 7's
+  Bufferline order/colors/title, statusline, terminal, clue, deterministic completion, and real blame; Milestone 8's
+  complete diff lifecycle; the global graph, panels, JSON LSP formatting, contextual Gitsigns including Visual
+  stage/reset, NvimTree maps and filesystem operations, and Bufferline rendering/safety/live offset.
+- Two disposable regression assumptions needed deterministic setup, not production changes. Gitsigns' retained graph
+  can prefix a one-character blame author with either `┍` or `╺` depending on worktree state, so the check now asserts
+  the semantic one-character suffix. NvimTree Git navigation requires two changed nodes, which the fixture now seeds.
+  The Git fixture indexes/worktrees and generated filesystem paths were restored; `/workspace` was clean before this
+  final ExecPlan-only audit update.
+- Remaining manual checks are limited to appearance and physical input: inspect both Gruvbox modes interactively;
+  confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
+  physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
+  also remain unavailable in this container.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1020,3 +1034,9 @@ Temporary exploration material is intentionally uncommitted:
   buffer-local `\gi` inline hunk preview. A disposable two-commit Git fixture and ordinary selected-buffer fixture
   passed base-selection, source-focus, special-comparison, unrelated-window, complete option-restoration, all close
   paths, inline-preview lifecycle, retained popup preview, contextual-map inventory, startup, and whitespace checks.
+- 2026-09-11 UTC — Completed Milestone 9 after rereading the committed plan from a clean tree. The focused follow-up
+  and touched global/Gitsigns/NvimTree/Bufferline integration suites all passed, including real JSON formatting,
+  panel toggles, dark/light highlight values, blame, deterministic completion, diff closure, inline preview,
+  filesystem operations, and Visual Git mutations. Tightened two temporary fixture assumptions without changing
+  production code, restored every disposable mutation, recorded only genuine interactive/host deferrals, and left
+  this final ExecPlan audit as the sole task-related change for its required local commit.
