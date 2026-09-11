@@ -16,6 +16,7 @@ vim.o.ignorecase = true
 vim.o.laststatus = 3
 vim.o.linebreak = true
 vim.o.mouse = 'a'
+vim.o.mousemoveevent = true
 vim.o.mousescroll = 'ver:1,hor:0'
 vim.o.number = true
 vim.o.pumheight = 10
@@ -36,6 +37,7 @@ vim.opt.shortmess:append('IscWa')
 
 -- Plugins
 vim.pack.add({
+    'https://github.com/akinsho/bufferline.nvim',
     'https://github.com/ellisonleao/gruvbox.nvim',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
@@ -69,13 +71,6 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
-                MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
-                MiniTablineFill = { bg = pal[bg .. '0_soft'] },
-                MiniTablineHidden = { fg = pal.gray },
-                MiniTablineModifiedCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_orange'] },
-                MiniTablineModifiedHidden = { bg = pal[bg .. '1'], fg = pal.neutral_orange },
-                MiniTablineModifiedVisible = { bg = pal[bg .. '1'], fg = pal[accent .. '_orange'] },
-                MiniTablineVisible = { fg = pal[fg .. '3'] },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
                 SignColumn = { bg = pal[bg .. '0'] },
                 WinBar = { bold = true, fg = pal.gray },
@@ -314,14 +309,19 @@ end
 
 -- Full layout
 -- Tabline
-require('mini.tabline').setup({
-    format = function(buf_id, label)
-        local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
-        if not info then return MiniTabline.default_format(buf_id, label) end
-
-        local icon = MiniIcons.get('file', info.filename)
-        return string.format(' %s %s ', icon, info.filename)
-    end,
+require('bufferline').setup({
+    options = {
+        close_command = function(bufnr) MiniBufremove.delete(bufnr) end,
+        diagnostics = false,
+        hover = { enabled = true, delay = 200, reveal = { 'close' } },
+        modified_icon = '●',
+        name_formatter = function(buf) local info = jdt_info(buf.path); return info and info.filename end,
+        offsets = {
+            { filetype = 'NvimTree', separator = true },
+        },
+        right_mouse_command = function(bufnr) MiniBufremove.delete(bufnr) end,
+        show_close_icon = false,
+    },
 })
 
 -- Aerial

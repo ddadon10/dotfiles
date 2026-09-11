@@ -496,11 +496,12 @@ limitation.
 - [x] Milestone 2: implemented and validated the global keymap graph, panels, JSON format mapping, and Mini Clue.
 - [x] Milestone 3: implemented and validated contextual Gitsigns actions and blame closing.
 - [x] Milestone 4: replaced and validated NvimTree's buffer-local mappings.
-- [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
+- [x] Milestone 5: replaced Mini Tabline with Bufferline and passed all headless/static UI-state checks; physical
+  hover/click behavior remains deferred to an interactive terminal.
 - [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
-Exact next action: implement Milestone 5 in `.config/nvim/init.lua`: add Bufferline, remove Mini Tabline and its
-highlights, enable mouse-move events, configure the approved options, and run headless/static UI-state checks.
+Exact next action: begin Milestone 6 by rereading this entire living ExecPlan and inspecting the worktree, then run
+the consolidated focused validation and record only genuine environment-limited checks as deferred.
 
 ## Findings and Decisions
 
@@ -545,6 +546,16 @@ highlights, enable mouse-move events, configure the approved options, and run he
 - The headless environment has no system clipboard provider. The NvimTree fixture supplied a temporary in-process
   provider and verified the exact values sent by all three path-copy actions; production configuration was not
   changed. The double-click map was verified through the effective-map API but real mouse input remains a UI check.
+- Milestone 5's static and headless checks passed on 2026-09-11. Bufferline is the sole tabline owner, its effective
+  options use ID sorting, no diagnostics, 200 ms close reveal, `●`, safe function callbacks, hidden global close,
+  JDT shortening, and one NvimTree separator offset; the milestone added no keymap call or devicons dependency.
+- The existing Mini Icons compatibility shim returned both an icon and color through `nvim-web-devicons`. Rendered
+  state contained the modified marker and short `Widget.class` JDT name without URI or diagnostic text, while both
+  close callbacks preserved deliberately modified buffers instead of forcing deletion.
+- Bufferline's raw sidebar offset reports the NvimTree window's live 45-column width and returns to zero when the tree
+  closes. Its aggregate `state.left_offset_size` can additionally include Bufferline's own overflow marker in a narrow
+  headless screen, so offset validation correctly uses `bufferline.offset.get().left_size` rather than conflating the
+  two independent layout components.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -691,3 +702,8 @@ Temporary exploration material is intentionally uncommitted:
   passing generated and real effective-map inventories plus disposable create, rename, move, delete, clipboard,
   search, root, refresh, info, navigation, open-target, context restoration, and Explorer toggle checks. Documented
   the test-only clipboard provider and deferred physical double-click input; added no production dependency or map.
+- 2026-09-11 UTC — Completed Milestone 5's source, static, and headless work: installed Bufferline as the sole new
+  dependency; enabled mouse-move events; removed Mini Tabline and its seven highlights; and configured safe mouse
+  closing, no diagnostics, hover reveal, modified marker, JDT names, hidden global close, and NvimTree offset. Recorded
+  passing effective-option, render, modified-buffer safety, icon shim, JDT, live-offset, startup, static dependency,
+  and no-new-keymap checks. Deferred only physical hover/click behavior to an interactive mouse-capable terminal.
