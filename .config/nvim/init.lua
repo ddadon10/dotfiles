@@ -34,6 +34,22 @@ vim.o.wrap = true
 
 vim.opt.shortmess:append('IscWa')
 
+-- Autosave
+vim.api.nvim_create_autocmd({ 'InsertLeave', 'BufLeave', 'FocusLost' }, {
+    group = vim.api.nvim_create_augroup('ConfigAutosave', { clear = true }),
+    nested = true,
+    callback = function(args)
+        if not vim.bo[args.buf].modified
+            or vim.bo[args.buf].buftype ~= ''
+            or vim.bo[args.buf].readonly
+            or vim.api.nvim_buf_get_name(args.buf) == '' then
+            return
+        end
+
+        vim.cmd('lockmarks silent update')
+    end,
+})
+
 -- Plugins
 vim.pack.add({
     'https://github.com/akinsho/bufferline.nvim',
