@@ -14,7 +14,7 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   backslash leader for general actions and noun groups.
 - The flat Space picker layer includes direct common Fzf Lua pickers plus a `<Space>g` Git-search subgroup.
 - Gitsigns actions live only in relevant buffers under `\g`; the blame drawer is a same-key `\gb` toggle and
-  `\bd` closes the current ordinary buffer or special panel.
+  literal `|` closes the current ordinary buffer, special panel, or active diff comparison.
 - Panels use `\p`: Explorer, Aerial outline, and one reusable shell terminal. The redundant Codex launcher and state
   are absent. Quickfix uses direct `\q` for toggling and `<Space>q` for selecting entries.
 - NvimTree has no inherited plugin defaults. Its buffer-local mappings treat the selected Explorer node as the noun
@@ -23,13 +23,14 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   Gitsigns and NvimTree attachment, after a 250 ms delay.
 - Bufferline replaces Mini Tabline with a Gruvbox-adaptive, VS Code-style adjacent-insertion buffer row, a blue active
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
-  `File Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` and discoverable `\bp`/`\bn` traverse its
-  visual order; literal `|` closes through the same universal close action as `\bd`. It displays no LSP diagnostics.
+  `File Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
+  performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
 - The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
-  while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use adaptive
-  blue and purple backgrounds.
+  while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use the same
+  adaptive purple background, and logical fields have visible `│` separators.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
-  `\bd`/`|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline hunk preview.
+  their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
+- Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
 - Neovim's native right-click menu is not customized.
 
 Relevant repository state:
@@ -63,11 +64,12 @@ Assumptions and boundaries:
   side after that change; it must not use `<Leader>`.
 - The project intentionally does not preserve Neovim defaults. It does preserve the selected direct editing
   primitives `d`, `s`/`S`, `<A-h/j/k/l>`, Visual `<D-c>`, and command-line `<CR>`.
-- Keep `qq`, project `[q`/`]q`, and `+` absent. Use literal `{`/`}` as fast previous/next visual Bufferline actions
-  and literal `|` as an alias of universal close. Leave `[`/`]` free for Neovim's bracket-prefixed mappings.
-- Keep direct global `\c` Comment and `\x` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions
-  therefore live under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch
-  buffer cannot meaningfully be written.
+- Keep project `[q`/`]q` and `+` absent. Use literal `{`/`}` as fast previous/next visual Bufferline actions and
+  literal `|` as universal close. Leave `[`/`]` free for Neovim's bracket-prefixed mappings and restore `qq` as
+  Save-all-and-quit.
+- Keep direct global `\c` Comment and `qq` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions live
+  under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch buffer cannot
+  meaningfully be written; the former `\x` mapping is removed.
 - Do not map Gitsigns whole-buffer reset, hunk selection, stage-buffer, or display toggles. The balanced trim exposes
   the original twelve actions plus the later-approved `\gi` inline hunk preview.
 - JSON formatting already works. Do not add `provideFormatter`, format-on-save, SchemaStore, or another formatter;
@@ -75,8 +77,8 @@ Assumptions and boundaries:
 - Bufferline must use `sort_by = 'insert_after_current'`; every next/previous action must use Bufferline cycle commands
   so navigation follows the visible order. Keep diagnostics disabled, the Mini Icons devicons mock, and JDT virtual
   filename behavior; add no separate devicons or statusline plugin.
-- Use the corrected `{}`/`|` fast-key set: `{` is previous, `}` is next, and `|` is universal close. Keep the
-  discoverable `\bp`/`\bn` aliases as well.
+- Use the corrected `{}`/`|` fast-key set: `{` is previous, `}` is next, and `|` is universal close. Remove the entire
+  `\b` mapping family, including selected-buffer diff; direct keys are sufficient for this occasional-use workflow.
 - Use the approved Layered Gruvbox theme: soft/base backgrounds for fill, inactive, and selected states; adaptive
   bright/faded blue for the active indicator and Explorer separator; and adaptive bright/faded orange for modified
   markers. Recompute it on `ColorScheme` for dark/light changes.
@@ -665,6 +667,42 @@ the journal, exact automated results, and only genuinely interactive checks.
 Recovery: correct only the milestone owning a failure and repeat its focused checks. Use `git revert` on the relevant
 local milestone commit instead of resetting the branch or disturbing unrelated user work.
 
+### Milestone 10: Simplify direct keys and separate statusline fields
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: global mappings, the Mini Clue group list, Gruvbox statusline highlights, and active and
+  inactive Mini Statusline content.
+
+Steps:
+
+1. Restore Normal `qq = :wqall` with description `Save all buffers and quit Neovim`; remove `\x`.
+2. Remove every `\b` mapping (`\ba`, `\bd`, `\bD`, `\bn`, and `\bp`) and the `+Buffers` Mini Clue entry. This also
+   removes selected-buffer diff. Keep `{`/`}` for visual-order Bufferline traversal and `|` as the sole universal
+   close action, including active Gitsigns diff cleanup.
+3. Change `MiniStatuslineDevinfo` from adaptive Gruvbox blue to the same adaptive purple used by
+   `MiniStatuslineFileinfo`. Preserve the neutral filename background and mode-dependent mode background.
+4. Render `│` separators between the left-side mode, optional Git, and filename sections and between the right-side
+   filetype, line-ending, indentation, and line:column fields. Omit the Git separator when no Git text exists.
+5. Validate with `git diff --check`, headless startup, and focused fixtures:
+   - Effective maps contain `qq = :wqall`, no `\x` or `\b...`, unchanged `{`/`}`/`|`, and no `+Buffers` clue.
+   - A disposable modified buffer is written and Neovim exits when `qq` is invoked.
+   - Direct brace traversal still follows Bufferline's adjacent visual order and `|` still closes ordinary and
+     special buffers.
+   - Dark/light snapshots show identical purple backgrounds for Git and metadata with readable foregrounds.
+   - A rendered Git/filetype statusline contains the expected logical fields in order and at least five `│`
+     separators; removed diagnostics, size, encoding, search, and raw fileformat labels remain absent.
+   - The existing real JSON format, Explorer, Aerial, terminal, and Quickfix checks still pass.
+6. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the compact direct-key surface is `{` previous, `}` next, `|` close, and `qq` save-all-and-quit;
+there is no redundant buffer noun group or quit alias, and the statusline uses one cohesive purple information color
+with clear field boundaries.
+
+Recovery: if `qq` cannot write every modified buffer, preserve the mapping and surface the native write error rather
+than forcing exit. If separators make narrow rendering noisy, retain separators between displayed fields and rely on
+the existing truncation rules rather than adding width-specific state.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -700,6 +738,8 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
   automated checks pass and all disposable mutations are restored.
 - [x] Corrected fast Bufferline navigation to `{`/`}`/`|`, removed the project `[`/`]` mappings and `nowait`, and
   reran focused navigation and global-map checks.
+- [x] Milestone 10: restored `qq`, removed `\x` and all `\b` mappings/clues, unified the statusline's Git and metadata
+  blocks on adaptive purple, added field separators, and passed focused behavior and regression checks.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -817,6 +857,13 @@ physical terminal UI checks remain downstream.
   Bufferline's visual previous/next commands without `nowait`, retains `|` as universal close, and leaves square
   brackets unmapped by the project. Focused startup, direct/discoverable visual-order navigation, exact mapping flags,
   global graph, panels, and JSON formatting checks passed after the correction.
+- Milestone 10 passed focused validation on 2026-09-11. Effective maps contain `qq = :wqall`, no `\x` or `\b...`,
+  unchanged `{`/`}`/`|`, and no Buffer Mini Clue group. A disposable modified buffer was written before `qq` exited;
+  direct visual-order navigation, ordinary/special `|` close, Explorer, Aerial, terminal, Quickfix, and real JSON LSP
+  formatting remained functional.
+- Dark and light snapshots give both `MiniStatuslineDevinfo` and `MiniStatuslineFileinfo` the same adaptive Gruvbox
+  purple background with the existing contrasting foreground. A rendered Git/filetype statusline retained its
+  logical field order and contained five `│` separators while all previously removed fields remained absent.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -916,8 +963,8 @@ Temporary exploration material is intentionally uncommitted:
 - Use `rename_full()` for NvimTree `\m`; direct `api.fs.move()` would misleadingly require a prior cut.
 - Keep the focused Gitsigns set, add the approved `\gi` inline preview, and continue omitting the high-impact
   whole-buffer reset and lower-value duplicates.
-- Implement both blame toggle and universal `\bd`: the former gives same-key behavior from either pane, while the
-  latter gives every ordinary/special buffer one canonical close action.
+- Keep the blame drawer's `\gb` same-key toggle and use literal `|` as the sole universal ordinary/special/diff close
+  action.
 - Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
   diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
   commands, literal `{`/`}` navigation without `nowait`, literal `|` close, and a centered `File Explorer` offset
@@ -925,8 +972,8 @@ Temporary exploration material is intentionally uncommitted:
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
-  LF/CRLF/CR label, indentation, and line:column. Remove search, diagnostics/LSP state, size, and encoding. Use an
-  adaptive blue Git background, neutral filename, and adaptive purple metadata background.
+  LF/CRLF/CR label, indentation, and line:column. Separate logical fields with `│`; remove search, diagnostics/LSP
+  state, size, and encoding. Use the same adaptive purple for Git and metadata with a neutral filename background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -934,9 +981,11 @@ Temporary exploration material is intentionally uncommitted:
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
   Clue's delay to 250 ms. Validate the mapping deterministically with `vim.fn.complete()` rather than an asynchronous
   LSP fixture; production completion remains LSP-backed.
-- Keep native split diffs, make `\gd`/`\gD` same-key toggles, and make universal `\bd`/`|` close the comparison while
+- Keep native split diffs, make `\gd`/`\gD` same-key toggles, and let universal `|` close the comparison while
   preserving the source and unrelated windows. Distinguish special comparisons only by non-empty `buftype`, finish
-  with `:diffoff!`, and add no diff plugin or custom renderer.
+  with `:diffoff!`, and add no diff plugin or custom renderer. Do not retain selected-buffer diff.
+- Use `qq` for Save-all-and-quit and remove `\x`. Remove the entire `\b` family and its Mini Clue group because
+  `{`/`}`/`|` provide the required direct buffer navigation and close surface.
 - Leave native menus untouched and use Mini Clue as the sole discovery addition.
 
 ### Inference and unresolved gaps
@@ -1050,3 +1099,9 @@ Temporary exploration material is intentionally uncommitted:
   plus discoverable `\bp`/`\bn`. Updated the active requirements, validation, progress, findings, and decisions while
   preserving earlier audit entries as history. Whitespace, startup, direct/discoverable visual-order navigation,
   mapping inventory/flags, global panels, and real JSON formatting checks passed.
+- 2026-09-11 UTC — Completed Milestone 10: restored `qq = :wqall`; removed `\x`, all five `\b` mappings, selected-
+  buffer diff, and the Buffer clue; changed Git from adaptive blue to the metadata block's adaptive purple; and added
+  `│` separators across logical statusline fields. Updated final-state requirements and decisions while preserving
+  superseded milestones and audit entries as implementation history. Whitespace, startup, effective maps/clues,
+  behavioral `qq`, direct visual-order navigation, ordinary/special close, dark/light colors, rendered statusline,
+  panels, and real JSON formatting checks all passed.

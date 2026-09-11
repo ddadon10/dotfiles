@@ -69,7 +69,7 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceRead = { bg = pal[bg .. '2'], fg = pal[accent .. '_blue'] },
                 LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
-                MiniStatuslineDevinfo = { bg = pal[accent .. '_blue'], fg = pal[bg .. '0'] },
+                MiniStatuslineDevinfo = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'] },
                 MiniStatuslineFileinfo = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'] },
                 MiniStatuslineFilename = { bg = pal[bg .. '1'], fg = pal[fg .. '1'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
@@ -262,6 +262,7 @@ end
 
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
+    local git = statusline_git()
     local info = jdt_info(vim.api.nvim_buf_get_name(0))
     local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')
@@ -273,12 +274,15 @@ local function statusline()
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
 
     return MiniStatusline.combine_groups({
-        { hl = mode_hl, strings = { mode } },
-        { hl = 'MiniStatuslineDevinfo', strings = { statusline_git() } },
+        { hl = mode_hl, strings = { mode, '│' } },
+        { hl = 'MiniStatuslineDevinfo', strings = { git, git ~= '' and '│' or '' } },
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        { hl = 'MiniStatuslineFileinfo', strings = { filetype, fileformat, statusline_indent(), '%l:%c' } },
+        {
+            hl = 'MiniStatuslineFileinfo',
+            strings = { filetype, filetype ~= '' and '│' or '', fileformat, '│', statusline_indent(), '│', '%l:%c' },
+        },
     })
 end
 
@@ -703,8 +707,7 @@ vim.keymap.set('n', '<Leader>c', 'gcc', { desc = 'Comment line', remap = true })
 vim.keymap.set('x', '<Leader>c', 'gc', { desc = 'Comment selection', remap = true })
 vim.keymap.set({ 'n', 'x' }, '<Leader>f', function() vim.lsp.buf.format() end, { desc = 'Format' })
 vim.keymap.set('n', '<Leader>s', '<cmd>write<cr>', { desc = 'Save buffer' })
-vim.keymap.set('n', '<Leader>x', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
-vim.keymap.set('n', '<Leader>ba', '<cmd>buffer #<cr>', { desc = 'Buffer: alternate' })
+vim.keymap.set('n', 'qq', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
 local function close_current_buffer()
     if close_active_diff() then return end
     if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
@@ -713,27 +716,6 @@ local function close_current_buffer()
         MiniBufremove.delete()
     end
 end
-vim.keymap.set('n', '<Leader>bd', close_current_buffer, { desc = 'Buffer: close current' })
-vim.keymap.set('n', '<Leader>bD', function()
-    local source_window = vim.api.nvim_get_current_win()
-    fzf.buffers({
-        actions = {
-            ['enter'] = function(selected, opts)
-                vim.cmd('diffthis')
-                fzf_actions.buf_vsplit(selected, opts)
-                vim.cmd('diffthis')
-                if vim.api.nvim_win_is_valid(source_window) then vim.api.nvim_set_current_win(source_window) end
-            end,
-        },
-        fzf_opts = { ['--no-multi'] = true },
-        ignore_current_buffer = true,
-        previewer = false,
-        show_unloaded = false,
-        winopts = { height = 0.50, title = 'Diff Buffer' },
-    })
-end, { desc = 'Buffer: diff selected' })
-vim.keymap.set('n', '<Leader>bn', '<cmd>BufferLineCycleNext<cr>', { desc = 'Buffer: next' })
-vim.keymap.set('n', '<Leader>bp', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Buffer: previous' })
 vim.keymap.set('n', '{', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Buffer: previous' })
 vim.keymap.set('n', '}', '<cmd>BufferLineCycleNext<cr>', { desc = 'Buffer: next' })
 vim.keymap.set('n', '|', close_current_buffer, { desc = 'Buffer: close current' })
@@ -746,7 +728,6 @@ local miniclue = require('mini.clue')
 miniclue.setup({
     clues = {
         { mode = 'n', keys = '<Space>g', desc = '+Git search' },
-        { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
         { mode = 'n', keys = '<Leader>g', desc = '+Git actions' },
         { mode = 'n', keys = '<Leader>p', desc = '+Panels' },
     },
