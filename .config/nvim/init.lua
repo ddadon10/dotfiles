@@ -69,7 +69,6 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceRead = { bg = pal[bg .. '2'], fg = pal[accent .. '_blue'] },
                 LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
-                MiniStatuslineFilename = { bg = pal[bg .. '1'], fg = pal[fg .. '1'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
@@ -249,11 +248,6 @@ require('gitsigns').setup({
 -- Statusline
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
 
-local function statusline_indent()
-    if vim.bo.expandtab then return string.format('Spaces:%d', vim.bo.shiftwidth) end
-    return string.format('Tabs:%d', vim.bo.tabstop)
-end
-
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
     local branch = vim.b.gitsigns_head or ''
@@ -268,15 +262,14 @@ local function statusline()
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
     local encoding = (vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding):upper()
-    local metadata = { 'Ln %l, Col %c', encoding, fileformat, statusline_indent() }
-    if filetype ~= '' then table.insert(metadata, filetype) end
+    local indentation = vim.bo.expandtab and 'Spaces:' .. vim.bo.shiftwidth or 'Tabs:' .. vim.bo.tabstop
+    local metadata = { 'Ln %l, Col %c', encoding, fileformat, indentation, filetype }
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
         { hl = 'MiniStatuslineDevinfo', strings = { git } },
         { hl = 'MiniStatuslineFilename', strings = { filename } },
-        '%<',
-        '%=',
+        '%<%=',
         { hl = 'MiniStatuslineFilename', strings = metadata },
     })
 end

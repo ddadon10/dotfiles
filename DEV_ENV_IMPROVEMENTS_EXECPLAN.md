@@ -28,9 +28,8 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 - The statusline retains mode, branch, filename/status, labeled current line/column, uppercase encoding, line-ending
   format, and title-cased indentation and filetype information while omitting diagnostics/LSP state, search count,
   total lines, and buffer size. The branch follows mode with trunk's default `MiniStatuslineDevinfo` background;
-  filename and all right metadata use
-  the path's neutral adaptive background. Normal mode also uses Gruvbox's trunk-default Mini Statusline colors. No
-  separator glyphs appear.
+  filename and all right metadata use Gruvbox's default `MiniStatuslineFilename`/`StatusLineNC` colors. Normal mode
+  also uses Gruvbox's trunk-default Mini Statusline colors. No separator glyphs appear.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -1001,6 +1000,33 @@ Expected result: Normal mode looks exactly as it does with the trunk configurati
 Recovery: restore the former adaptive `dark2`/`light2` override if the brighter trunk appearance is again considered
 too distracting; do not change other mode groups.
 
+### Milestone 23: Let Gruvbox own statusline colors and trim formatter plumbing
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Gruvbox overrides and Mini Statusline content construction.
+
+Steps:
+
+1. Remove the final custom statusline color override, `MiniStatuslineFilename`. Rely on Gruvbox's default link to
+   `StatusLineNC`, which retains the existing adaptive `bg1` background while using the theme's quieter `fg4` text.
+   Mode and branch already use theme-owned groups.
+2. Remove the single-use `statusline_indent()` helper and construct `Spaces:N`/`Tabs:N` inline in `statusline()`.
+3. Include `filetype` directly in the metadata list; rely on `MiniStatusline.combine_groups()` filtering empty
+   strings instead of conditionally inserting it.
+4. Combine adjacent raw statusline controls `%<` and `%=` into `%<%=`. Keep separate filename and metadata groups
+   because they occupy opposite sides of the alignment point, even though they share a highlight.
+5. Validate with `git diff --check`, headless startup, and the focused UI fixture. Confirm filename/metadata resolve
+   exactly to `StatusLineNC` in both Gruvbox modes, every field and conditional remains correct, and no statusline
+   override remains in the colorscheme table.
+6. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: Gruvbox owns all statusline color adaptation, while the formatter retains only the four semantic
+regions—mode, branch, left filename, and right metadata—with less one-use plumbing.
+
+Recovery: restore only the filename override if Gruvbox's `fg4` text proves too muted; do not duplicate theme defaults
+or merge groups across `%=` merely to reduce the table length.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1056,6 +1082,8 @@ too distracting; do not change other mode groups.
   encoding, and labeled current line and column.
 - [x] Milestone 21: capitalized indentation and filetype labels and uppercased encoding for display.
 - [x] Milestone 22: removed the project Normal-mode override and verified Gruvbox's exact trunk-default colors.
+- [x] Milestone 23: removed the last statusline color override and trimmed single-use formatter plumbing while
+  preserving the four semantic regions.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1229,6 +1257,10 @@ physical terminal UI checks remain downstream.
   Gruvbox's integration defines the effective group as bold `fg1` background with `bg0` text. Removing the current
   override reproduces `light1`/`dark0` in dark mode and `dark1`/`light0` in light mode. Whitespace, startup, all
   statusline content, and the remainder of the focused UI fixture pass.
+- Milestone 23 passed focused validation on 2026-09-11. `MiniStatuslineFilename` and the right metadata resolve
+  directly to Gruvbox's `StatusLineNC` in dark and light modes; no statusline highlight remains in the project
+  overrides. Inline indentation, unconditional metadata construction with empty-string filtering, and `%<%=` retain
+  identical content/order and all focused startup, color, casing, branchless, and location checks pass.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1340,7 +1372,8 @@ Temporary exploration material is intentionally uncommitted:
   `Ln %l, Col %c`, uppercase effective encoding, friendly LF/CRLF/CR, `Spaces:N`/`Tabs:N`, and an icon plus
   first-letter-capitalized filetype on the neutral background. Use Mini Statusline's
   native spacing and no divider glyphs. Remove search, diagnostics/LSP state, size, total lines, and Git change counts;
-  leave Normal mode unoverridden so it retains Gruvbox's trunk-default bold `fg1` background and `bg0` text.
+  leave all statusline groups unoverridden so Gruvbox owns dark/light adaptation. Retain separate filename and metadata
+  groups around `%=` because they have different alignment roles despite sharing `MiniStatuslineFilename`.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1525,3 +1558,7 @@ Temporary exploration material is intentionally uncommitted:
 - 2026-09-11 UTC — Completed Milestone 22: removed the custom subdued Normal-mode override after verifying trunk has
   none and Gruvbox itself supplies the effective Mini Statusline group. Whitespace, headless startup, and focused UI
   checks passed exact bold dark/light `fg1` background and `bg0` text values plus all retained statusline behavior.
+- 2026-09-11 UTC — Completed Milestone 23: removed the final custom statusline highlight, inlined the one-use
+  indentation label, let Mini Statusline filter an empty filetype, and combined `%<%=`. Whitespace, headless startup,
+  and focused UI checks passed exact dark/light `StatusLineNC` filename/metadata colors and all retained content,
+  order, casing, location, and conditional branch behavior.
