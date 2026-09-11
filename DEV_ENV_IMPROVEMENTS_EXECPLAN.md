@@ -101,7 +101,7 @@ Steps:
 5. Validate the milestone once:
    - `npm --userconfig /workspace/.npmrc config get min-release-age` prints `3`.
    - `bash -n docker/.bashrc` exits zero.
-   - `rg -n 'gcheckout' . --hidden -g '!/.git/**'` returns no matches.
+   - `rg -n 'gcheckout' docker/.bashrc .zshrc` returns no matches.
    - A static apt-block check reports exactly one `npm`, one `python3-venv`, and one `yarnpkg`, in stable order.
    - Record `zsh -n .zshrc` as a downstream check because zsh is not installed here.
    - Do not run `build.sh`; it invokes Docker and pushes images.
@@ -450,7 +450,7 @@ Steps:
    - `git diff --check`.
    - `bash -n docker/.bashrc`.
    - `npm --userconfig /workspace/.npmrc config get min-release-age` prints `3`.
-   - `rg -n 'gcheckout' . --hidden -g '!/.git/**'` returns no matches.
+   - `rg -n 'gcheckout' docker/.bashrc .zshrc` returns no matches.
    - A static apt-block check reports one occurrence each of `npm`, `python3-venv`, and `yarnpkg`.
    - `nvim --headless -u /workspace/.config/nvim/init.lua '+qa'` exits zero.
    - A static/effective map inventory confirms the exact approved global and contextual graph, no removed aliases,
@@ -491,20 +491,27 @@ limitation.
   `<Space>g` Git search, contextual NvimTree layout, and balanced trim.
 - [x] Prototyped Bufferline with the Mini Icons devicons mock, safe MiniBufremove callbacks, no diagnostics, hover
   configuration, and the real 45-column NvimTree offset; selected the simple stable-order draft.
-- [x] Revised this self-contained ExecPlan with the selected graph; implementation has not started.
-- [ ] Milestone 1: update container packages, npm policy, and both alias surfaces.
+- [x] Revised this self-contained ExecPlan with the selected graph and began implementation from a clean worktree.
+- [x] Milestone 1: updated container packages, npm policy, and both alias surfaces; focused source checks pass.
 - [ ] Milestone 2: implement and validate the global keymap graph, panels, JSON format mapping, and Mini Clue.
 - [ ] Milestone 3: implement and validate contextual Gitsigns actions and blame closing.
 - [ ] Milestone 4: replace and validate NvimTree's buffer-local mappings.
 - [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
 - [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
-Exact next action: edit `docker/Dockerfile` to add `python3-venv` and `yarnpkg` in the apt list while retaining the
-single existing `npm` entry, then complete Milestone 1 before changing Neovim.
+Exact next action: implement Milestone 2 in `.config/nvim/init.lua`, beginning with the leader variables and complete
+global mapping graph, then configure Mini Clue and run the milestone's focused Neovim checks.
 
 ## Findings and Decisions
 
 ### Verified facts and evidence
+
+- Milestone 1 validation passed on 2026-09-11: npm reports `min-release-age` as `3`, Bash syntax is valid, the first
+  apt block contains exactly one each of `npm`, `python3-venv`, and `yarnpkg` in that order, the two shell surfaces
+  contain no `gcheckout`, and `git diff --check` is clean. Zsh syntax and the image build remain deferred as planned.
+- The original repository-wide `gcheckout` validation was self-referential because this ExecPlan documents the
+  removed alias. The executable check now targets `docker/.bashrc` and `.zshrc`, which are the complete alias and
+  guidance surfaces in scope.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -631,3 +638,7 @@ Temporary exploration material is intentionally uncommitted:
   MiniBufremove-backed mouse closing, hover requirements, a blank live-width NvimTree offset, exact validation and
   recovery, and the prototype evidence in `/tmp/bufferline-exploration.Ih1aac/JOURNAL.md`. Added no implementation or
   Bufferline keymap.
+- 2026-09-11 UTC — Completed Milestone 1: added `python3-venv` and `yarnpkg` to the existing apt package list, set
+  npm's three-day `min-release-age`, and removed `gcheckout` from both shell surfaces and host guidance. Recorded the
+  passing npm, Bash, apt-list, alias, and whitespace checks and retained the planned Docker/zsh deferrals. Corrected
+  the self-referential alias validation to inspect the two in-scope shell files instead of this documenting ExecPlan.

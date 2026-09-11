@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     psmisc \
     python3 \
     python3-pip \
+    python3-venv \
     ripgrep \
     rsync \
     shellcheck \
@@ -57,6 +58,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     unzip \
     vim \
     xz-utils \
+    yarnpkg \
     yq \
     zip \
     && rm -rf /var/lib/apt/lists/*

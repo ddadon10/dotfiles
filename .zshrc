@@ -35,7 +35,7 @@ dev() {
 }
 
 # Git Client
-git() { echo "Git is disabled on the host. Use gcheckout, gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
+git() { echo "Git is disabled on the host. Use gclone, gfetch, glsremote, gpull, gpush or run git from a container." >&2; return 1; }
 
 _gitclient() {
   docker network create git >/dev/null 2>&1 || true
@@ -51,7 +51,6 @@ _gitclient() {
     ddadon/gitclient:current "$@"
 }
 
-alias gcheckout='_gitclient checkout'
 alias gclone='_gitclient clone'
 alias gfetch='_gitclient fetch'
 alias glsremote='_gitclient ls-remote'
