@@ -23,7 +23,7 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   Gitsigns and NvimTree attachment, after a 250 ms delay.
 - Bufferline replaces Mini Tabline with a Gruvbox-adaptive, VS Code-style adjacent-insertion buffer row, a blue active
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
-  `File Explorer` offset matching the NvimTree sidebar. Literal `[`/`]` and discoverable `\bp`/`\bn` traverse its
+  `File Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` and discoverable `\bp`/`\bn` traverse its
   visual order; literal `|` closes through the same universal close action as `\bd`. It displays no LSP diagnostics.
 - The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
   while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use adaptive
@@ -63,9 +63,8 @@ Assumptions and boundaries:
   side after that change; it must not use `<Leader>`.
 - The project intentionally does not preserve Neovim defaults. It does preserve the selected direct editing
   primitives `d`, `s`/`S`, `<A-h/j/k/l>`, Visual `<D-c>`, and command-line `<CR>`.
-- Keep `qq`, project `[q`/`]q`, `+`, `{`, and `}` absent. Restore literal `[`/`]` as fast previous/next visual
-  Bufferline actions and literal `|` as an alias of universal close. This intentionally overrides any conflicting
-  defaults; the user does not require them.
+- Keep `qq`, project `[q`/`]q`, and `+` absent. Use literal `{`/`}` as fast previous/next visual Bufferline actions
+  and literal `|` as an alias of universal close. Leave `[`/`]` free for Neovim's bracket-prefixed mappings.
 - Keep direct global `\c` Comment and `\x` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions
   therefore live under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch
   buffer cannot meaningfully be written.
@@ -76,7 +75,8 @@ Assumptions and boundaries:
 - Bufferline must use `sort_by = 'insert_after_current'`; every next/previous action must use Bufferline cycle commands
   so navigation follows the visible order. Keep diagnostics disabled, the Mini Icons devicons mock, and JDT virtual
   filename behavior; add no separate devicons or statusline plugin.
-- Interpret the requested `[]|` literally as `[`, `]`, and `|`. Keep the discoverable `\bp`/`\bn` aliases as well.
+- Use the corrected `{}`/`|` fast-key set: `{` is previous, `}` is next, and `|` is universal close. Keep the
+  discoverable `\bp`/`\bn` aliases as well.
 - Use the approved Layered Gruvbox theme: soft/base backgrounds for fill, inactive, and selected states; adaptive
   bright/faded blue for the active indicator and Explorer separator; and adaptive bright/faded orange for modified
   markers. Recompute it on `ColorScheme` for dark/light changes.
@@ -505,9 +505,8 @@ Steps:
 
 1. Change Bufferline to `sort_by = 'insert_after_current'`, the closest available behavior to VS Code opening a new
    editor immediately after the active editor. Traverse that sorted row, rather than numeric buffer IDs:
-   - Map Normal `[` to `:BufferLineCyclePrev` and `]` to `:BufferLineCycleNext`, both with `nowait = true`. Neovim
-     supplies longer bracket-prefixed mappings; immediate execution deliberately makes those defaults unreachable
-     instead of delaying these approved direct actions until `timeoutlen` expires.
+   - Map Normal `{` to `:BufferLineCyclePrev` and `}` to `:BufferLineCycleNext`. Do not set `nowait`; braces are
+     complete mappings and do not conflict with Neovim's longer bracket-prefixed mappings.
    - Change `\bp` and `\bn` to those same previous/next commands so the discoverable noun group agrees with the fast
      keys.
    - Map Normal `|` to the exact same callback as `\bd`; define the callback once because it is reused.
@@ -559,9 +558,9 @@ Steps:
    Tab and Shift-Tab retain their literal fallback. Do not add a completion dependency or change Enter acceptance.
 8. Add `window = { delay = 250 }` to Mini Clue. Keep its existing trigger and clue graph unchanged.
 9. Validate once after the related edits:
-   - Effective Bufferline options report adjacent insertion, and a four-buffer fixture proves immediate `nowait`
-     `[`/`]` plus `\bp`/`\bn` visit the displayed order rather than buffer-ID order. `|` and `\bd` both preserve
-     modified-buffer safety and close representative special panels correctly.
+   - Effective Bufferline options report adjacent insertion, and a four-buffer fixture proves `{`/`}` plus
+     `\bp`/`\bn` visit the displayed order rather than buffer-ID order. `[`/`]` have no project mapping; `|` and `\bd`
+     preserve modified-buffer safety and close representative special panels correctly.
    - A real NvimTree produces a 45-column `File Explorer` offset with no `Explorer` winbar.
    - Snapshot all overridden Bufferline highlight groups in dark and light modes; assert the table above, blue active
      indicator/offset separator, orange modified marker, and no black background. Restore the original background.
@@ -585,8 +584,8 @@ title; the statusline and blame drawer are compact; only the useful shell termin
 and project clues appear after 250 ms.
 
 Recovery: if dynamic colors do not refresh, inspect Bufferline's `ColorScheme` callback and effective highlight
-function before adding another autocmd. If `[`/`]` do not execute immediately, inspect their effective `nowait` flag
-before deleting any default maps or changing timeout settings. If Mini Keymap changes literal Tab fallback, use Mini
+function before adding another autocmd. If `{`/`}` do not follow visual order, inspect their effective Bufferline
+command before changing timeout settings. If Mini Keymap changes literal Tab fallback, use Mini
 Completion's documented `pumvisible()` expression mappings with the same observed behavior.
 
 ### Milestone 8: Make native split diffs easy to close and add inline preview
@@ -691,7 +690,7 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
 - [x] Explored the follow-up Bufferline order/highlight APIs, Mini Statusline/Completion/Keymap behavior, Gitsigns
   blame/diff APIs, native diff cleanup, and a listed unified-diff prototype; rejected the prototype as needless
   complexity and selected toggleable native splits.
-- [x] Approved immediate bracket maps, minimal terminal cleanup, deterministic native completion validation, and
+- [x] Approved direct brace maps, minimal terminal cleanup, deterministic native completion validation, and
   generic special-buffer diff detection to keep the implementation small and decoupled.
 - [x] Milestone 7: refined and validated Bufferline navigation/theme/title, statusline, blame, terminal, completion,
   and clue timing.
@@ -699,6 +698,8 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
   option-restoration, context, and preview checks pass.
 - [x] Milestone 9: reran focused follow-up and touched-surface regressions from the committed configuration; all
   automated checks pass and all disposable mutations are restored.
+- [x] Corrected fast Bufferline navigation to `{`/`}`/`|`, removed the project `[`/`]` mappings and `nowait`, and
+  reran focused navigation and global-map checks.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -780,8 +781,8 @@ physical terminal UI checks remain downstream.
 - Gitsigns inline preview covers the current hunk and clears itself on CursorMoved, InsertEnter, or BufLeave, making it
   a useful low-cost companion to the full split. A Neovim 0.12.4 listed unified-diff prototype also passed, but the
   user rejected its Git-base retrieval and lifecycle code as disproportionate complexity.
-- Milestone 7 passed focused validation on 2026-09-11. Bufferline uses adjacent insertion; direct `[`/`]` have the
-  effective `nowait` flag; direct and discoverable navigation follow a verified `a, c, b` visual order; and dark/light
+- Milestone 7 passed focused validation on 2026-09-11. Bufferline uses adjacent insertion; direct `{`/`}` and
+  discoverable navigation follow a verified `a, c, b` visual order; and dark/light
   highlight snapshots match every approved layered fill/inactive/selected, blue indicator/offset, and orange modified
   color. A real NvimTree rendered a centered 45-column `File Explorer` offset with an empty window winbar.
 - Statusline rendering showed mode, Git, modified filename, icon/filetype, CRLF, indentation, and line:column in order
@@ -812,6 +813,10 @@ physical terminal UI checks remain downstream.
   confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
   physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
   also remain unavailable in this container.
+- The user corrected the intended fast-key set from `[`/`]`/`|` to `{`/`}`/`|`. The final config maps braces to
+  Bufferline's visual previous/next commands without `nowait`, retains `|` as universal close, and leaves square
+  brackets unmapped by the project. Focused startup, direct/discoverable visual-order navigation, exact mapping flags,
+  global graph, panels, and JSON formatting checks passed after the correction.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -915,7 +920,7 @@ Temporary exploration material is intentionally uncommitted:
   latter gives every ordinary/special buffer one canonical close action.
 - Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
   diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
-  commands, immediate `nowait` literal `[`/`]` navigation, literal `|` close, and a centered `File Explorer` offset
+  commands, literal `{`/`}` navigation without `nowait`, literal `|` close, and a centered `File Explorer` offset
   title.
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
@@ -1040,3 +1045,8 @@ Temporary exploration material is intentionally uncommitted:
   filesystem operations, and Visual Git mutations. Tightened two temporary fixture assumptions without changing
   production code, restored every disposable mutation, recorded only genuine interactive/host deferrals, and left
   this final ExecPlan audit as the sole task-related change for its required local commit.
+- 2026-09-11 UTC — Applied the user's navigation-key correction: replaced project `[`/`]` Bufferline navigation with
+  `{`/`}`, removed `nowait`, restored square brackets for Neovim's bracket-prefixed commands, and retained `|` close
+  plus discoverable `\bp`/`\bn`. Updated the active requirements, validation, progress, findings, and decisions while
+  preserving earlier audit entries as history. Whitespace, startup, direct/discoverable visual-order navigation,
+  mapping inventory/flags, global panels, and real JSON formatting checks passed.
