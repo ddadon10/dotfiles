@@ -21,17 +21,21 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   and expose mnemonic actions and small Open/Clipboard groups through Mini Clue.
 - Mini Clue describes the project-owned `g`, literal-Space, and backslash families, including mappings added later by
   Gitsigns and NvimTree attachment.
+- Bufferline replaces Mini Tabline with a default-styled, stable-order buffer row, a modified marker, hover-revealed
+  close controls, safe MiniBufremove-backed mouse closing, and an offset matching the NvimTree sidebar. It displays no
+  LSP diagnostics and adds no keymaps.
 - Neovim's native right-click menu is not customized.
 
 Relevant repository state:
 
-- Branch `20260911-improvement` is clean at commit `f59fa8b` before this plan revision.
+- Branch `20260911-improvement` is clean at commit `441c0ae` before this plan revision.
 - `docker/Dockerfile` uses Debian trixie and one alphabetically ordered apt package list. `npm` is already present;
   `python3-venv` and `yarnpkg` are not.
 - `.npmrc` is copied to `/root/.npmrc` by the development image.
 - `docker/.bashrc` and `.zshrc` both define `gcheckout`; `.zshrc` also names it in the disabled-Git error.
 - Neovim configuration remains a single tracked file, `.config/nvim/init.lua`. It installs Fzf Lua, Gitsigns,
-  Mini.nvim, NvimTree, Aerial, Quicker, and the LSP dependencies required here; no plugin addition is needed.
+  Mini.nvim, NvimTree, Aerial, Quicker, and the LSP dependencies required here. Mini Tabline supplies the current
+  buffer row; Bufferline is not installed and will be the only new plugin.
 - `vim.g.mapleader` and `vim.g.maplocalleader` are currently Space. There are 46 explicit project mappings, the
   general actions are mixed into the Space prefix, Gitsigns has no `on_attach` maps, NvimTree inherits more than 50
   plugin defaults, Mini Clue is not configured, and Aerial has no project toggle.
@@ -41,7 +45,8 @@ Relevant repository state:
   `5be654f2232c10ddcad19c1607a67b6b4b78fc29`, Mini.nvim
   `9d01f392b33fb2ba36fbc87fc0bf4453e63ffb0a`, NvimTree
   `b2aadda94b107480c48e548d6db51c6840b7b33c`, and Aerial
-  `28fe6e822ae344544c379d60fcb13c9519a1f08a`.
+  `28fe6e822ae344544c379d60fcb13c9519a1f08a`. Bufferline exploration used upstream commit
+  `655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3`.
 
 Assumptions and boundaries:
 
@@ -60,6 +65,11 @@ Assumptions and boundaries:
   balanced trim deliberately exposes only the selected twelve Gitsigns actions.
 - JSON formatting already works. Do not add `provideFormatter`, format-on-save, SchemaStore, or another formatter;
   the new `\f` mapping calls `vim.lsp.buf.format()` for any attached formatter.
+- Bufferline must retain its default buffer-ID ordering so its displayed order agrees with the planned native
+  `\bn`/`\bp` actions. Do not add Bufferline keymaps, LSP diagnostics, custom style presets, custom highlight groups,
+  or a separate devicons plugin. Keep the existing Mini Icons devicons mock and JDT virtual-buffer filename behavior.
+- Bufferline's per-buffer close click and right-click action must call MiniBufremove rather than its forced-delete
+  defaults. Its hover interaction is a tabline mouse action, not native popup-menu customization.
 - Do not customize native menus, add a context-menu plugin, preserve/redirect Neovim's original `gx` browser
   callback, or build a mouse-access keymap registry. Mini Clue is the only new discovery interface.
 - Docker cannot run in this environment. Source-level checks run here; a real image build and executable smoke test
@@ -356,7 +366,77 @@ user direction; do not restore the entire default set. If a trigger disappears, 
 runs last. If full-path rename is unsuitable as Move, stop and report the API limitation instead of inventing direct
 filesystem mutation outside NvimTree.
 
-### Milestone 5: Final focused validation and handoff
+### Milestone 5: Replace Mini Tabline with Bufferline
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: global mouse-movement option, `vim.pack.add()` plugin list, Gruvbox overrides, tabline
+  setup, existing `jdt_info()` formatter, MiniBufremove, Mini Icons' devicons mock, and NvimTree sidebar integration.
+- Bufferline's `setup({ options = ... })`, mouse-close callbacks, hover events, name formatter, modified marker, and
+  sidebar-offset configuration.
+
+Steps:
+
+1. Add `https://github.com/akinsho/bufferline.nvim` to the alphabetically ordered `vim.pack.add()` list. This is the
+   only new dependency; do not add `nvim-web-devicons` because the existing `MiniIcons.mock_nvim_web_devicons()`
+   supplies the API Bufferline consumes.
+2. Set `vim.o.mousemoveevent = true` with the other global options. The existing `vim.o.mouse = 'a'` remains in place;
+   both are required for the requested hover behavior.
+3. Remove the `require('mini.tabline').setup(...)` block and all seven `MiniTabline*` Gruvbox highlight overrides.
+   Retain the Mini.nvim plugin and every other configured Mini module.
+4. Configure Bufferline in the existing `-- Tabline` location with this exact behavior:
+
+   ```lua
+   require('bufferline').setup({
+       options = {
+           close_command = function(bufnr) MiniBufremove.delete(bufnr) end,
+           diagnostics = false,
+           hover = { enabled = true, delay = 200, reveal = { 'close' } },
+           modified_icon = '●',
+           name_formatter = function(buf) local info = jdt_info(buf.path); return info and info.filename end,
+           offsets = {
+               { filetype = 'NvimTree', separator = true },
+           },
+           right_mouse_command = function(bufnr) MiniBufremove.delete(bufnr) end,
+           show_close_icon = false,
+       },
+   })
+   ```
+
+   Keep the offset area blank because NvimTree already has an `Explorer` winbar. Its width must be derived from the
+   actual sidebar window, currently configured as 45 columns.
+5. Omit Bufferline settings that only repeat the desired defaults: buffer mode, default style preset, thin
+   separators, active-buffer indicator, file icons, always-visible row, and buffer-ID sorting. Do not add Bufferline
+   mappings or change the approved `\b` mapping family. The stable default order deliberately keeps displayed order
+   aligned with native `:bnext` and `:bprevious`.
+6. Validate once after the related edits:
+   - `nvim --headless -u /workspace/.config/nvim/init.lua '+qa'` exits zero and Bufferline owns the `tabline` option.
+   - Static inspection finds one Bufferline plugin entry and setup, no Mini Tabline setup or `MiniTabline*` highlight,
+     no new keymap, and no standalone devicons plugin.
+   - Effective Bufferline options report `diagnostics = false`, hover close reveal at 200 ms, the `●` modified icon,
+     safe function callbacks for close-click and right-click, hidden global close icon, and default buffer-ID sort.
+   - A scratch modified buffer renders `●` without any LSP count or severity marker. A close callback against an
+     unsaved scratch buffer requests confirmation and does not silently destroy it.
+   - The existing Mini Icons mock returns an icon and color through `require('nvim-web-devicons')` before Bufferline
+     renders; no new icon package is present.
+   - A fake `jdt://contents/...` buffer renders the short class filename instead of its virtual URI.
+   - Opening the real NvimTree produces a left offset equal to its 45-column live width; closing NvimTree returns the
+     offset to zero.
+   - In an interactive Neovim UI, an inactive unmodified buffer reveals its close icon after hover, the current
+     unmodified buffer retains its close icon, and a modified buffer retains its modified marker. Confirm that clicking
+     close or right-clicking a tab invokes safe MiniBufremove behavior.
+7. Record exact results and commit the ExecPlan with `.config/nvim/init.lua` as a local milestone commit such as
+   `Replace Mini Tabline with Bufferline`.
+
+Expected result: Neovim presents a default-styled, VS Code-like row of buffers whose tabs start after the NvimTree
+sidebar, expose close controls through hover and mouse actions, visibly mark unsaved files, retain stable navigation
+order and JDT names, and contain no LSP diagnostics or new keyboard interface.
+
+Recovery: if Bufferline cannot load or render with the Mini Icons mock, restore the removed Mini Tabline setup and
+Gruvbox overrides, remove Bufferline and `mousemoveevent`, and revert the milestone commit. If only the interactive
+hover check fails, first confirm the terminal forwards mouse-motion events before altering the approved configuration.
+
+### Milestone 6: Final focused validation and handoff
 
 Affected files:
 
@@ -378,6 +458,9 @@ Steps:
    - One consolidated Neovim scratch run covers Mini Clue roots/context, macro recording, Comment, JSON LSP formatting,
      all panel toggles, ordinary/special `\bd`, blame from both panes, selected Gitsigns actions, and NvimTree
      context isolation.
+   - Bufferline is the sole tabline implementation, shows no diagnostics, renders its modified marker and JDT names,
+     safely closes buffers through MiniBufremove, and tracks the live NvimTree width with its sidebar offset.
+   - Perform the interactive Bufferline hover/click check from Milestone 5 in a terminal that forwards mouse movement.
 3. Confirm all exploration scripts and disposable fixtures remain outside the repository and `git status --short`
    contains only intentional task state.
 4. Update Progress, Findings and Decisions, and Audit Log with exact final evidence and deferred checks. Create a final
@@ -399,19 +482,22 @@ limitation.
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
   project/plugin keymaps relevant to the task.
-- [x] Researched official npm, Debian, Neovim, nvim-lspconfig, Fzf Lua, Gitsigns, Aerial, Mini Clue, and NvimTree
-  documentation/source at the installed revisions.
+- [x] Researched official npm, Debian, Neovim, nvim-lspconfig, Fzf Lua, Gitsigns, Aerial, Mini Clue, NvimTree, and
+  Bufferline documentation/source at the installed or selected revisions.
 - [x] Tested JSON formatting, blame drawer failure/repairs, Aerial toggling, Mini Clue roots/context, Fzf provider
   availability, Gitsigns attachment isolation, and complete replacement of NvimTree defaults in temporary fixtures.
 - [x] Explored native-menu context and nested TUI behavior, reverted the demo, and dropped menu customization.
 - [x] Cataloged the old keymaps and selected the three-root/noun-group architecture, flat Space picker layer,
   `<Space>g` Git search, contextual NvimTree layout, and balanced trim.
+- [x] Prototyped Bufferline with the Mini Icons devicons mock, safe MiniBufremove callbacks, no diagnostics, hover
+  configuration, and the real 45-column NvimTree offset; selected the simple stable-order draft.
 - [x] Revised this self-contained ExecPlan with the selected graph; implementation has not started.
 - [ ] Milestone 1: update container packages, npm policy, and both alias surfaces.
 - [ ] Milestone 2: implement and validate the global keymap graph, panels, JSON format mapping, and Mini Clue.
 - [ ] Milestone 3: implement and validate contextual Gitsigns actions and blame closing.
 - [ ] Milestone 4: replace and validate NvimTree's buffer-local mappings.
-- [ ] Milestone 5: run consolidated validation and hand off deferred environment checks.
+- [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
+- [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
 Exact next action: edit `docker/Dockerfile` to add `python3-venv` and `yarnpkg` in the apt list while retaining the
 single existing `npm` entry, then complete Milestone 1 before changing Neovim.
@@ -455,6 +541,20 @@ single existing `npm` entry, then complete Milestone 1 before changing Neovim.
   nodes: [filesystem API](https://github.com/nvim-tree/nvim-tree.lua/blob/b2aadda94b107480c48e548d6db51c6840b7b33c/doc/nvim-tree-lua.txt#L2415-L2536).
 - Aerial's `AerialToggle!` opens/closes while preserving source focus, and the installed command passed a scratch
   toggle test: [Aerial command semantics](https://github.com/stevearc/aerial.nvim/blob/28fe6e822ae344544c379d60fcb13c9519a1f08a/README.md#L209-L218).
+- Bufferline defaults to buffer mode, buffer-ID ordering, thin separators, an active-buffer indicator, a `●`
+  modified marker, always showing the row, and no diagnostics:
+  [Bufferline defaults](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/lua/bufferline/config.lua#L632-L675).
+  Its upstream hover configuration requires `mousemoveevent` and can reveal inactive close icons after 200 ms:
+  [hover behavior](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/doc/bufferline.txt#L181-L199).
+- Bufferline renders a modified marker instead of a close icon for a modified buffer; its default close-click and
+  right-click callbacks use forced `bdelete!`, so both must be replaced with MiniBufremove callbacks:
+  [suffix rendering](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/lua/bufferline/ui.lua#L263-L331),
+  [mouse defaults](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/lua/bufferline/config.lua#L636-L642).
+- Bufferline officially supports an NvimTree offset derived from the matching edge window:
+  [sidebar offset](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/doc/bufferline.txt#L593-L641).
+  A headless prototype with the repository's real NvimTree configuration measured a 45-column left offset. The
+  existing Mini Icons mock returned a colored Lua icon through the devicons compatibility API, and MiniBufremove
+  preserved a deliberately modified scratch buffer rather than silently forcing deletion.
 - Neovim native menus and flat custom entries worked in a terminal, but selecting a nested custom menu reproduced
   `E335: Menu not defined for Normal mode`. A chained `:popup` workaround worked but required a multi-stage design.
   The experimental config was reverted and the user chose Mini Clue instead.
@@ -464,6 +564,7 @@ Temporary exploration material is intentionally uncommitted:
 - `/tmp/neovim-improvements-explore.Nlutuo/JOURNAL.md`
 - `/tmp/native-menu-exploration/JOURNAL.md`
 - `/tmp/neovim-keymap-architecture.EpFoTn/JOURNAL.md`
+- `/tmp/bufferline-exploration.Ih1aac/JOURNAL.md`
 
 ### Decisions
 
@@ -486,6 +587,9 @@ Temporary exploration material is intentionally uncommitted:
 - Keep the focused twelve-action Gitsigns set and omit the high-impact whole-buffer reset and lower-value duplicates.
 - Implement both blame toggle and universal `\bd`: the former gives same-key behavior from either pane, while the
   latter gives every ordinary/special buffer one canonical close action.
+- Replace Mini Tabline with Bufferline using its default visuals and buffer-ID ordering. Enable only the requested
+  hover, modified marker, safe mouse closing, JDT name formatter, and blank NvimTree offset; explicitly disable
+  diagnostics, hide the redundant global close icon, and add no Bufferline keymaps or devicons dependency.
 - Leave native menus untouched and use Mini Clue as the sole discovery addition.
 
 ### Inference and unresolved gaps
@@ -494,11 +598,15 @@ Temporary exploration material is intentionally uncommitted:
 - Inference: contextual NvimTree `\s` is preferable to preserving global Save in an unwritable Explorer buffer; the
   buffer-local description makes the override visible.
 - Inference: preserving Aerial source focus matches the other panel toggles and occasional-use workflow.
+- Inference: default buffer-ID order is preferable to `insert_after_current` here because it keeps the visual row
+  consistent with the already approved native `\bn`/`\bp` actions without adding Bufferline-specific mappings.
 - Unresolved until external build: the pinned base and live trixie repositories must resolve all three apt packages
   on every target architecture.
 - Unresolved until host validation: zsh syntax cannot run here because zsh is absent.
 - Unresolved until implementation: NvimTree full-path rename and destructive operations must be exercised only in a
   disposable fixture; exploratory API/source inspection establishes semantics but not every interactive edge case.
+- Unresolved until interactive validation: headless tests cannot generate real terminal mouse movement, so hover
+  reveal and click behavior must be confirmed in a UI whose terminal forwards mouse-motion events.
 - The native browser-menu/Normal-`gx` collision remains outside scope because menu customization was dropped.
 
 ## Audit Log
@@ -517,3 +625,9 @@ Temporary exploration material is intentionally uncommitted:
   Gitsigns layout, and complete buffer-local NvimTree default replacement. Added exact mapping tables, attachment and
   trigger-order requirements, focused validation and recovery, preserved all package/npm/alias/JSON requirements, and
   kept native menus excluded. No implementation or tracked experimental change is included in this revision.
+- 2026-09-11 UTC — Added the user-approved Bufferline replacement as Milestone 5 and renumbered final validation to
+  Milestone 6. Recorded removal of Mini Tabline and its highlight overrides, reuse of the Mini Icons devicons mock,
+  default visuals and stable buffer-ID ordering, explicit no-diagnostics behavior, JDT filename parity, safe
+  MiniBufremove-backed mouse closing, hover requirements, a blank live-width NvimTree offset, exact validation and
+  recovery, and the prototype evidence in `/tmp/bufferline-exploration.Ih1aac/JOURNAL.md`. Added no implementation or
+  Bufferline keymap.
