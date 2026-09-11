@@ -251,8 +251,8 @@ require('gitsigns').setup({
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
 
 local function statusline_indent()
-    if vim.bo.expandtab then return string.format('spaces:%d', vim.bo.shiftwidth) end
-    return string.format('tabs:%d', vim.bo.tabstop)
+    if vim.bo.expandtab then return string.format('Spaces:%d', vim.bo.shiftwidth) end
+    return string.format('Tabs:%d', vim.bo.tabstop)
 end
 
 local function statusline()
@@ -265,10 +265,10 @@ local function statusline()
     local filetype = vim.bo.filetype
     if filetype ~= '' then
         local icon = MiniIcons.get('filetype', filetype)
-        filetype = (icon and icon .. ' ' or '') .. filetype
+        filetype = (icon and icon .. ' ' or '') .. filetype:gsub('^%l', string.upper)
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
-    local encoding = vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding
+    local encoding = (vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding):upper()
     local metadata = { 'Ln %l, Col %c', encoding, fileformat, statusline_indent() }
     if filetype ~= '' then table.insert(metadata, filetype) end
 

@@ -25,8 +25,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
   `Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
-- The statusline retains mode, branch, filename/status, labeled current line/column, encoding, line-ending format,
-  indentation, and filetype while omitting diagnostics/LSP state, search count, total lines, and buffer size. The
+- The statusline retains mode, branch, filename/status, labeled current line/column, uppercase encoding, line-ending
+  format, and title-cased indentation and filetype information while omitting diagnostics/LSP state, search count,
+  total lines, and buffer size. The
   branch follows mode with trunk's default `MiniStatuslineDevinfo` background; filename and all right metadata use
   the path's neutral adaptive background. No separator glyphs appear.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
@@ -957,6 +958,28 @@ branch-group background.
 Recovery: if encoding is unexpectedly empty, retain the global-encoding fallback rather than introducing a fixed
 label. Restore a divider only if explicitly requested again.
 
+### Milestone 21: Normalize statusline label casing
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Mini Statusline's encoding, indentation, and filetype display text.
+
+Steps:
+
+1. Uppercase the effective encoding for display, so `utf-8` renders as `UTF-8` without changing buffer options.
+2. Capitalize indentation labels as `Spaces:N` or `Tabs:N`.
+3. Capitalize the first lowercase character of the filetype display after using the original lowercase value for
+   Mini Icons lookup. Accept generic results such as `Json` or `Typescript`; do not add a canonical-name table.
+4. Validate with `git diff --check`, headless startup, and the focused UI fixture. Confirm `UTF-8`, `Spaces:4`, and
+   icon-prefixed `Lua` in their approved order while all prior content, colors, and omissions remain correct.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: informational labels use consistent display casing without changing any Neovim option or plugin
+behavior.
+
+Recovery: revert only these display transforms if a filetype's generic capitalization is misleading; keep the raw
+lowercase filetype for icon lookup.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1010,6 +1033,7 @@ label. Restore a divider only if explicitly requested again.
 - [x] Milestone 19: replaced statusline box-drawing dividers with unpadded light vertical bars and passed rendering checks.
 - [x] Milestone 20: restored trunk's default branch block after mode, removed total lines and dividers, restored
   encoding, and labeled current line and column.
+- [x] Milestone 21: capitalized indentation and filetype labels and uppercased encoding for display.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1176,6 +1200,9 @@ physical terminal UI checks remain downstream.
   is again immediately after mode and omits Gitsigns counts. Right metadata renders labeled line/column, effective
   `utf-8`, CRLF, indentation, and filetype on the neutral background. Total lines and both prior divider glyphs are
   absent; all four location cases, branchless behavior, resolved dark/light colors, startup, and the fixture pass.
+- Milestone 21 passed focused validation on 2026-09-11. The statusline renders `UTF-8`, `Spaces:4`, and icon-prefixed
+  `Lua` in the approved metadata order; the tab path is explicitly `Tabs:N`. Encoding and filetype source values stay
+  unchanged, Mini Icons still receives the original filetype, and whitespace, startup, and the focused fixture pass.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1284,8 +1311,8 @@ Temporary exploration material is intentionally uncommitted:
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve this logical order: mode, trunk-default `MiniStatuslineDevinfo` `` branch block, filename/status, then
-  `Ln %l, Col %c`, effective
-  encoding, friendly LF/CRLF/CR, indentation, and icon/filetype on the neutral background. Use Mini Statusline's
+  `Ln %l, Col %c`, uppercase effective encoding, friendly LF/CRLF/CR, `Spaces:N`/`Tabs:N`, and an icon plus
+  first-letter-capitalized filetype on the neutral background. Use Mini Statusline's
   native spacing and no divider glyphs. Remove search, diagnostics/LSP state, size, total lines, and Git change counts;
   keep Normal mode on its subdued `dark2`/`light2` adaptive background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
@@ -1466,3 +1493,6 @@ Temporary exploration material is intentionally uncommitted:
   four location values, resolved trunk-default dark/light branch colors, absent counts/total/dividers, and branchless
   behavior. Recorded that the statusline's terminal-row height never changed; the short divider, compressed spacing,
   and removed branch block only reduced visual weight.
+- 2026-09-11 UTC — Completed Milestone 21: uppercased effective encoding, capitalized `Spaces`/`Tabs`, and
+  capitalized the first lowercase filetype character after icon lookup. Whitespace, headless startup, and focused UI
+  checks passed `UTF-8`, `Spaces:4`, icon-prefixed `Lua`, ordering, and all previously approved statusline behavior.
