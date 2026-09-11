@@ -15,8 +15,6 @@ single-file configuration style. The observable result is:
   panels as well as ordinary buffers.
 - Aerial toggles without stealing editor focus through `<Leader>o`.
 - `mini.clue` describes every configured multi-key family, including `qq`, while preserving macro recording.
-- Neovim's native right-click `PopUp` menu exposes most one-click custom actions, enables them contextually, and keeps
-  the native URL opener working despite the local Normal-mode `gx` rename mapping.
 
 The relevant repository state at plan creation is:
 
@@ -38,10 +36,8 @@ Assumptions and boundaries:
   second uppercase mapping; retain the existing key and change its description to `Toggle blame`.
 - JSON formatting already works. Do not add formatter settings, format-on-save, a formatting keymap, or another
   formatter in this task.
-- Keep native Neovim menus. Do not add a context-menu plugin, general keymap registry, or automatic import of every
-  plugin/default mapping.
-- Keep high-impact or non-standalone operations out of the mouse menu: `qq`, operator `d`, search prompt aliases `s` and
-  `S`, command-line `<CR>`, and window/terminal focus plumbing.
+- Do not customize Neovim's native menus, add a context-menu plugin, preserve/redirect the original `gx` callback, or
+  build a keymap registry for mouse access. Mini Clue is the chosen keymap-discovery interface.
 - Docker cannot run in this environment. Source-level validation is required here; a real image build and executable
   smoke test are recorded as downstream validation rather than simulated.
 - Do not run `git pull` or `git push`. Stage only the ExecPlan and files named by the current milestone. Every Audit Log
@@ -166,75 +162,7 @@ Recovery: if one trigger shadows a later buffer-local plugin mapping, keep the r
 verified test, remove only the `q` trigger and record `qq` as the one unavoidable non-clueable project mapping rather
 than remapping the quit action without user direction.
 
-### Milestone 4: Native contextual right-click menu
-
-Affected file and interfaces:
-
-- `.config/nvim/init.lua`: preservation of Neovim's original Normal `gx`, native `PopUp` menu definitions after
-  keymaps/Mini Clue, and a project-owned `MenuPopup` autocmd.
-- Neovim's public mapping/menu interfaces: `maparg()`, `<Plug>` mappings, recursive mode-specific `nmenu`/`vmenu`,
-  `menu_info()`, `:emenu`, and `MenuPopup`.
-
-Steps:
-
-1. Immediately before overriding Normal-mode `gx`, preserve Neovim's original callback without copying private
-   implementation:
-
-   ```lua
-   vim.keymap.set('n', '<Plug>(ConfigOpenUnderCursor)', vim.fn.maparg('gx', 'n', false, true).callback)
-   ```
-
-   Keep the current `gx` Rename mapping. Later redefine only the Normal-mode native `PopUp.Open in web browser` entry
-   to recurse to `<Plug>(ConfigOpenUnderCursor)`. Visual `gx` is not overridden by this repository and should retain
-   Neovim's definition. This fixes the verified collision without calling the private `vim.ui._get_urls()` API.
-2. Add one static `vim.cmd([[...]])` menu block after mappings. Use recursive, silent, mode-specific entries so they
-   invoke the existing mapping callbacks, and put the keyboard equivalent after `<Tab>` in each menu name. Escape
-   spaces in paths and use `<Bar>` for the literal `|` close mapping.
-3. Catalog these one-click actions:
-
-| Menu | Normal-mode mappings | Visual-mode mappings |
-| --- | --- | --- |
-| `PopUp.LSP` | `ga`, `gd`, `ge`, `gh`, `gi`, `gl`, `gp`, `gt`, `gu`, `gx` | `ga` |
-| `PopUp.Search` | `gw`, `<Leader><Leader>`, `<Leader>.`, `<Leader>?`, `<Leader>a`, `<Leader>j`, `<Leader>m`, `<Leader>p`, `<Leader>s` | `<Leader><Leader>` selection search |
-| `PopUp.Git` | `<Leader>b`, `<Leader>d`, `<Leader>D` | none |
-| `PopUp.Buffer` | `+`, `{`, `|`, `}` | none |
-| `PopUp.Quickfix` | `[q`, `]q` | none |
-| `PopUp.Panels` | `<Leader>c`, `<Leader>o`, `<Leader>q`, `<Leader>t` | none |
-
-   Use readable leaf labels matching each keymap's `desc`. Do not add `qq`, bare operators/prompts, clipboard/edit
-   actions already present in Neovim's menu, or mouse-redundant window navigation.
-4. Add a `ConfigContextMenu` augroup with a `MenuPopup` autocmd. It must adjust only project-owned entries and must not
-   clear or replace Neovim's `nvim.popupmenu` group. Each invocation should first disable conditionally available paths,
-   then enable them from in-memory state only:
-   - Enable each LSP operation only when `vim.lsp.get_clients({ bufnr = 0, method = ... })` finds the corresponding
-     method. Gate `ge` on a non-empty diagnostic count rather than an LSP client.
-   - Enable blame and Git diff only when Gitsigns is attached (`vim.b.gitsigns_status_dict ~= nil`); Diff Buffer can
-     remain available independently.
-   - Enable quickfix previous/next only when `vim.fn.getqflist({ size = 0 }).size > 0`.
-   - Disable file-scoped searches and ordinary file-buffer actions in special buffers (`vim.bo.buftype ~= ''`), but
-     leave the repaired Close action and relevant panel toggles available.
-   - Do not run Git, filesystem, or language-server subprocesses from `MenuPopup`.
-5. Validate in layers:
-   - Headless startup exits zero.
-   - `menu_info()` asserts representative menu path, mode, recursive RHS, accelerator, and enabled state after
-     synthetic `MenuPopup` events in a file buffer, JSON/LSP buffer, blame buffer, Aerial, terminal, and quickfix.
-   - A harmless recursive `:emenu` invocation reaches the existing Lua mapping through Mini Clue.
-   - With `vim.ui.open` stubbed, the URL fixture `https://example.com` executed through the native browser menu reaches
-     the preserved opener and does not call Rename.
-   - In a PTY, right-click a code buffer and a special panel once each; confirm the nested categories render, the cursor
-     follows `popup_setpos`, irrelevant actions are unavailable, and Close remains usable.
-6. Record validation and commit the plan plus `.config/nvim/init.lua` as `Customize Neovim native context menu`.
-
-Expected result: terminal right-click keeps Neovim's default contextual actions and adds the curated project actions;
-the menu teaches keyboard shortcuts, invokes the same implementations as the keys, avoids misleading actions by
-context, and opens URLs rather than invoking Rename.
-
-Recovery: remove only project-owned `PopUp.LSP`, `PopUp.Search`, `PopUp.Git`, `PopUp.Buffer`, `PopUp.Quickfix`, and
-`PopUp.Panels` paths with mode-specific `unmenu` commands, delete `ConfigContextMenu`, and remove the project `<Plug>`
-mapping/browser-leaf override. Neovim's default `PopUp` and `nvim.popupmenu` autocmd remain intact. Revert the milestone
-commit if an external UI handles native menus incompatibly; do not add a plugin as an unplanned fallback.
-
-### Milestone 5: Final focused validation and handoff
+### Milestone 4: Final focused validation and handoff
 
 Affected files:
 
@@ -252,7 +180,7 @@ Steps:
    - A static package-list check -> one occurrence each of `npm`, `python3-venv`, and `yarnpkg` in the apt block.
    - `nvim --headless -u /workspace/.config/nvim/init.lua '+qa'` -> exit zero.
    - One consolidated Neovim scratch test covering JSON formatting, blame/open-close, special-buffer `|`, Aerial
-     toggling, Mini Clue trigger metadata/macro recording, native menu metadata/context, and the `gx` browser repair.
+     toggling, and Mini Clue trigger metadata/macro recording.
 3. Confirm temporary exploration/test files remain outside the repository and `git status --short` contains only
    intentional task state.
 4. Update Progress so every completed item is checked, put exact final evidence and the deferred Docker/zsh checks in
@@ -275,15 +203,15 @@ an environment limitation by weakening the expected result.
 
 - [x] Inspected the repository, installed tools/plugins, existing keymaps, aliases, apt list, and npm configuration.
 - [x] Researched official npm, Debian, Neovim, nvim-lspconfig, Gitsigns, Aerial, and Mini Clue documentation/source.
-- [x] Tested JSON LSP formatting, blame drawer failure/repairs, Aerial toggles, Mini Clue triggers/macros, native menu
-  definitions/context, actual TUI right-click behavior, and the `gx` browser-menu repair.
+- [x] Tested JSON LSP formatting, blame drawer failure/repairs, Aerial toggles, and Mini Clue triggers/macros.
+- [x] Explored native-menu context, TUI right-click behavior, nested-menu limitations, and the `gx` collision; reverted
+  the demo and dropped menu customization from scope because Mini Clue is sufficient.
 - [x] Confirmed all experiments are outside the repository and task source files match `HEAD` before the plan commit.
 - [x] Created this self-contained ExecPlan; implementation has not started.
 - [ ] Milestone 1: update container packages, npm policy, and both alias surfaces.
 - [ ] Milestone 2: implement and validate blame/panel close behavior and the Aerial mapping.
 - [ ] Milestone 3: configure and validate Mini Clue.
-- [ ] Milestone 4: add and validate the native contextual menu and `gx` repair.
-- [ ] Milestone 5: run final focused validation and hand off deferred environment checks.
+- [ ] Milestone 4: run final focused validation and hand off deferred environment checks.
 
 Exact next action: edit `docker/Dockerfile` to add `python3-venv` and `yarnpkg` in the apt list while retaining the one
 existing `npm` entry, then continue Milestone 1 without touching Neovim yet.
@@ -315,11 +243,13 @@ existing `npm` entry, then continue Milestone 1 without touching Neovim yet.
   contextual adjustment: [mouse behavior](https://github.com/neovim/neovim/blob/v0.12.4/runtime/doc/options.txt#L4561-L4588),
   [native PopUp](https://github.com/neovim/neovim/blob/v0.12.4/runtime/doc/gui.txt#L730-L752), and
   [MenuPopup](https://github.com/neovim/neovim/blob/v0.12.4/runtime/doc/autocmd.txt#L855-L869).
-  PTY tests proved it renders in the terminal with this repository config.
+  PTY tests proved the menu and flat custom entries render in the terminal. Clicking a nested `PopUp.Demo` parent,
+  however, reproduced `E335: Menu not defined for Normal mode`; a chained `:popup` opened a second menu successfully
+  but required a multi-stage menu architecture.
 - Neovim's browser menu recursively invokes `gx`, while this repository changes Normal `gx` to Rename. The collision
   and its dynamic enablement are visible in [Neovim defaults](https://github.com/neovim/neovim/blob/v0.12.4/runtime/lua/vim/_core/defaults.lua#L488-L552).
   Preserving the original callback under `<Plug>` and retargeting the Normal menu opened the URL in a stubbed test and
-  did not invoke Rename.
+  did not invoke Rename, but that experimental repair was reverted with the menu demo.
 
 Detailed exploration journals and scratch programs are temporary and intentionally uncommitted:
 
@@ -338,8 +268,8 @@ Detailed exploration journals and scratch programs are temporary and intentional
   already-advertised general action that currently crashes on the blame panel.
 - Use Mini Clue's full supported starter plus the one project-specific `q` trigger, rather than hand-maintaining every
   leaf as a clue.
-- Use a curated native menu and shared mappings. This keeps keyboard, clues, and mouse behavior on the same callbacks
-  without a new dependency or a broad keymap-registry refactor.
+- Leave Neovim's native menu untouched and use Mini Clue as the sole keymap-discovery addition. Do not implement the
+  tested flat catalog, chained-popup workaround, `MenuPopup` context logic, or `gx` browser-menu repair.
 
 ### Requested suggestions considered
 
@@ -362,7 +292,7 @@ Detailed exploration journals and scratch programs are temporary and intentional
 
 1. Same-key toggle plus context-aware `|` (Recommended)
 
-   Reuses the current `<Leader>b`, works from either pane or the mouse menu, and makes the existing close action honest.
+   Reuses the current `<Leader>b`, works from either pane, and makes the existing close action honest.
 
 2. Buffer-local `q` for `gitsigns-blame`
 
@@ -373,21 +303,14 @@ Detailed exploration journals and scratch programs are temporary and intentional
    Satisfies the literal uppercase spelling, but splits one feature across two keys and does not solve the broken `|`
    action.
 
-#### Right-click customization
+#### Right-click customization (dropped)
 
-1. Curated native `PopUp` catalog (Recommended)
-
-   Smallest dependency-free approach; verified in the TUI; preserves Neovim's own contextual menu and shares mappings.
-
-2. Generate native menus from a project keymap registry
-
-   Could make future mappings automatically mouse-accessible, but requires refactoring all existing mappings into
-   structured metadata with categories and context predicates.
-
-3. Add a third-party context-menu plugin
-
-   May offer richer widgets or icons, but adds a dependency while native Neovim already supplies mode-specific menus,
-   contextual events, mouse placement, and terminal rendering.
+- A flat native catalog worked with real terminal mouse input but produced a long top-level menu.
+- Dot-delimited native submenus are part of Neovim's menu model, but clicking the tested nested parent in the built-in
+  TUI produced `E335` instead of descending into it.
+- A launcher item using `:popup` successfully opened a second native menu, but the extra staged configuration and
+  contextual state handling were disproportionate to the benefit. The user chose Mini Clue instead, so none of these
+  approaches belongs in implementation.
 
 ### Inference and unresolved gaps
 
@@ -400,8 +323,8 @@ Detailed exploration journals and scratch programs are temporary and intentional
   prohibited Docker build.
 - Unresolved until host validation: `.zshrc` syntax cannot be executed here because zsh is absent. The edit is a simple
   alias/message deletion, and the exact downstream check is specified.
-- External UIs and terminal multiplexers may render or intercept right-click differently. The built-in TUI passed;
-  keeping native menus provides the least custom surface if an external frontend differs.
+- The known native browser-menu/Normal-`gx` collision remains outside scope because menu customization was explicitly
+  dropped. Mini Clue does not depend on native menu behavior or external UI rendering.
 
 ## Audit Log
 
@@ -412,3 +335,8 @@ Detailed exploration journals and scratch programs are temporary and intentional
   the exact next action. No implementation or tracked experimental change is included in this audit entry.
 - 2026-09-11 UTC — Corrected the `PopUp.Search` catalog's `<Leader>s` notation during pre-commit review so the plan
   names the existing mapping exactly.
+- 2026-09-11 UTC — Removed native right-click customization, its `gx` repair, its former Milestone 4, and all associated
+  final validation from the implementation plan at the user's direction. Recorded that flat entries worked, nested
+  TUI selection reproduced `E335`, and a chained `:popup` worked but was too complex; made Mini Clue the sole planned
+  discovery interface, renumbered final validation to Milestone 4, and reverted the uncommitted menu demo from
+  `.config/nvim/init.lua`.
