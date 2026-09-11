@@ -25,16 +25,17 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
   `File Explorer` offset matching the NvimTree sidebar. Literal `[`/`]` and discoverable `\bp`/`\bn` traverse its
   visual order; literal `|` closes through the same universal close action as `\bd`. It displays no LSP diagnostics.
-- The statusline retains mode, Git, filename/status, filetype, indentation, search count, and cursor location while
-  omitting diagnostics/LSP state, encoding/fileformat, and buffer size.
-- Gitsigns blame uses a one-character author label. Git and selected-buffer diffs open as listed, read-only unified
-  diff buffers in the current window instead of starting Vim split-diff mode.
+- The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
+  while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use adaptive
+  blue and purple backgrounds.
+- Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
+  `\bd`/`|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline hunk preview.
 - Neovim's native right-click menu is not customized.
 
 Relevant repository state:
 
-- Branch `20260911-improvement` is clean at commit `0708952` before this follow-up plan revision. Milestones 1–6 are
-  implemented in the six local commits ending at that commit.
+- Branch `20260911-improvement` is clean at commit `e9071af` before this approved-design revision. Milestones 1–6 are
+  implemented in the six local commits ending at `0708952`; `e9071af` added the first follow-up draft.
 - `docker/Dockerfile` uses Debian trixie and contains exactly one package entry each for `npm`, `python3-venv`, and
   `yarnpkg`.
 - `.npmrc` is copied to `/root/.npmrc` by the development image.
@@ -67,19 +68,19 @@ Assumptions and boundaries:
 - Keep direct global `\c` Comment and `\x` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions
   therefore live under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch
   buffer cannot meaningfully be written.
-- Do not map Gitsigns whole-buffer reset, inline hunk preview, hunk selection, stage-buffer, or display toggles. The
-  balanced trim deliberately exposes only the selected twelve Gitsigns actions.
+- Do not map Gitsigns whole-buffer reset, hunk selection, stage-buffer, or display toggles. The balanced trim exposes
+  the original twelve actions plus the later-approved `\gi` inline hunk preview.
 - JSON formatting already works. Do not add `provideFormatter`, format-on-save, SchemaStore, or another formatter;
   the new `\f` mapping calls `vim.lsp.buf.format()` for any attached formatter.
 - Bufferline must use `sort_by = 'insert_after_current'`; every next/previous action must use Bufferline cycle commands
   so navigation follows the visible order. Keep diagnostics disabled, the Mini Icons devicons mock, and JDT virtual
   filename behavior; add no separate devicons or statusline plugin.
 - Interpret the requested `[]|` literally as `[`, `]`, and `|`. Keep the discoverable `\bp`/`\bn` aliases as well.
-- The recommended theme is the selected plan default pending user iteration: Gruvbox soft/base backgrounds for fill,
-  inactive, and selected states; adaptive bright/faded blue for the active indicator and Explorer separator; and
-  adaptive bright/faded orange for modified markers. It must be recomputed on `ColorScheme` for dark/light changes.
-- The recommended diff design is the selected plan default pending user iteration: a custom unified-diff buffer built
-  with `vim.text.diff()` and listed through `nvim_create_buf(true, true)`. Do not add Diffview or another dependency.
+- Use the approved Layered Gruvbox theme: soft/base backgrounds for fill, inactive, and selected states; adaptive
+  bright/faded blue for the active indicator and Explorer separator; and adaptive bright/faded orange for modified
+  markers. Recompute it on `ColorScheme` for dark/light changes.
+- Keep native split diffs. Add one small close helper and same-key Gitsigns toggles rather than a custom unified-diff
+  buffer or Diffview dependency.
 - Bufferline's per-buffer close click and right-click action must call MiniBufremove rather than its forced-delete
   defaults. Its hover interaction is a tabline mouse action, not native popup-menu customization.
 - Do not customize native menus, add a context-menu plugin, preserve/redirect Neovim's original `gx` browser
@@ -529,15 +530,19 @@ Steps:
    Apply the state backgrounds consistently to buffer text, separators, close buttons, modified markers, and the
    selected indicator. Preserve the default thin separator/icon style, hover behavior, modified dot, and no-LSP
    diagnostics. Do not introduce black or hard-contrast backgrounds.
-4. Replace the statusline's diagnostics and `section_fileinfo()` entries with the focused layout:
-   `mode | branch and Git counts | filename/status %= conditional search count | filetype | spaces:N/tabs:N | line:column`.
-   - Keep the existing JDT filename handling and `%r`; add `%m` if the filename section does not already expose the
-     modified state.
+4. Preserve the current statusline's structure while replacing its diagnostics and bundled `section_fileinfo()` with
+   the approved logical order:
+   `mode | branch and Git counts | filename/status %= filetype | LF/CRLF | spaces:N/tabs:N | line:column`.
+   - Keep the existing JDT filename handling and append `%m%r` so modified and read-only state remain visible.
    - Keep the existing compact Gitsigns branch/count function.
-   - Use `MiniStatusline.section_searchcount({ options = { recompute = false }, trunc_width = 85 })` so search state
-     appears only when useful without forcing a scan on every redraw.
-   - Render plain `vim.bo.filetype` and `%l:%c`; do not reintroduce LSP/diagnostics, buffer size, encoding,
-     fileformat, total-line/column counts, or another statusline dependency.
+   - Preserve the current Mini Icons filetype icon beside `vim.bo.filetype`. Render `vim.bo.fileformat` as the clearer
+     `LF` for `unix`, `CRLF` for `dos`, or `CR` for `mac`, then keep the existing indentation label and add `%l:%c`.
+   - Keep the mode's existing mode-dependent highlight, give the Git block an adaptive Gruvbox blue background, keep
+     the filename on a neutral Gruvbox background, and give the right metadata block an adaptive Gruvbox purple
+     background. Use bright blue/purple with dark text in dark mode and faded blue/purple with light text in light
+     mode.
+   - Do not show search count, LSP/diagnostics, buffer size, encoding, raw `[unix]`/`[dos]`, total-line/column counts,
+     or add another statusline dependency.
 5. Set Gitsigns `blame_formatter` to a function that returns only the first Unicode character of
    `blame_info.author`, highlighted with `context.hash_hl_group`, and returns `false` as its second result to suppress
    repeated summary lines. Render `?` for `Not Committed Yet`; leave the renderer-owned graph and heatmap intact.
@@ -557,8 +562,10 @@ Steps:
    - A real NvimTree produces a 45-column `File Explorer` offset with no `Explorer` winbar.
    - Snapshot all overridden Bufferline highlight groups in dark and light modes; assert the table above, blue active
      indicator/offset separator, orange modified marker, and no black background. Restore the original background.
-   - Statusline snapshots at wide/narrow widths show the selected fields, hide search count when inactive, show it
-     when active, and contain no diagnostics/LSP text, size, encoding, fileformat, or invalid evaluation marker.
+   - Statusline snapshots at wide/narrow widths show mode, Git, filename/status, icon/filetype, friendly line ending,
+     indentation, and line:column in order. Dark/light highlight snapshots prove the blue Git and purple metadata
+     backgrounds have readable contrasting text. Output contains no search count, diagnostics/LSP text, size,
+     encoding, raw fileformat name, total-line/column counts, or invalid evaluation marker.
    - A disposable Git fixture confirms every committed author header is one character and an uncommitted line is `?`.
    - Static/effective map checks find no Codex callback, command, state, or `\pc`; `\pt` still opens, hides, restores,
      and reuses the shell terminal.
@@ -577,53 +584,58 @@ function before adding another autocmd. If `[`/`]` pause behind default prefix m
 effective bracket mappings after inventorying them; do not increase timeout. If Mini Keymap changes literal Tab
 fallback, use Mini Completion's documented `pumvisible()` expression mappings with the same observed behavior.
 
-### Milestone 8: Replace split diffs with listed unified-diff buffers
+### Milestone 8: Make native split diffs easy to close and add inline preview
 
 Affected file and interfaces:
 
-- `.config/nvim/init.lua`: one reusable unified-diff renderer, Gitsigns `\gd`/`\gD`, selected-buffer `\bD`, Bufferline
-  name formatting, and universal buffer closing.
-- Neovim 0.12 `vim.text.diff()`, `vim.api.nvim_create_buf(true, true)`, `vim.system()`, Fzf Lua's buffer selection,
-  Gitsigns' attached-buffer metadata, and Git's `show` plumbing command.
+- `.config/nvim/init.lua`: one reusable diff-close callback, Gitsigns `\gd`/`\gD`/`\gi`, selected-buffer `\bD`, and
+  the shared `\bd`/`|` universal close callback.
+- Gitsigns `diffthis()` and `preview_hunk_inline()`, Neovim's `:diffoff!`, window-local `diff` option, and existing
+  Fzf Lua selected-buffer split.
 
 Steps:
 
-1. Replace the three current split-producing workflows—Gitsigns `\gd`, Gitsigns `\gD`, and selected-buffer `\bD`—
-   with one renderer that accepts before/after text plus labels and opens a unified diff in the current window.
-2. The renderer must:
-   - Generate hunks with `vim.text.diff(before, after, { algorithm = 'histogram', ctxlen = 3,
-     result_type = 'unified' })` and prepend conventional `---`/`+++` file labels.
-   - Create a named listed scratch buffer with `vim.api.nvim_create_buf(true, true)`, `filetype = 'diff'`,
-     `bufhidden = 'wipe'`, `swapfile = false`, and `modifiable = false` after content is populated.
-   - Store a concise buffer-local display title such as `filename ↔ index` or `filename ↔ HEAD~`; extend the existing
-     Bufferline name formatter to prefer that title and otherwise retain JDT behavior.
-   - Replace only the current window's displayed buffer. The source remains listed, so alternate/previous navigation
-     returns to it and `|`/`\bd` closes the diff exactly like another Bufferline buffer.
-   - Report an empty diff or retrieval failure without leaving an empty orphan buffer.
-3. For `\gd`, asynchronously run `git -C <gitsigns-root> show :<repository-relative-path>` to retrieve the index
-   version. For `\gD`, retrieve `HEAD~:<repository-relative-path>`. Compare that base to the current in-memory source
-   buffer so unsaved edits are included. Use an argument-vector `vim.system()` call; never concatenate a shell command.
-4. For `\bD`, keep the existing single-selection Fzf buffer picker but read both loaded buffers in memory and send
-   them to the same renderer. Remove all `:diffthis`, split creation, and source-window restoration from this action.
-5. Keep `\gp` as the existing current-hunk popup preview. Do not map `preview_hunk_inline()`, make Git's index buffer
-   writable, add a second side-by-side mode, or add Diffview.
-6. Validate in disposable fixtures:
-   - Git files with unstaged and unsaved changes produce correct, syntax-highlighted listed buffers for index and
-     previous-commit bases; headers and hunks identify the requested base.
-   - Selected-buffer diff produces the same listed-buffer properties and correct unified text.
-   - Each diff gets a stable human-readable Bufferline label, appears in visual order next to the source, survives
-     ordinary Bufferline navigation, and closes with `|` and `\bd` without any window-layout or diff-mode residue.
-   - Empty comparisons and invalid/untracked Git bases notify cleanly and create no buffer.
-   - Static inspection finds no remaining `vim.cmd('diffthis')` or Gitsigns `diffthis()` call.
+1. Keep Gitsigns' native `diffthis()` splits and the existing selected-buffer split instead of building a custom
+   listed unified-diff buffer or adding a dependency.
+2. Add one small callback that closes the active diff layout:
+   - Inspect only windows in the current tab whose window-local `diff` option is set.
+   - If the current buffer is a Gitsigns comparison buffer (`buftype` is `acwrite` for the index or `nowrite` for a
+     revision), close the current comparison window. Otherwise, preserve the current source window and close the
+     other diff comparison window or windows.
+   - Run `:diffoff!` after closing comparison windows so diff, scroll/cursor binding, wrapping, fold, and related
+     options are restored across the current tab.
+   - Return whether a diff was closed so callers can toggle without duplicating window logic. Never use `:only`,
+     because unrelated editor panels/splits must survive.
+3. Change Gitsigns `\gd` and `\gD` to same-key toggles. If a diff is active in the current tab, either mapping closes
+   it through the shared callback; otherwise they retain `diffthis()` against the index and `diffthis('~')` against
+   the previous commit respectively. Gitsigns already returns focus to the source window, so the opening key remains
+   immediately available for closing.
+4. Teach the shared universal close callback used by `\bd` and `|` to invoke the diff-close callback first whenever
+   the current window participates in a diff. If no diff is active, retain its existing special-window close and
+   MiniBufremove behavior. This makes selected-buffer `\bD` and Gitsigns diffs closable from their normal source focus
+   without deleting the source buffer.
+5. Add buffer-local Gitsigns `\gi = preview_hunk_inline()` with description `Git: preview hunk inline`; retain
+   `\gp` as popup preview. The inline preview needs no close mapping because Gitsigns clears it automatically on
+   cursor movement, Insert entry, or leaving the buffer. Refresh the buffer's Mini Clue triggers after adding it.
+6. Validate in a disposable two-commit Git fixture and ordinary scratch buffers:
+   - `\gd` and `\gD` still open the correct index/previous-commit native split, keep source focus, and close on a
+     second press without leaving any `diff`, `scrollbind`, `cursorbind`, or altered wrap/fold state.
+   - With each Gitsigns split open, `\bd` and `|` close only the comparison window, retain the source buffer and every
+     unrelated panel/split, and leave no diff-mode residue. Repeat for selected-buffer `\bD`.
+   - Invoking close from a focused Gitsigns comparison pane closes that pane rather than the source.
+   - `\gi` renders added/deleted lines inline for the current hunk and clears on CursorMoved, InsertEnter, and
+     BufLeave; `\gp` remains the popup preview.
+   - The Gitsigns Mini Clue inventory contains the new `\gi` leaf and every previously approved action only.
 7. Update Progress, Findings and Decisions, and Audit Log with exact results. Stage only this ExecPlan and
-   `.config/nvim/init.lua`, then create a local commit such as `Add listed unified diff buffers`.
+   `.config/nvim/init.lua`, then create a local commit such as `Simplify Neovim diff handling`.
 
-Expected result: every project-owned full-buffer diff is a normal-looking, syntax-highlighted Bufferline item that can
-be navigated to and closed without managing a split layout, while current-hunk preview remains a lightweight popup.
+Expected result: full Git and selected-buffer comparisons retain Neovim's familiar synchronized split but close with
+the opening Gitsigns key or universal close action, while `\gi` supplies a zero-layout-change preview for routine hunk
+inspection.
 
-Recovery: if Git base retrieval cannot reliably represent the index or previous commit, retain the tested
-selected-buffer renderer and restore only Gitsigns `diffthis()` mappings while documenting the gap. If Bufferline
-filters the listed scratch despite its options, inspect the effective component list before changing its global filter.
+Recovery: if Gitsigns changes its comparison-buffer type, identify it from the verified current-tab diff windows and
+buffer name before widening the close rule. If complete option restoration fails, keep the comparison-window close
+and diagnose `:diffoff!` state in the disposable fixture rather than adding manual option resets.
 
 ### Milestone 9: Follow-up regression validation and handoff
 
@@ -671,13 +683,14 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
 - [x] Milestone 6: consolidated source/static/headless validation passed; downstream Docker, zsh, and physical
   terminal mouse checks are documented for handoff.
 - [x] Explored the follow-up Bufferline order/highlight APIs, Mini Statusline/Completion/Keymap behavior, Gitsigns
-  blame/diff APIs, and Neovim listed unified-diff buffers; recorded evidence and a passing prototype outside the repo.
+  blame/diff APIs, native diff cleanup, and a listed unified-diff prototype; rejected the prototype as needless
+  complexity and selected toggleable native splits.
 - [ ] Milestone 7: refine Bufferline navigation/theme/title, statusline, blame, terminal, completion, and clue timing.
-- [ ] Milestone 8: replace project-owned split diffs with listed unified-diff buffers.
+- [ ] Milestone 8: make native split diffs easy to close and add inline hunk preview.
 - [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
 
-Exact next action: after the user reviews the recommended color, statusline, diff, and literal `[]|` choices, implement
-Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update this log, and commit only those task changes.
+Exact next action: implement the user-approved Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update
+this log, and commit only those task changes.
 
 ## Findings and Decisions
 
@@ -743,17 +756,19 @@ Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update this log,
 - Bufferline accepts a highlight-producing function and re-resolves it from its `ColorScheme` autocmd. This supports
   exact Gruvbox palette choices that follow runtime dark/light changes without duplicating a theme-change autocmd.
 - Mini Statusline's full `section_fileinfo()` always combines filetype, encoding/fileformat, and computed buffer size;
-  removing only the KiB display requires replacing that section. Its search-count section supports
-  `recompute = false`, and direct statusline items provide low-cost line/column and file flags.
+  removing only the KiB/encoding output while retaining useful filetype and line-ending information requires replacing
+  that section. Its raw fileformat labels are `unix`, `dos`, and `mac`, corresponding to LF, CRLF, and CR; direct
+  statusline items provide low-cost line/column and file flags.
 - Mini Completion intentionally does not map Tab. Because Mini Keymap is part of the installed Mini.nvim checkout,
   its documented `pmenu_next`/`pmenu_prev` multistep mappings can provide completion selection with literal-Tab
   fallback and no dependency. Mini Clue's documented default delay is 1000 ms and accepts a direct 250 ms override.
-- Gitsigns' side-panel `blame_formatter` accepts a function and can suppress repeated summaries. Its `diffthis()` is
-  specifically a split `vimdiff`; inline preview covers only the current hunk, and `show()` displays an unlisted
-  revision buffer rather than a unified diff.
-- A Neovim 0.12.4 prototype generated unified hunks with `vim.text.diff()` and opened them in a named
-  `nvim_create_buf(true, true)` scratch buffer. The result was listed, `nofile`, nonmodifiable, syntax-ready, and thus
-  suitable for the requested ordinary Bufferline lifecycle.
+- Gitsigns' side-panel `blame_formatter` accepts a function and can suppress repeated summaries. Its `diffthis()`
+  creates a split, returns focus to the source, marks index/revision comparison buffers as `acwrite`/`nowrite`, and
+  installs cleanup when the comparison is hidden. Neovim's `:diffoff!` restores diff-related options throughout the
+  tab, so a same-key close helper can retain the native diff without custom rendering.
+- Gitsigns inline preview covers the current hunk and clears itself on CursorMoved, InsertEnter, or BufLeave, making it
+  a useful low-cost companion to the full split. A Neovim 0.12.4 listed unified-diff prototype also passed, but the
+  user rejected its Git-base retrieval and lifecycle code as disproportionate complexity.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -819,9 +834,8 @@ Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update this log,
   [blame formatter](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L1070-L1098),
   [split diff](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L212-L240), and
   [inline preview](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L370-L379).
-  Neovim supplies the two primitives needed by the replacement:
-  [listed scratch buffers](https://neovim.io/doc/user/api#nvim_create_buf()) and
-  [unified text diff](https://neovim.io/doc/user/lua#vim.text.diff()).
+  Neovim documents `:diffoff!` as restoring diff-related options across all diff windows in the current tab:
+  [diff cleanup](https://neovim.io/doc/user/diff.html#%3Adiffoff).
 - Neovim native menus and flat custom entries worked in a terminal, but selecting a nested custom menu reproduced
   `E335: Menu not defined for Normal mode`. A chained `:popup` workaround worked but required a multi-stage design.
   The experimental config was reverted and the user chose Mini Clue instead.
@@ -852,7 +866,8 @@ Temporary exploration material is intentionally uncommitted:
 - Treat NvimTree's current buffer as the implicit Explorer noun, replace all defaults, group only Open and Clipboard
   variants, and restore Mini Clue triggers last.
 - Use `rename_full()` for NvimTree `\m`; direct `api.fs.move()` would misleadingly require a prior cut.
-- Keep the focused twelve-action Gitsigns set and omit the high-impact whole-buffer reset and lower-value duplicates.
+- Keep the focused Gitsigns set, add the approved `\gi` inline preview, and continue omitting the high-impact
+  whole-buffer reset and lower-value duplicates.
 - Implement both blame toggle and universal `\bd`: the former gives same-key behavior from either pane, while the
   latter gives every ordinary/special buffer one canonical close action.
 - Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
@@ -860,15 +875,16 @@ Temporary exploration material is intentionally uncommitted:
   commands, literal `[`/`]` fast navigation, literal `|` close, and a centered `File Explorer` offset title.
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
-- Use the focused statusline: mode, Git, filename/status, conditional search count, filetype, indentation, and
-  line:column. Remove diagnostics/LSP state and the inseparable fileinfo size/encoding/fileformat section.
+- Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
+  LF/CRLF/CR label, indentation, and line:column. Remove search, diagnostics/LSP state, size, and encoding. Use an
+  adaptive blue Git background, neutral filename, and adaptive purple metadata background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove the Codex-specific launcher and state; keep one shell terminal panel under `\pt`.
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
   Clue's delay to 250 ms.
-- Replace all three project-owned split diffs with one listed, nonmodifiable unified-diff buffer renderer. Include
-  unsaved current-buffer content, reuse it for selected-buffer comparisons, and add no diff plugin.
+- Keep native split diffs, make `\gd`/`\gD` same-key toggles, and make universal `\bd`/`|` close the comparison while
+  preserving the source and unrelated windows. Finish with `:diffoff!`; add no diff plugin or custom renderer.
 - Leave native menus untouched and use Mini Clue as the sole discovery addition.
 
 ### Inference and unresolved gaps
@@ -879,11 +895,9 @@ Temporary exploration material is intentionally uncommitted:
 - Inference: preserving Aerial source focus matches the other panel toggles and occasional-use workflow.
 - Inference: `insert_after_current` is the closest Bufferline-provided equivalent to VS Code's right-of-active editor
   insertion. Pairing it with Bufferline cycle commands removes the former visible-order/native-ID mismatch.
-- Inference: the literal `[]|` request means three mappings—`[` previous, `]` next, `|` close—even though the older
-  pre-overhaul navigation used curly braces. This remains the one interpretation to confirm during user review.
-- Inference: a unified patch buffer best fits the requested single-buffer lifecycle. Gitsigns inline preview is only
-  hunk-local, while its complete diff is intrinsically split; a dedicated diff plugin would add disproportionate UI
-  and dependency complexity.
+- Inference: keeping the native split plus one close helper is preferable to the prototyped unified patch buffer. It
+  preserves Gitsigns' index/revision semantics, avoids Git plumbing and asynchronous lifecycle code, and makes the
+  existing layout manageable through same-key and universal close actions.
 - Unresolved until external build: the pinned base and live trixie repositories must resolve all three apt packages
   on every target architecture.
 - Unresolved until host validation: zsh syntax cannot run here because zsh is absent.
@@ -950,3 +964,10 @@ Temporary exploration material is intentionally uncommitted:
   Codex-panel removal, Mini Keymap Tab completion, 250 ms clues, and listed unified-diff buffers replacing all three
   split workflows. Recorded alternatives and the curly-versus-square-bracket interpretation for user iteration; no
   production configuration was changed.
+- 2026-09-11 UTC — Incorporated the user's final follow-up design approval without changing production configuration.
+  Locked in literal `[`/`]`/`|`, adjacent visual ordering, the Layered Gruvbox Bufferline palette, Explorer title,
+  compact blame, Codex removal, Tab completion, and 250 ms clues. Revised the statusline to preserve its current shape
+  while removing search and diagnostics/LSP, replacing bundled size/encoding data with icon/filetype and friendly
+  LF/CRLF/CR, adding line:column, and assigning blue Git plus purple metadata backgrounds. Rejected the custom listed
+  unified-diff milestone as needless complexity; replaced it with native Gitsigns/selected-buffer splits that close
+  via same-key `\gd`/`\gD` or universal `\bd`/`|`, clean up with `:diffoff!`, and add `\gi` inline hunk preview.
