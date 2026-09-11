@@ -23,12 +23,13 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   Gitsigns and NvimTree attachment, after a 250 ms delay.
 - Bufferline replaces Mini Tabline with a Gruvbox-adaptive, VS Code-style adjacent-insertion buffer row, a blue active
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
-  `File Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
+  `Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
-- The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
+- The statusline retains mode, Git, filename/status, cursor location, line-ending format, indentation, and filetype
   while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use the same
   adaptive purple background, Normal mode uses a subdued adaptive neutral, and the padded location field remains
-  stable as line/column digit counts change. Mini Statusline owns spacing between highlight groups and fields.
+  stable as line digits change. A Nerd Font branch icon precedes Git, and `│` separators appear only between entries
+  in the single-color right metadata block.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -731,6 +732,37 @@ boundaries does not shift the right-side statusline layout.
 Recovery: if four line digits or three column digits are insufficient for a particular file, increase the respective
 minimum field width; do not replace the compact current-location field with total line/column counts.
 
+### Milestone 12: Finalize Explorer title and statusline ordering
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: Bufferline's NvimTree offset title, `statusline_git()`, and Mini Statusline metadata order.
+
+Steps:
+
+1. Rename Bufferline's centered NvimTree offset from `File Explorer` to `Explorer`; keep its 45-column live width and
+   blue separator unchanged.
+2. Prefix a non-empty Gitsigns branch with Nerd Font branch glyph ``; do not render the glyph when no branch exists.
+3. Order the right purple metadata block as location, line ending, indentation, then icon/filetype. Insert `│` as
+   separate Mini Statusline strings only between entries in this block, where one highlight background prevents color
+   bleed. Omit the final separator when filetype is empty and keep the left mode/Git/filename blocks separator-free.
+4. Change location from `%4l:%-3c` to `%4l:%c`: retain four-column, left-side line-number padding but remove trailing
+   column padding now that location is the first right-side entry.
+5. Validate with `git diff --check`, headless startup, and the focused UI fixture:
+   - Effective Bufferline configuration and a live NvimTree render show centered `Explorer`, not `File Explorer`.
+   - A Git statusline renders `` immediately before the branch; a branchless statusline has no orphan glyph.
+   - The right block renders location, friendly line ending, indentation, and filetype in that order with exactly
+     three `│` separators, while the left section contains none.
+   - Lines 99 and 111 retain equal-width location fields, and there is no right-side column padding in the format.
+   - Dark/light Normal, Git, metadata, filename, and Bufferline highlight assertions remain unchanged.
+6. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the sidebar has the compact `Explorer` title; Git is recognizable at a glance; and the far-right
+single-color block is stable and reads `location │ line-ending │ indentation │ filetype`.
+
+Recovery: if the branch glyph is unavailable in a user's font, replace only that glyph while retaining the conditional
+branch prefix. If metadata is absent, preserve conditional filetype handling rather than leaving a trailing divider.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -770,6 +802,8 @@ minimum field width; do not replace the compact current-location field with tota
   blocks on adaptive purple, retained native field spacing, and passed focused behavior and regression checks.
 - [x] Milestone 11: replaced Normal mode's bright reverse-video background with an adaptive neutral and stabilized
   the padded line/column field; dark/light and line 99/111 checks pass.
+- [x] Milestone 12: renamed the sidebar title, added the Git branch glyph, and finalized the right-only separated
+  location/line-ending/indentation/filetype order; focused UI checks pass.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -903,6 +937,10 @@ physical terminal UI checks remain downstream.
   `Cursor`, producing Gruvbox `light1` behind dark text in dark mode. The final override uses `dark2`/`light1` in dark
   mode and `light2`/`dark1` in light mode, while the other statusline colors remain unchanged. `%4l:%-3c` produced
   equal-width rendered location suffixes at lines 99 and 111; startup, field inventory, and no-separator checks pass.
+- Milestone 12 passed focused validation on 2026-09-11. Bufferline's live NvimTree offset is centered and titled
+  `Explorer`; Git renders ` main` before counts; and exactly three `│` glyphs occur only after the first right-side
+  field. The verified order is location, CRLF, indentation, then icon/filetype. `%4l:%c` retains equal display width
+  at lines 99 and 111 without trailing column padding, and every dark/light highlight assertion still passes.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1006,15 +1044,15 @@ Temporary exploration material is intentionally uncommitted:
   action.
 - Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
   diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
-  commands, literal `{`/`}` navigation without `nowait`, literal `|` close, and a centered `File Explorer` offset
+  commands, literal `{`/`}` navigation without `nowait`, literal `|` close, and a centered `Explorer` offset
   title.
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
-- Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
-  LF/CRLF/CR label, indentation, and line:column. Use Mini Statusline's native spaces without explicit separators;
-  remove search, diagnostics/LSP state, size, and encoding. Use the same adaptive purple for Git and metadata with a
-  neutral filename background. Give Normal mode a subdued `dark2`/`light2` adaptive background and render location as
-  `%4l:%-3c` so ordinary line/column digit changes do not move adjacent metadata.
+- Preserve the statusline shape with this logical order: mode, `` plus Git, filename/status, then location, friendly
+  LF/CRLF/CR label, indentation, and icon/filetype. Use native spacing without separators on the left and `│` only
+  between entries in the single-purple-background right block. Remove search, diagnostics/LSP state, size, and
+  encoding. Use the same adaptive purple for Git and metadata with a neutral filename background. Give Normal mode a
+  subdued `dark2`/`light2` adaptive background and render location as `%4l:%c` for left-only line-number padding.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1158,3 +1196,8 @@ Temporary exploration material is intentionally uncommitted:
   with adaptive Gruvbox `dark2`/`light2` backgrounds and contrasting `light1`/`dark1` text, then changed location to
   `%4l:%-3c` for stable width. Whitespace, startup, exact dark/light colors, retained statusline fields, absent
   separators, and equal-width line 99/111 location checks passed.
+- 2026-09-11 UTC — Completed Milestone 12: renamed the Bufferline sidebar offset to `Explorer`; conditionally prefixed
+  the Git branch with Nerd Font glyph ``; reordered right metadata to location, line ending, indentation, and
+  filetype; added exactly three dividers only inside that purple block; and changed location to `%4l:%c` for left-only
+  padding. Whitespace, startup, effective/live Explorer title, Git glyph, field order, separator scope, line 99/111
+  stability, and all dark/light highlight checks passed.

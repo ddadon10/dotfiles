@@ -253,7 +253,9 @@ require('gitsigns').setup({
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
 
 local function statusline_git()
-    return vim.trim((vim.b.gitsigns_head or '') .. ' ' .. (vim.b.gitsigns_status or ''))
+    local branch = vim.b.gitsigns_head or ''
+    if branch ~= '' then branch = ' ' .. branch end
+    return vim.trim(branch .. ' ' .. (vim.b.gitsigns_status or ''))
 end
 
 local function statusline_indent()
@@ -273,6 +275,8 @@ local function statusline()
         filetype = (icon and icon .. ' ' or '') .. filetype
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
+    local metadata = { '%4l:%c', '│', fileformat, '│', statusline_indent() }
+    if filetype ~= '' then vim.list_extend(metadata, { '│', filetype }) end
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
@@ -280,7 +284,7 @@ local function statusline()
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        { hl = 'MiniStatuslineFileinfo', strings = { filetype, fileformat, statusline_indent(), '%4l:%-3c' } },
+        { hl = 'MiniStatuslineFileinfo', strings = metadata },
     })
 end
 
@@ -385,7 +389,7 @@ require('bufferline').setup({
         modified_icon = '●',
         name_formatter = function(buf) local info = jdt_info(buf.path); return info and info.filename end,
         offsets = {
-            { filetype = 'NvimTree', text = 'File Explorer', text_align = 'center', separator = true },
+            { filetype = 'NvimTree', text = 'Explorer', text_align = 'center', separator = true },
         },
         right_mouse_command = function(bufnr) MiniBufremove.delete(bufnr) end,
         show_close_icon = false,
