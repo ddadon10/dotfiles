@@ -70,7 +70,6 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
                 MiniStatuslineFilename = { bg = pal[bg .. '1'], fg = pal[fg .. '1'] },
-                MiniStatuslineModeNormal = { bg = pal[bg .. '2'], bold = true, fg = pal[fg .. '1'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
