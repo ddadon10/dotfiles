@@ -498,10 +498,11 @@ limitation.
 - [x] Milestone 4: replaced and validated NvimTree's buffer-local mappings.
 - [x] Milestone 5: replaced Mini Tabline with Bufferline and passed all headless/static UI-state checks; physical
   hover/click behavior remains deferred to an interactive terminal.
-- [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
+- [x] Milestone 6: consolidated source/static/headless validation passed; downstream Docker, zsh, and physical
+  terminal mouse checks are documented for handoff.
 
-Exact next action: begin Milestone 6 by rereading this entire living ExecPlan and inspecting the worktree, then run
-the consolidated focused validation and record only genuine environment-limited checks as deferred.
+Exact next action: no repository implementation remains. On capable hosts, run `zsh -n .zshrc`, build and smoke-test
+the image, and confirm Bufferline hover/click behavior in a terminal that forwards mouse motion.
 
 ## Findings and Decisions
 
@@ -556,6 +557,11 @@ the consolidated focused validation and record only genuine environment-limited 
   closes. Its aggregate `state.left_offset_size` can additionally include Bufferline's own overflow marker in a narrow
   headless screen, so offset validation correctly uses `bufferline.offset.get().left_size` rather than conflating the
   two independent layout components.
+- Final consolidated validation passed on 2026-09-11 from a clean worktree. It reran whitespace, Bash, npm policy,
+  shell-alias, apt-count, Neovim startup, global map/Mini Clue/macro/Comment/JSON/panel/close, contextual Gitsigns,
+  contextual NvimTree, and Bufferline option/render/safety/offset checks against the committed configuration.
+- The final run restored both disposable Git/filesystem fixtures and confirmed the repository worktree remained
+  clean. All test scripts and fixtures are under `/tmp`; no exploratory artifact is tracked.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -654,8 +660,6 @@ Temporary exploration material is intentionally uncommitted:
 - Unresolved until external build: the pinned base and live trixie repositories must resolve all three apt packages
   on every target architecture.
 - Unresolved until host validation: zsh syntax cannot run here because zsh is absent.
-- Unresolved until implementation: NvimTree full-path rename and destructive operations must be exercised only in a
-  disposable fixture; exploratory API/source inspection establishes semantics but not every interactive edge case.
 - Unresolved until interactive validation: headless tests cannot generate real terminal mouse movement, so hover
   reveal and click behavior must be confirmed in a UI whose terminal forwards mouse-motion events.
 - The native browser-menu/Normal-`gx` collision remains outside scope because menu customization was dropped.
@@ -707,3 +711,8 @@ Temporary exploration material is intentionally uncommitted:
   closing, no diagnostics, hover reveal, modified marker, JDT names, hidden global close, and NvimTree offset. Recorded
   passing effective-option, render, modified-buffer safety, icon shim, JDT, live-offset, startup, static dependency,
   and no-new-keymap checks. Deferred only physical hover/click behavior to an interactive mouse-capable terminal.
+- 2026-09-11 UTC — Completed Milestone 6 after rereading the full living plan from a clean worktree. Reran one
+  consolidated validation command covering every source/static check and the global, Gitsigns, NvimTree, Bufferline,
+  JSON, Mini Clue, panel, Comment, macro, close, filesystem, and mutation fixtures; all passed, temporary mutations
+  were restored, and the repository remained clean. Marked implementation complete and retained only the Docker
+  image smoke test, unavailable zsh syntax check, and physical terminal Bufferline mouse check for downstream hosts.
