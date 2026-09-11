@@ -30,8 +30,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   total lines, and buffer size. The branch follows mode with trunk's default `MiniStatuslineDevinfo` background;
   filename and all right metadata use Gruvbox's default `MiniStatuslineFilename`/`StatusLineNC` colors. Normal mode
   also uses Gruvbox's trunk-default Mini Statusline colors. No separator glyphs appear.
-- Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
-  their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
+- Gitsigns blame shows the abbreviated commit, author's first name, date, and commit summary while retaining its
+  graph/heatmap. Existing split diffs become same-key toggles and close through their opening key or `|` with complete
+  diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
 - Neovim's native right-click menu is not customized.
 
@@ -1027,6 +1028,29 @@ regions—mode, branch, left filename, and right metadata—with less one-use pl
 Recovery: restore only the filename override if Gruvbox's `fg4` text proves too muted; do not duplicate theme defaults
 or merge groups across `%=` merely to reduce the table length.
 
+### Milestone 24: Restore blame details and shorten only the author
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Gitsigns `blame_formatter`.
+
+Steps:
+
+1. Replace the one-character-only blame output with the built-in drawer's useful information: abbreviated commit,
+   author, ISO date, and commit summary. Keep the renderer-owned graph/heatmap.
+2. Shorten only committed authors to the first whitespace-delimited name. Continue displaying `?` for
+   `Not Committed Yet`; do not introduce configurable widths, truncation calculations, or another helper.
+3. Do not return `false` from the formatter, because that suppresses the commit summary.
+4. Validate with `git diff --check`, headless startup, a functional formatter fixture covering ASCII, Unicode, and
+   uncommitted authors, and a real blame drawer that contains the hash, first name, date, and summary.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: each blame header reads like `479c802d Codex 2026-09-11`, with its commit summary below, instead of
+discarding all metadata except one author letter.
+
+Recovery: remove `blame_formatter` to restore Gitsigns' completely default full-author layout; do not reintroduce the
+one-letter formatter or summary suppression.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1084,6 +1108,8 @@ or merge groups across `%=` merely to reduce the table length.
 - [x] Milestone 22: removed the project Normal-mode override and verified Gruvbox's exact trunk-default colors.
 - [x] Milestone 23: removed the last statusline color override and trimmed single-use formatter plumbing while
   preserving the four semantic regions.
+- [x] Milestone 24: restored blame commit/date/summary information and shortened only the author to their first name;
+  focused formatter and real-drawer checks pass.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1193,6 +1219,10 @@ physical terminal UI checks remain downstream.
   the semantic one-character suffix. NvimTree Git navigation requires two changed nodes, which the fixture now seeds.
   The Git fixture indexes/worktrees and generated filesystem paths were restored; `/workspace` was clean before this
   final ExecPlan-only audit update.
+- The one-character blame formatter was over-aggressive: it replaced the whole built-in header and explicitly
+  suppressed the summary. Milestone 24 now emits abbreviated SHA, first name, and ISO date without a false second
+  return, so Gitsigns keeps the summary. Functional ASCII/Unicode/uncommitted checks and the real Git drawer passed;
+  the fixture rendered `Codex` rather than only `C`.
 - Remaining manual checks are limited to appearance and physical input: inspect both Gruvbox modes interactively;
   confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
   physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
@@ -1374,8 +1404,8 @@ Temporary exploration material is intentionally uncommitted:
   native spacing and no divider glyphs. Remove search, diagnostics/LSP state, size, total lines, and Git change counts;
   leave all statusline groups unoverridden so Gruvbox owns dark/light adaptation. Retain separate filename and metadata
   groups around `%=` because they have different alignment roles despite sharing `MiniStatuslineFilename`.
-- Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
-  graph/heatmap.
+- Keep the full blame drawer's abbreviated commit, date, summary, and renderer-owned graph/heatmap; shorten only the
+  author to their first whitespace-delimited name and use `?` for an uncommitted line.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
   terminal panel under `\pt` without an otherwise unnecessary refactor.
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
@@ -1562,3 +1592,8 @@ Temporary exploration material is intentionally uncommitted:
   indentation label, let Mini Statusline filter an empty filetype, and combined `%<%=`. Whitespace, headless startup,
   and focused UI checks passed exact dark/light `StatusLineNC` filename/metadata colors and all retained content,
   order, casing, location, and conditional branch behavior.
+- 2026-09-11 UTC — Completed Milestone 24 as a corrective simplification: replaced the broken one-letter-only blame
+  layout with abbreviated commit, first name, ISO date, and the restored commit summary, while retaining `?` for
+  uncommitted lines and Gitsigns' graph/heatmap. Whitespace, startup, functional ASCII/Unicode/uncommitted formatting,
+  and a real two-commit drawer all passed. The drawer now renders `Codex` rather than `C`; no width/truncation helper
+  or additional plugin was added.

@@ -211,8 +211,11 @@ vim.api.nvim_create_autocmd('FileType', {
 
 require('gitsigns').setup({
     blame_formatter = function(_, info, context)
-        local author = info.author == 'Not Committed Yet' and '?' or vim.fn.strcharpart(info.author, 0, 1)
-        return { { author, context.hash_hl_group } }, false
+        local author = info.author == 'Not Committed Yet' and '?' or info.author:match('^%S+')
+        return {
+            { info.abbrev_sha, context.hash_hl_group },
+            { ' ' .. author .. ' ' .. os.date('%Y-%m-%d', info.author_time) },
+        }
     end,
     numhl = false,
     on_attach = function(bufnr)
