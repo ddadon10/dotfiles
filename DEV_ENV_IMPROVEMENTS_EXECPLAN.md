@@ -86,8 +86,8 @@ Assumptions and boundaries:
 - Use the corrected `{}`/`|` fast-key set: `{` is previous, `}` is next, and `|` is universal close. Remove the entire
   `\b` mapping family, including selected-buffer diff; direct keys are sufficient for this occasional-use workflow.
 - Use the approved Layered Gruvbox theme: soft/base backgrounds for fill, inactive, and selected states; adaptive
-  bright/faded blue for the active indicator and Explorer separator; and adaptive bright/faded orange for modified
-  markers. Recompute it on `ColorScheme` for dark/light changes.
+  bright/faded blue for the active indicator; normal adaptive `dark1`/`light1` for the Explorer separator; and
+  adaptive bright/faded orange for modified markers. Recompute it on `ColorScheme` for dark/light changes.
 - Keep native split diffs. Add one small close helper and same-key Gitsigns toggles rather than a custom unified-diff
   buffer or Diffview dependency.
 - Bufferline's per-buffer close click and right-click action must call MiniBufremove rather than its forced-delete
@@ -1105,6 +1105,28 @@ Recovery: restore `\yc` and remove the contextual `\c` if copy should return to 
 be restored independently without changing mapping behavior; do not disable Mini Clue for Explorer merely to hide a
 global description.
 
+### Milestone 27: Distinguish the active indicator from the Explorer border
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Bufferline's adaptive `offset_separator` highlight.
+
+Steps:
+
+1. Keep `indicator_selected` adaptive blue; it is the sole blue vertical bar identifying the active buffer.
+2. Change only `offset_separator.fg` from adaptive blue to the existing `inactive` color: Gruvbox `dark1` in dark mode
+   and `light1` in light mode. This matches the theme's effective `WinSeparator` foreground and makes the
+   Explorer/Bufferline boundary a normal structural border.
+3. Preserve the offset separator's row-fill background, Explorer title/width, and every other Bufferline color.
+4. Validate with `git diff --check`, headless startup, and dark/light highlight assertions proving the active indicator
+   remains blue while the offset separator matches the normal separator tone.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the Explorer boundary is visually neutral and only the active file has a blue vertical marker.
+
+Recovery: restore the blue offset foreground if the neutral border becomes too faint; do not change the active marker
+or unrelated Bufferline state colors.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1168,6 +1190,8 @@ global description.
   passed exact mapping/clue, real panel-cycle, startup, and touched-regression checks.
 - [x] Milestone 26: made Explorer `\c` contextual Copy, removed `\yc`, stripped redundant prefixes from every project
   leaf description, and passed exact clue/map behavior plus touched regressions.
+- [x] Milestone 27: returned the Explorer offset border to Gruvbox's normal separator tone while retaining the blue
+  active-buffer indicator; dark/light checks pass.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1293,6 +1317,10 @@ physical terminal UI checks remain downstream.
   `alpha.txt`, observed it in NvimTree's copy state, confirmed `\yc` absent in Normal and Visual modes, and retained
   the four meaningful group labels. Startup, panels, Bufferline/statusline, blame, and current Gitsigns diff/preview
   regressions passed. The Gitsigns fixture was explicitly made dirty for the test and restored afterward.
+- The supplied screenshot showed two adjacent blue vertical bars because `indicator_selected` and `offset_separator`
+  were both assigned the same blue accent. Gruvbox resolves `WinSeparator` to `dark1` in dark mode and `light1` in
+  light mode, which are already available as Bufferline's adaptive inactive color. Milestone 27 uses that value only
+  for the Explorer border; startup and exact dark/light offset/indicator assertions passed.
 - Remaining manual checks are limited to appearance and physical input: inspect both Gruvbox modes interactively;
   confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
   physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
@@ -1466,8 +1494,9 @@ Temporary exploration material is intentionally uncommitted:
   diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
   commands, literal `{`/`}` navigation without `nowait`, literal `|` close, and a centered `Explorer` offset
   title.
-- Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
-  modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
+- Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep only its active indicator blue, use the normal
+  adaptive separator tone for the Explorer boundary, keep the modified marker orange, and recompute all state colors
+  for dark/light modes through Bufferline's highlight callback.
 - Preserve this logical order: mode, trunk-default `MiniStatuslineDevinfo` `` branch block, filename/status, then
   `Ln %l, Col %c`, uppercase effective encoding, friendly LF/CRLF/CR, `Spaces:N`/`Tabs:N`, and an icon plus
   first-letter-capitalized filetype on the neutral background. Use Mini Statusline's
@@ -1681,3 +1710,7 @@ Temporary exploration material is intentionally uncommitted:
   copy passed, as did startup, whitespace, panel, Bufferline/statusline, blame, and current Gitsigns regressions. A
   stale temporary Milestone 8 fixture still exercised previously removed `\b` mappings and selected-buffer diff; it
   was narrowed to the current Gitsigns split/inline-preview surface, made deterministically dirty, and restored.
+- 2026-09-11 UTC — Completed Milestone 27 after inspecting the supplied screenshot: changed only Bufferline's Explorer
+  offset separator from the shared blue accent to Gruvbox's normal adaptive `dark1`/`light1` separator tone. The
+  active-buffer indicator remains bright/faded blue. Whitespace, startup, and exact dark/light Bufferline highlight
+  checks passed. The user's untracked screenshot was inspected but left untouched and uncommitted.

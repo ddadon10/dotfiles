@@ -364,7 +364,7 @@ require('bufferline').setup({
             modified = { bg = inactive, fg = orange },
             modified_selected = { bg = selected, fg = orange },
             modified_visible = { bg = inactive, fg = orange },
-            offset_separator = { bg = fill, fg = blue },
+            offset_separator = { bg = fill, fg = inactive },
             separator = { bg = inactive, fg = fill },
             separator_selected = { bg = selected, fg = fill },
             separator_visible = { bg = inactive, fg = fill },
