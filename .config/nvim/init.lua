@@ -705,9 +705,9 @@ end
 vim.keymap.set('n', '{', '<cmd>BufferLineCyclePrev<cr>', { desc = 'previous buffer' })
 vim.keymap.set('n', '}', '<cmd>BufferLineCycleNext<cr>', { desc = 'next buffer' })
 vim.keymap.set('n', '|', close_current_buffer, { desc = 'close current buffer' })
-vim.keymap.set('n', '<Leader>e', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Explorer' })
-vim.keymap.set('n', '<Leader>o', '<cmd>AerialToggle!<cr>', { desc = 'outline' })
-vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'terminal' })
+vim.keymap.set('n', '<Leader>e', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Toggle Explorer' })
+vim.keymap.set('n', '<Leader>o', '<cmd>AerialToggle!<cr>', { desc = 'Toggle Outline' })
+vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle Terminal' })
 vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'toggle quickfix' })
 
 local miniclue = require('mini.clue')
