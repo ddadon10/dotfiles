@@ -342,8 +342,51 @@ require('aerial').setup({
 })
 
 -- NvimTree
+local function attach_nvim_tree(bufnr)
+    local api = require('nvim-tree.api')
+    local function map(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = 'Explorer: ' .. desc })
+    end
+
+    map('n', '<CR>', api.node.open.edit, 'open')
+    map('n', '<2-LeftMouse>', api.node.open.edit, 'open')
+    map('n', '<Leader>a', api.fs.create, 'create')
+    map({ 'n', 'x' }, '<Leader>d', api.fs.remove, 'delete')
+    map('n', '<Leader>h', api.tree.change_root_to_node, 'root here')
+    map('n', '<Leader>i', api.node.show_info_popup, 'node info')
+    map('n', '<Leader>m', api.fs.rename_full, 'move by full path')
+    map('n', '<Leader>r', api.fs.rename, 'rename')
+    map('n', '<Leader>R', api.tree.reload, 'refresh')
+    map('n', '<Leader>s', api.tree.search_node, 'search')
+    map('n', '<Leader>u', api.tree.change_root_to_parent, 'root up')
+    map('n', '<Leader>oh', api.node.open.horizontal, 'open in horizontal split')
+    map('n', '<Leader>op', api.node.open.preview, 'open preview')
+    map('n', '<Leader>ot', api.node.open.tab, 'open in tab')
+    map('n', '<Leader>ov', api.node.open.vertical, 'open in vertical split')
+    map('n', '<Leader>ya', api.fs.copy.absolute_path, 'copy absolute path')
+    map({ 'n', 'x' }, '<Leader>yc', api.fs.copy.node, 'copy')
+    map('n', '<Leader>yf', api.fs.copy.filename, 'copy filename')
+    map('n', '<Leader>yp', api.fs.paste, 'paste')
+    map('n', '<Leader>yr', api.fs.copy.relative_path, 'copy relative path')
+    map({ 'n', 'x' }, '<Leader>yx', api.fs.cut, 'cut')
+    map('n', '<Leader>gj', api.node.navigate.git.next, 'next Git node')
+    map('n', '<Leader>gk', api.node.navigate.git.prev, 'previous Git node')
+    map('n', 'ge', api.node.navigate.diagnostics.next, 'next diagnostic node')
+    map('n', 'gE', api.node.navigate.diagnostics.prev, 'previous diagnostic node')
+
+    vim.b[bufnr].miniclue_config = {
+        clues = {
+            { mode = 'n', keys = '<Leader>o', desc = '+Open' },
+            { mode = 'n', keys = '<Leader>y', desc = '+Clipboard' },
+            { mode = 'x', keys = '<Leader>y', desc = '+Clipboard' },
+        },
+    }
+    if _G.MiniClue then MiniClue.ensure_buf_triggers(bufnr) end
+end
+
 require('nvim-tree').setup({
     filters = { git_ignored = false },
+    on_attach = attach_nvim_tree,
     prefer_startup_root = true,
     update_focused_file = { enable = true, update_root = { enable = true } },
     view = { width = 45 },

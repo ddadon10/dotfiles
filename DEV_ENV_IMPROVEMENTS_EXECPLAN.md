@@ -495,12 +495,12 @@ limitation.
 - [x] Milestone 1: updated container packages, npm policy, and both alias surfaces; focused source checks pass.
 - [x] Milestone 2: implemented and validated the global keymap graph, panels, JSON format mapping, and Mini Clue.
 - [x] Milestone 3: implemented and validated contextual Gitsigns actions and blame closing.
-- [ ] Milestone 4: replace and validate NvimTree's buffer-local mappings.
+- [x] Milestone 4: replaced and validated NvimTree's buffer-local mappings.
 - [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
 - [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
-Exact next action: implement Milestone 4 in `.config/nvim/init.lua`, beginning with NvimTree's custom `on_attach` and
-complete replacement map set, then validate effective maps and operations only in a disposable filesystem fixture.
+Exact next action: implement Milestone 5 in `.config/nvim/init.lua`: add Bufferline, remove Mini Tabline and its
+highlights, enable mouse-move events, configure the approved options, and run headless/static UI-state checks.
 
 ## Findings and Decisions
 
@@ -535,6 +535,16 @@ complete replacement map set, then validate effective maps and operations only i
   values and did not raise `E1513`.
 - Gitsigns publishes its initial status dictionary before it invokes `on_attach`; contextual-map tests must wait for
   the actual `\gb` buffer mapping (and hunk counts) rather than treating the first status metadata as full attachment.
+- Milestone 4's generated-map and real-buffer checks passed on 2026-09-11. NvimTree exposes exactly the 25 approved
+  Normal actions and only delete/copy/cut in Visual mode, has no representative inherited defaults, and receives
+  buffer-local leader, literal-Space, and `g` Mini Clue triggers plus Normal Open and Normal/Visual Clipboard clues.
+- A disposable filesystem and Git fixture exercised create, rename, full-path move, confirmed delete, copy/cut/paste,
+  absolute/filename/relative path copy, search, root-here/root-up, refresh, node info, Git and diagnostic navigation,
+  Enter, preview, horizontal/vertical/tab opening, and `\pe` close/reopen. Leaving Explorer restored global Save and
+  diagnostic meanings plus the source buffer's contextual Gitsigns navigation.
+- The headless environment has no system clipboard provider. The NvimTree fixture supplied a temporary in-process
+  provider and verified the exact values sent by all three path-copy actions; production configuration was not
+  changed. The double-click map was verified through the effective-map API but real mouse input remains a UI check.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -676,3 +686,8 @@ Temporary exploration material is intentionally uncommitted:
   triggers after each late buffer-local map set. Recorded passing isolation, effective-map, hunk navigation/preview,
   both quickfix scopes, both diffs, blame-line, Normal and Visual stage/reset, undo-stage, same-key drawer toggle,
   universal drawer close, option restoration, and disposable-repository cleanup checks.
+- 2026-09-11 UTC — Completed Milestone 4: replaced all NvimTree defaults with the approved context-as-noun actions,
+  Open/Clipboard subgroups, Git/diagnostic navigation, buffer-local clues, and late Mini Clue trigger refresh. Recorded
+  passing generated and real effective-map inventories plus disposable create, rename, move, delete, clipboard,
+  search, root, refresh, info, navigation, open-target, context restoration, and Explorer toggle checks. Documented
+  the test-only clipboard provider and deferred physical double-click input; added no production dependency or map.
