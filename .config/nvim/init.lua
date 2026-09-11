@@ -273,17 +273,12 @@ local function statusline()
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
 
-    return MiniStatusline.combine_groups({
-        { hl = mode_hl, strings = { mode, '│' } },
-        { hl = 'MiniStatuslineDevinfo', strings = { git, git ~= '' and '│' or '' } },
-        { hl = 'MiniStatuslineFilename', strings = { filename } },
-        '%<',
-        '%=',
-        {
-            hl = 'MiniStatuslineFileinfo',
-            strings = { filetype, filetype ~= '' and '│' or '', fileformat, '│', statusline_indent(), '│', '%l:%c' },
-        },
-    })
+    local left = '%#' .. mode_hl .. '# ' .. mode .. '│'
+    if git ~= '' then left = left .. '%#MiniStatuslineDevinfo#' .. git .. '│' end
+    left = left .. '%#MiniStatuslineFilename#' .. filename .. ' '
+    local metadata = (filetype ~= '' and filetype .. '│' or '')
+        .. fileformat .. '│' .. statusline_indent() .. '│%l:%c'
+    return left .. '%<%=%#MiniStatuslineFileinfo# ' .. metadata .. ' '
 end
 
 require('mini.statusline').setup({ content = { active = statusline, inactive = statusline } })
