@@ -252,12 +252,6 @@ require('gitsigns').setup({
 -- Statusline
 local statusline_trunc_width = 85 -- Roughly half of 175, which is the number of columns on a MBP 14" with JetBrains Mono 14px Bold.
 
-local function statusline_git()
-    local branch = vim.b.gitsigns_head or ''
-    if branch ~= '' then branch = ' ' .. branch end
-    return vim.trim(branch .. ' ' .. (vim.b.gitsigns_status or ''))
-end
-
 local function statusline_indent()
     if vim.bo.expandtab then return string.format('spaces:%d', vim.bo.shiftwidth) end
     return string.format('tabs:%d', vim.bo.tabstop)
@@ -265,7 +259,8 @@ end
 
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
-    local git = statusline_git()
+    local branch = vim.b.gitsigns_head or ''
+    local git = branch ~= '' and ' ' .. branch or ''
     local info = jdt_info(vim.api.nvim_buf_get_name(0))
     local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')

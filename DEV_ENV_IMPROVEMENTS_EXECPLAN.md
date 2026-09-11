@@ -29,7 +29,7 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   and filetype while omitting diagnostics/LSP state, search count, encoding, and buffer size. The right metadata,
   including Git, uses an adaptive purple background; Normal mode uses a subdued adaptive neutral, and location remains
   stable as line or column digits change. Location uses the path's neutral background and expands left as one grouped
-  value; unpadded `│` separators divide every right-side entry, ending with a Nerd Font branch icon and Git status.
+  value; unpadded `│` separators divide every right-side entry, ending with a Nerd Font icon and branch name only.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -863,6 +863,26 @@ Expected result: the right edge resembles `111:1│120 lines│LF│spaces:4│l
 Recovery: restore the single metadata join string if compact fields prove hard to scan; do not alter field padding or
 highlight boundaries.
 
+### Milestone 17: Show only the Git branch
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Mini Statusline's far-right Git field.
+
+Steps:
+
+1. Build the conditional Git field solely from `vim.b.gitsigns_head`, prefixed with ``. Do not append
+   `vim.b.gitsigns_status` or its added, changed, and deleted counts.
+2. Remove the now-trivial single-use `statusline_git()` helper and construct the branch field inside `statusline()`.
+3. Validate with `git diff --check`, headless startup, and the focused UI fixture. Confirm a populated buffer ends in
+   `│ main` without `+3`, `~1`, or `-2`, while a branchless buffer retains no orphan icon or separator.
+4. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the compact far-right Git field identifies only the current branch.
+
+Recovery: restore the removed status string only if change counts are explicitly requested again; retain the branch
+field's far-right position and conditional divider.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -911,6 +931,7 @@ highlight boundaries.
 - [x] Milestone 15: grouped and left-padded the complete location on the path background, removed spacing at its
   purple boundary, compacted later separators, and passed focused rendering checks.
 - [x] Milestone 16: removed spaces around every metadata divider and passed exact rendered-spacing checks.
+- [x] Milestone 17: removed Git change counts so the far-right field contains only the icon and branch name.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1062,6 +1083,9 @@ physical terminal UI checks remain downstream.
 - Milestone 16 passed focused validation on 2026-09-11. All five populated right-side dividers render as bare `│`
   with no adjacent spaces; location grouping, field order, branchless conditional behavior, headless startup, and the
   remainder of the focused UI fixture remain passing.
+- Milestone 17 passed focused validation on 2026-09-11. A buffer with mocked Gitsigns branch and count data rendered
+  `│ main` at the far right without `+3`, `~1`, or `-2`; branchless output retained no orphan icon or divider.
+  Whitespace, headless startup, and the remainder of the focused UI fixture remain passing.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1170,10 +1194,10 @@ Temporary exploration material is intentionally uncommitted:
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the statusline shape with this logical order: mode, filename/status, then location, `%L lines`, friendly
-  LF/CRLF/CR label, indentation, icon/filetype, and `` plus Git at the far right. Render location on the filename's
-  neutral background as right-aligned `%8(%l:%c%)`, followed immediately by the purple block's first `│`; use
-  bare `│` separators for its later entries as well. Remove search, diagnostics/LSP state, size, and encoding, and
-  give Normal mode a subdued `dark2`/`light2` adaptive background.
+  LF/CRLF/CR label, indentation, icon/filetype, and `` plus the branch name only at the far right. Render location
+  on the filename's neutral background as right-aligned `%8(%l:%c%)`, followed immediately by the purple block's
+  first `│`; use bare `│` separators for its later entries as well. Remove search, diagnostics/LSP state, size,
+  and encoding, and give Normal mode a subdued `dark2`/`light2` adaptive background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1336,3 +1360,6 @@ Temporary exploration material is intentionally uncommitted:
 - 2026-09-11 UTC — Completed Milestone 16: removed both surrounding spaces from every later metadata divider so all
   five separators are bare `│`, matching the existing compact location boundary. Whitespace, headless startup, and
   the focused UI fixture passed exact no-adjacent-space, field-order, grouped-location, and branchless checks.
+- 2026-09-11 UTC — Completed Milestone 17: reduced the far-right Git field to the conditional ``-prefixed branch
+  name and removed the single-use branch/count helper. Whitespace, headless startup, and focused UI checks passed with
+  mocked change counts absent from rendered output and no orphan branch divider in branchless output.
