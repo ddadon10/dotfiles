@@ -275,7 +275,7 @@ local function statusline()
         filetype = (icon and icon .. ' ' or '') .. filetype
     end
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
-    local metadata = { '%4l:%c', '│', fileformat, '│', statusline_indent() }
+    local metadata = { '%4l:%3c', '│', fileformat, '│', statusline_indent() }
     if filetype ~= '' then vim.list_extend(metadata, { '│', filetype }) end
 
     return MiniStatusline.combine_groups({

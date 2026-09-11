@@ -28,8 +28,8 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 - The statusline retains mode, Git, filename/status, cursor location, line-ending format, indentation, and filetype
   while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use the same
   adaptive purple background, Normal mode uses a subdued adaptive neutral, and the padded location field remains
-  stable as line digits change. A Nerd Font branch icon precedes Git, and `│` separators appear only between entries
-  in the single-color right metadata block.
+  stable as line or column digits change. A Nerd Font branch icon precedes Git, and `│` separators appear only
+  between entries in the single-color right metadata block.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -763,6 +763,28 @@ single-color block is stable and reads `location │ line-ending │ indentation
 Recovery: if the branch glyph is unavailable in a user's font, replace only that glyph while retaining the conditional
 branch prefix. If metadata is absent, preserve conditional filetype handling rather than leaving a trailing divider.
 
+### Milestone 13: Stabilize cursor-column width
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Mini Statusline's location field.
+
+Steps:
+
+1. Change location from `%4l:%c` to `%4l:%3c`. Keep the line and column fields right-aligned so their minimum widths
+   produce leading padding only; retain location as the first item in the right metadata block.
+2. Validate with `git diff --check`, headless startup, and the focused UI fixture:
+   - Lines 99 and 111 render fixed-width line fields.
+   - Columns 99 and 120 render fixed-width column fields.
+   - The approved field order and right-only separators remain unchanged.
+3. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the right metadata block does not shift when either the line or column crosses from two to three
+digits, and the location contains no trailing field padding.
+
+Recovery: if files routinely exceed four-digit lines or three-digit columns, increase only the corresponding minimum
+width; retain right alignment so any padding stays on the left.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -804,6 +826,8 @@ branch prefix. If metadata is absent, preserve conditional filetype handling rat
   the padded line/column field; dark/light and line 99/111 checks pass.
 - [x] Milestone 12: renamed the sidebar title, added the Git branch glyph, and finalized the right-only separated
   location/line-ending/indentation/filetype order; focused UI checks pass.
+- [x] Milestone 13: reserved a three-character, right-aligned column field and verified stable location width across
+  lines 99/111 and columns 99/120.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -941,6 +965,9 @@ physical terminal UI checks remain downstream.
   `Explorer`; Git renders ` main` before counts; and exactly three `│` glyphs occur only after the first right-side
   field. The verified order is location, CRLF, indentation, then icon/filetype. `%4l:%c` retains equal display width
   at lines 99 and 111 without trailing column padding, and every dark/light highlight assertion still passes.
+- Milestone 13 passed focused validation on 2026-09-11. `%4l:%3c` renders ` 111: 99` and ` 111:120` at equal width,
+  while preserving the previously verified `  99:  1`/` 111:  1` line-width transition. Startup, whitespace, field
+  order, separator scope, and the rest of the Milestone 7 UI fixture remain passing.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1052,7 +1079,7 @@ Temporary exploration material is intentionally uncommitted:
   LF/CRLF/CR label, indentation, and icon/filetype. Use native spacing without separators on the left and `│` only
   between entries in the single-purple-background right block. Remove search, diagnostics/LSP state, size, and
   encoding. Use the same adaptive purple for Git and metadata with a neutral filename background. Give Normal mode a
-  subdued `dark2`/`light2` adaptive background and render location as `%4l:%c` for left-only line-number padding.
+  subdued `dark2`/`light2` adaptive background and render location as `%4l:%3c` for left-only line and column padding.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1201,3 +1228,6 @@ Temporary exploration material is intentionally uncommitted:
   filetype; added exactly three dividers only inside that purple block; and changed location to `%4l:%c` for left-only
   padding. Whitespace, startup, effective/live Explorer title, Git glyph, field order, separator scope, line 99/111
   stability, and all dark/light highlight checks passed.
+- 2026-09-11 UTC — Completed Milestone 13: changed the statusline location to `%4l:%3c`, preserving right alignment
+  while reserving three columns for cursor-column values. Whitespace, headless startup, and the focused UI fixture
+  passed, including fixed-width transitions across lines 99/111 and columns 99/120 with no trailing field padding.
