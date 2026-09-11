@@ -27,7 +27,7 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
 - The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
   while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use the same
-  adaptive purple background, and logical fields have compact `│` separators without surrounding spaces.
+  adaptive purple background, with Mini Statusline's native spacing between highlight groups and fields.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -667,7 +667,7 @@ the journal, exact automated results, and only genuinely interactive checks.
 Recovery: correct only the milestone owning a failure and repeat its focused checks. Use `git revert` on the relevant
 local milestone commit instead of resetting the branch or disturbing unrelated user work.
 
-### Milestone 10: Simplify direct keys and separate statusline fields
+### Milestone 10: Simplify direct keys and statusline fields
 
 Affected file and interfaces:
 
@@ -682,28 +682,27 @@ Steps:
    close action, including active Gitsigns diff cleanup.
 3. Change `MiniStatuslineDevinfo` from adaptive Gruvbox blue to the same adaptive purple used by
    `MiniStatuslineFileinfo`. Preserve the neutral filename background and mode-dependent mode background.
-4. Render `│` separators without surrounding spaces between the left-side mode, optional Git, and filename sections
-   and between the right-side filetype, line-ending, indentation, and line:column fields. Omit the Git separator when
-   no Git text exists; retain padding only at the outer edges of the left and right statusline regions.
+4. Use `MiniStatusline.combine_groups()` native spacing between the left-side mode, optional Git, and filename sections
+   and between the right-side filetype, line-ending, indentation, and line:column fields. Do not render explicit
+   separator glyphs; the native combiner owns padding and highlight transitions.
 5. Validate with `git diff --check`, headless startup, and focused fixtures:
    - Effective maps contain `qq = :wqall`, no `\x` or `\b...`, unchanged `{`/`}`/`|`, and no `+Buffers` clue.
    - A disposable modified buffer is written and Neovim exits when `qq` is invoked.
    - Direct brace traversal still follows Bufferline's adjacent visual order and `|` still closes ordinary and
      special buffers.
    - Dark/light snapshots show identical purple backgrounds for Git and metadata with readable foregrounds.
-   - A rendered Git/filetype statusline contains the expected logical fields in order and at least five `│`
-     separators, with no ` │` or `│ ` sequence; removed diagnostics, size, encoding, search, and raw fileformat labels
-     remain absent.
+   - A rendered Git/filetype statusline contains the expected logical fields in order with no `│`; removed
+     diagnostics, size, encoding, search, and raw fileformat labels remain absent.
    - The existing real JSON format, Explorer, Aerial, terminal, and Quickfix checks still pass.
 6. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
 
 Expected result: the compact direct-key surface is `{` previous, `}` next, `|` close, and `qq` save-all-and-quit;
 there is no redundant buffer noun group or quit alias, and the statusline uses one cohesive purple information color
-with compact field boundaries.
+with native spacing and clean highlight boundaries.
 
 Recovery: if `qq` cannot write every modified buffer, preserve the mapping and surface the native write error rather
-than forcing exit. If separators make narrow rendering noisy, retain separators between displayed fields and rely on
-the existing truncation rules rather than adding width-specific state.
+than forcing exit. If native spacing makes narrow rendering noisy, rely on the existing truncation rules rather than
+adding custom separators or width-specific state.
 
 ## Progress
 
@@ -741,7 +740,7 @@ the existing truncation rules rather than adding width-specific state.
 - [x] Corrected fast Bufferline navigation to `{`/`}`/`|`, removed the project `[`/`]` mappings and `nowait`, and
   reran focused navigation and global-map checks.
 - [x] Milestone 10: restored `qq`, removed `\x` and all `\b` mappings/clues, unified the statusline's Git and metadata
-  blocks on adaptive purple, added compact field separators, and passed focused behavior and regression checks.
+  blocks on adaptive purple, retained native field spacing, and passed focused behavior and regression checks.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -867,6 +866,10 @@ physical terminal UI checks remain downstream.
   purple background with the existing contrasting foreground. A rendered Git/filetype statusline retained its
   logical field order and contained five `│` separators while all previously removed fields remained absent. The
   subsequent compact-separator check found no surrounding-space sequence in the rendered result.
+- The user subsequently removed the separators because explicit statusline assembly allowed highlight colors to
+  bleed across boundaries. Restoring `MiniStatusline.combine_groups()` and its native spaces removed every `│` while
+  preserving field order, purple Git/metadata backgrounds, neutral filename color, and clean highlight transitions;
+  focused startup and dark/light rendering checks pass.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -975,9 +978,9 @@ Temporary exploration material is intentionally uncommitted:
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
-  LF/CRLF/CR label, indentation, and line:column. Separate logical fields with compact `│` characters and no adjacent
-  spaces; remove search, diagnostics/LSP state, size, and encoding. Use the same adaptive purple for Git and metadata
-  with a neutral filename background.
+  LF/CRLF/CR label, indentation, and line:column. Use Mini Statusline's native spaces without explicit separators;
+  remove search, diagnostics/LSP state, size, and encoding. Use the same adaptive purple for Git and metadata with a
+  neutral filename background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1113,3 +1116,7 @@ Temporary exploration material is intentionally uncommitted:
   space-inserting group combiner with explicit highlight transitions and compact field assembly, retaining only outer
   region padding. Headless startup, whitespace, field order/count, dark/light highlights, and assertions excluding
   both ` │` and `│ ` from the rendered statusline passed.
+- 2026-09-11 UTC — Removed explicit statusline separators after the user observed color bleed. Restored
+  `MiniStatusline.combine_groups()` with its original spaces between mode, Git, filename, filetype, line ending,
+  indentation, and location while retaining purple Git/metadata backgrounds. Headless startup, whitespace, field
+  order, dark/light highlight values, and the rendered absence of `│` all passed.
