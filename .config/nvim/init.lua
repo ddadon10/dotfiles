@@ -72,6 +72,7 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 MiniStatuslineDevinfo = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'] },
                 MiniStatuslineFileinfo = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'] },
                 MiniStatuslineFilename = { bg = pal[bg .. '1'], fg = pal[fg .. '1'] },
+                MiniStatuslineModeNormal = { bg = pal[bg .. '2'], bold = true, fg = pal[fg .. '1'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
@@ -279,7 +280,7 @@ local function statusline()
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        { hl = 'MiniStatuslineFileinfo', strings = { filetype, fileformat, statusline_indent(), '%l:%c' } },
+        { hl = 'MiniStatuslineFileinfo', strings = { filetype, fileformat, statusline_indent(), '%4l:%-3c' } },
     })
 end
 

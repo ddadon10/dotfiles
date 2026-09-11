@@ -27,7 +27,8 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   performs universal close; the redundant `\b` mapping family is absent. It displays no LSP diagnostics.
 - The statusline retains mode, Git, filename/status, filetype, line-ending format, indentation, and cursor location
   while omitting diagnostics/LSP state, search count, encoding, and buffer size. Git and metadata blocks use the same
-  adaptive purple background, with Mini Statusline's native spacing between highlight groups and fields.
+  adaptive purple background, Normal mode uses a subdued adaptive neutral, and the padded location field remains
+  stable as line/column digit counts change. Mini Statusline owns spacing between highlight groups and fields.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -704,6 +705,32 @@ Recovery: if `qq` cannot write every modified buffer, preserve the mapping and s
 than forcing exit. If native spacing makes narrow rendering noisy, rely on the existing truncation rules rather than
 adding custom separators or width-specific state.
 
+### Milestone 11: Subdue Normal mode and stabilize cursor location
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: Gruvbox's `MiniStatuslineModeNormal` override and the Mini Statusline location field.
+
+Steps:
+
+1. Override only `MiniStatuslineModeNormal` with adaptive neutral colors: `dark2` background and `light1` foreground
+   in dark mode, `light2` background and `dark1` foreground in light mode, retaining bold mode text. Do not use Mini
+   Statusline's default reverse-`Cursor` link, whose light dark-mode background is visually distracting.
+2. Replace `%l:%c` with `%4l:%-3c`: reserve four right-aligned columns for the line number and three left-aligned
+   columns for the cursor column. This keeps the metadata layout stable across line 99/111 and common column changes.
+3. Validate with `git diff --check`, headless startup, and the focused statusline fixture:
+   - Dark/light highlight snapshots match the exact neutral background/foreground pairs and are not white.
+   - Existing purple Git/metadata and neutral filename backgrounds remain unchanged.
+   - Rendered statuslines at lines 99 and 111 have equal-width location suffixes and retain every approved field.
+   - No explicit separator glyph or previously removed statusline field returns.
+4. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: Normal mode is visually calm in both Gruvbox variants, while cursor movement across line-number digit
+boundaries does not shift the right-side statusline layout.
+
+Recovery: if four line digits or three column digits are insufficient for a particular file, increase the respective
+minimum field width; do not replace the compact current-location field with total line/column counts.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -741,6 +768,8 @@ adding custom separators or width-specific state.
   reran focused navigation and global-map checks.
 - [x] Milestone 10: restored `qq`, removed `\x` and all `\b` mappings/clues, unified the statusline's Git and metadata
   blocks on adaptive purple, retained native field spacing, and passed focused behavior and regression checks.
+- [x] Milestone 11: replaced Normal mode's bright reverse-video background with an adaptive neutral and stabilized
+  the padded line/column field; dark/light and line 99/111 checks pass.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -870,6 +899,10 @@ physical terminal UI checks remain downstream.
   bleed across boundaries. Restoring `MiniStatusline.combine_groups()` and its native spaces removed every `│` while
   preserving field order, purple Git/metadata backgrounds, neutral filename color, and clean highlight transitions;
   focused startup and dark/light rendering checks pass.
+- Milestone 11 passed focused validation on 2026-09-11. Mini Statusline's default Normal mode linked to reverse
+  `Cursor`, producing Gruvbox `light1` behind dark text in dark mode. The final override uses `dark2`/`light1` in dark
+  mode and `light2`/`dark1` in light mode, while the other statusline colors remain unchanged. `%4l:%-3c` produced
+  equal-width rendered location suffixes at lines 99 and 111; startup, field inventory, and no-separator checks pass.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -980,7 +1013,8 @@ Temporary exploration material is intentionally uncommitted:
 - Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
   LF/CRLF/CR label, indentation, and line:column. Use Mini Statusline's native spaces without explicit separators;
   remove search, diagnostics/LSP state, size, and encoding. Use the same adaptive purple for Git and metadata with a
-  neutral filename background.
+  neutral filename background. Give Normal mode a subdued `dark2`/`light2` adaptive background and render location as
+  `%4l:%-3c` so ordinary line/column digit changes do not move adjacent metadata.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1120,3 +1154,7 @@ Temporary exploration material is intentionally uncommitted:
   `MiniStatusline.combine_groups()` with its original spaces between mode, Git, filename, filetype, line ending,
   indentation, and location while retaining purple Git/metadata backgrounds. Headless startup, whitespace, field
   order, dark/light highlight values, and the rendered absence of `│` all passed.
+- 2026-09-11 UTC — Completed Milestone 11: replaced Mini Statusline's bright reverse-`Cursor` Normal-mode appearance
+  with adaptive Gruvbox `dark2`/`light2` backgrounds and contrasting `light1`/`dark1` text, then changed location to
+  `%4l:%-3c` for stable width. Whitespace, startup, exact dark/light colors, retained statusline fields, absent
+  separators, and equal-width line 99/111 location checks passed.
