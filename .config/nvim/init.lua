@@ -35,7 +35,7 @@ vim.o.wrap = true
 vim.opt.shortmess:append('IscWa')
 
 -- Autosave
-vim.api.nvim_create_autocmd({ 'InsertLeave', 'BufLeave', 'FocusLost' }, {
+vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged', 'BufLeave', 'FocusLost' }, {
     group = vim.api.nvim_create_augroup('ConfigAutosave', { clear = true }),
     nested = true,
     callback = function(args)
