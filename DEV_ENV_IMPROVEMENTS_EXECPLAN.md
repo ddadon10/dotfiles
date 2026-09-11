@@ -15,30 +15,35 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 - The flat Space picker layer includes direct common Fzf Lua pickers plus a `<Space>g` Git-search subgroup.
 - Gitsigns actions live only in relevant buffers under `\g`; the blame drawer is a same-key `\gb` toggle and
   `\bd` closes the current ordinary buffer or special panel.
-- Panels use `\p`: Codex, Explorer, Aerial outline, and terminal. Quickfix uses direct `\q` for toggling and
-  `<Space>q` for selecting entries.
+- Panels use `\p`: Explorer, Aerial outline, and one reusable shell terminal. The redundant Codex launcher and state
+  are absent. Quickfix uses direct `\q` for toggling and `<Space>q` for selecting entries.
 - NvimTree has no inherited plugin defaults. Its buffer-local mappings treat the selected Explorer node as the noun
   and expose mnemonic actions and small Open/Clipboard groups through Mini Clue.
 - Mini Clue describes the project-owned `g`, literal-Space, and backslash families, including mappings added later by
-  Gitsigns and NvimTree attachment.
-- Bufferline replaces Mini Tabline with a default-styled, stable-order buffer row, a modified marker, hover-revealed
-  close controls, safe MiniBufremove-backed mouse closing, and an offset matching the NvimTree sidebar. It displays no
-  LSP diagnostics and adds no keymaps.
+  Gitsigns and NvimTree attachment, after a 250 ms delay.
+- Bufferline replaces Mini Tabline with a Gruvbox-adaptive, VS Code-style adjacent-insertion buffer row, a blue active
+  indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
+  `File Explorer` offset matching the NvimTree sidebar. Literal `[`/`]` and discoverable `\bp`/`\bn` traverse its
+  visual order; literal `|` closes through the same universal close action as `\bd`. It displays no LSP diagnostics.
+- The statusline retains mode, Git, filename/status, filetype, indentation, search count, and cursor location while
+  omitting diagnostics/LSP state, encoding/fileformat, and buffer size.
+- Gitsigns blame uses a one-character author label. Git and selected-buffer diffs open as listed, read-only unified
+  diff buffers in the current window instead of starting Vim split-diff mode.
 - Neovim's native right-click menu is not customized.
 
 Relevant repository state:
 
-- Branch `20260911-improvement` is clean at commit `441c0ae` before this plan revision.
-- `docker/Dockerfile` uses Debian trixie and one alphabetically ordered apt package list. `npm` is already present;
-  `python3-venv` and `yarnpkg` are not.
+- Branch `20260911-improvement` is clean at commit `0708952` before this follow-up plan revision. Milestones 1–6 are
+  implemented in the six local commits ending at that commit.
+- `docker/Dockerfile` uses Debian trixie and contains exactly one package entry each for `npm`, `python3-venv`, and
+  `yarnpkg`.
 - `.npmrc` is copied to `/root/.npmrc` by the development image.
-- `docker/.bashrc` and `.zshrc` both define `gcheckout`; `.zshrc` also names it in the disabled-Git error.
-- Neovim configuration remains a single tracked file, `.config/nvim/init.lua`. It installs Fzf Lua, Gitsigns,
-  Mini.nvim, NvimTree, Aerial, Quicker, and the LSP dependencies required here. Mini Tabline supplies the current
-  buffer row; Bufferline is not installed and will be the only new plugin.
-- `vim.g.mapleader` and `vim.g.maplocalleader` are currently Space. There are 46 explicit project mappings, the
-  general actions are mixed into the Space prefix, Gitsigns has no `on_attach` maps, NvimTree inherits more than 50
-  plugin defaults, Mini Clue is not configured, and Aerial has no project toggle.
+- Neither tracked shell environment defines or advertises `gcheckout`.
+- Neovim configuration remains a single tracked file, `.config/nvim/init.lua`. It now installs and configures Fzf
+  Lua, Gitsigns, Mini.nvim, NvimTree, Aerial, Quicker, Bufferline, and the required LSP dependencies. Bufferline is the
+  sole tabline implementation and Mini Icons supplies its devicons-compatible API.
+- Both leader variables are backslash; the global and contextual keymap graph, Mini Clue, custom NvimTree maps,
+  Gitsigns maps, Aerial toggle, and JSON formatting have passed headless behavioral fixtures.
 - The installed exploration environment has Neovim 0.12.4, npm 11.16.0,
   `vscode-langservers-extracted` 4.10.0, Fzf Lua
   `05e44d38de0a79c11fba5f7bf8138791b1dbdd1e`, Gitsigns
@@ -56,8 +61,9 @@ Assumptions and boundaries:
   side after that change; it must not use `<Leader>`.
 - The project intentionally does not preserve Neovim defaults. It does preserve the selected direct editing
   primitives `d`, `s`/`S`, `<A-h/j/k/l>`, Visual `<D-c>`, and command-line `<CR>`.
-- Remove the redundant project mappings `qq`, `[q`, `]q`, `+`, `{`, `|`, and `}` after their replacements
-  are installed and tested. This restores ordinary macro recording and avoids competing action homes.
+- Keep `qq`, project `[q`/`]q`, `+`, `{`, and `}` absent. Restore literal `[`/`]` as fast previous/next visual
+  Bufferline actions and literal `|` as an alias of universal close. This intentionally overrides any conflicting
+  defaults; the user does not require them.
 - Keep direct global `\c` Comment and `\x` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions
   therefore live under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch
   buffer cannot meaningfully be written.
@@ -65,9 +71,15 @@ Assumptions and boundaries:
   balanced trim deliberately exposes only the selected twelve Gitsigns actions.
 - JSON formatting already works. Do not add `provideFormatter`, format-on-save, SchemaStore, or another formatter;
   the new `\f` mapping calls `vim.lsp.buf.format()` for any attached formatter.
-- Bufferline must retain its default buffer-ID ordering so its displayed order agrees with the planned native
-  `\bn`/`\bp` actions. Do not add Bufferline keymaps, LSP diagnostics, custom style presets, custom highlight groups,
-  or a separate devicons plugin. Keep the existing Mini Icons devicons mock and JDT virtual-buffer filename behavior.
+- Bufferline must use `sort_by = 'insert_after_current'`; every next/previous action must use Bufferline cycle commands
+  so navigation follows the visible order. Keep diagnostics disabled, the Mini Icons devicons mock, and JDT virtual
+  filename behavior; add no separate devicons or statusline plugin.
+- Interpret the requested `[]|` literally as `[`, `]`, and `|`. Keep the discoverable `\bp`/`\bn` aliases as well.
+- The recommended theme is the selected plan default pending user iteration: Gruvbox soft/base backgrounds for fill,
+  inactive, and selected states; adaptive bright/faded blue for the active indicator and Explorer separator; and
+  adaptive bright/faded orange for modified markers. It must be recomputed on `ColorScheme` for dark/light changes.
+- The recommended diff design is the selected plan default pending user iteration: a custom unified-diff buffer built
+  with `vim.text.diff()` and listed through `nvim_create_buf(true, true)`. Do not add Diffview or another dependency.
 - Bufferline's per-buffer close click and right-click action must call MiniBufremove rather than its forced-delete
   defaults. Its hover interaction is a tabline mouse action, not native popup-menu customization.
 - Do not customize native menus, add a context-menu plugin, preserve/redirect Neovim's original `gx` browser
@@ -478,6 +490,164 @@ Recovery: fix only the milestone that owns a failed assertion and repeat its foc
 milestones in reverse order if wholesale removal is required. Do not weaken an expected result to hide an environment
 limitation.
 
+### Milestone 7: Bufferline navigation, adaptive UI, and interaction cleanup
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: Bufferline options/highlights, NvimTree startup title, statusline content, terminal state,
+  Gitsigns blame formatting, Mini Completion/Mini Keymap, project mappings, and Mini Clue window timing.
+- Bufferline's visual sorter and cycle commands, Gruvbox's palette, MiniStatusline sections, Gitsigns
+  `blame_formatter`, MiniKeymap's popup-menu steps, and MiniBufremove.
+
+Steps:
+
+1. Change Bufferline to `sort_by = 'insert_after_current'`, the closest available behavior to VS Code opening a new
+   editor immediately after the active editor. Traverse that sorted row, rather than numeric buffer IDs:
+   - Map Normal `[` to `:BufferLineCyclePrev` and `]` to `:BufferLineCycleNext`.
+   - Change `\bp` and `\bn` to those same previous/next commands so the discoverable noun group agrees with the fast
+     keys.
+   - Map Normal `|` to the exact same callback as `\bd`; define the callback once because it is reused.
+   - Do not add move/reorder mappings. This request is about navigating the VS Code-style order, not manually sorting
+     it.
+2. Change the NvimTree offset to
+   `{ filetype = 'NvimTree', text = 'File Explorer', text_align = 'center', separator = true }`. Remove the separate
+   `vim.wo.winbar = '%= Explorer %='` assignment after startup tree opening so only Bufferline owns the title.
+3. Add a Bufferline `highlights = function()` callback that reads `require('gruvbox').palette` and
+   `vim.o.background`. Bufferline re-evaluates this callback on `ColorScheme`, so the same mapping adapts to both
+   variants:
+
+   | Role | Dark | Light |
+   | --- | --- | --- |
+   | Row fill | `dark0_soft` (`#32302f`) | `light0_soft` (`#f2e5bc`) |
+   | Inactive buffer | `dark1` (`#3c3836`) | `light1` (`#ebdbb2`) |
+   | Selected buffer | `dark2` (`#504945`) | `light2` (`#d5c4a1`) |
+   | Selected text | `light1` (`#ebdbb2`) | `dark1` (`#3c3836`) |
+   | Inactive text | `gray` (`#928374`) | `gray` (`#928374`) |
+   | Indicator/offset separator | `bright_blue` (`#83a598`) | `faded_blue` (`#076678`) |
+   | Modified marker | `bright_orange` (`#fe8019`) | `faded_orange` (`#af3a03`) |
+
+   Apply the state backgrounds consistently to buffer text, separators, close buttons, modified markers, and the
+   selected indicator. Preserve the default thin separator/icon style, hover behavior, modified dot, and no-LSP
+   diagnostics. Do not introduce black or hard-contrast backgrounds.
+4. Replace the statusline's diagnostics and `section_fileinfo()` entries with the focused layout:
+   `mode | branch and Git counts | filename/status %= conditional search count | filetype | spaces:N/tabs:N | line:column`.
+   - Keep the existing JDT filename handling and `%r`; add `%m` if the filename section does not already expose the
+     modified state.
+   - Keep the existing compact Gitsigns branch/count function.
+   - Use `MiniStatusline.section_searchcount({ options = { recompute = false }, trunc_width = 85 })` so search state
+     appears only when useful without forcing a scan on every redraw.
+   - Render plain `vim.bo.filetype` and `%l:%c`; do not reintroduce LSP/diagnostics, buffer size, encoding,
+     fileformat, total-line/column counts, or another statusline dependency.
+5. Set Gitsigns `blame_formatter` to a function that returns only the first Unicode character of
+   `blame_info.author`, highlighted with `context.hash_hl_group`, and returns `false` as its second result to suppress
+   repeated summary lines. Render `?` for `Not Committed Yet`; leave the renderer-owned graph and heatmap intact.
+6. Remove `toggle_codex()`, the `\pc` mapping, Codex buffer/window state, command/title parameters that exist only to
+   support multiple terminal types, and the corresponding panel expectation. Retain and simplify the existing
+   `\pt` shell-terminal toggle, reusable terminal buffer, bottom 16-line split, insert-mode behavior, and Terminal
+   winbar.
+7. Change `completeopt` from `menu,menuone,noinsert,fuzzy` to `menu,menuone,noselect,fuzzy`. Use the already installed
+   Mini Keymap module to map Insert `<Tab>` with `{ 'pmenu_next' }` and `<S-Tab>` with `{ 'pmenu_prev' }`. When the
+   completion popup is visible, the first Tab selects the first entry and further presses cycle; without a popup,
+   Tab and Shift-Tab retain their literal fallback. Do not add a completion dependency or change Enter acceptance.
+8. Add `window = { delay = 250 }` to Mini Clue. Keep its existing trigger and clue graph unchanged.
+9. Validate once after the related edits:
+   - Effective Bufferline options report adjacent insertion, and a four-buffer fixture proves `[`/`]` plus
+     `\bp`/`\bn` visit the displayed order rather than buffer-ID order. `|` and `\bd` both preserve modified-buffer
+     safety and close representative special panels correctly.
+   - A real NvimTree produces a 45-column `File Explorer` offset with no `Explorer` winbar.
+   - Snapshot all overridden Bufferline highlight groups in dark and light modes; assert the table above, blue active
+     indicator/offset separator, orange modified marker, and no black background. Restore the original background.
+   - Statusline snapshots at wide/narrow widths show the selected fields, hide search count when inactive, show it
+     when active, and contain no diagnostics/LSP text, size, encoding, fileformat, or invalid evaluation marker.
+   - A disposable Git fixture confirms every committed author header is one character and an uncommitted line is `?`.
+   - Static/effective map checks find no Codex callback, command, state, or `\pc`; `\pt` still opens, hides, restores,
+     and reuses the shell terminal.
+   - An attached completion fixture confirms the menu initially has no selection, first Tab selects item zero, second
+     Tab selects item one, Shift-Tab reverses, and Tab inserts ordinary indentation when no popup exists.
+   - Mini Clue's effective delay is exactly 250 ms and its root/context inventory is otherwise unchanged.
+10. Update Progress, Findings and Decisions, and Audit Log with exact results. Stage only this ExecPlan and
+    `.config/nvim/init.lua`, then create a local commit such as `Refine Neovim navigation and UI`.
+
+Expected result: Bufferline acts like an ordered editor-tab row and follows the current Gruvbox mode; Explorer has one
+title; the statusline and blame drawer are compact; only the useful shell terminal remains; completion responds to Tab;
+and project clues appear after 250 ms.
+
+Recovery: if dynamic colors do not refresh, inspect Bufferline's `ColorScheme` callback and effective highlight
+function before adding another autocmd. If `[`/`]` pause behind default prefix maps, remove only the conflicting
+effective bracket mappings after inventorying them; do not increase timeout. If Mini Keymap changes literal Tab
+fallback, use Mini Completion's documented `pumvisible()` expression mappings with the same observed behavior.
+
+### Milestone 8: Replace split diffs with listed unified-diff buffers
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: one reusable unified-diff renderer, Gitsigns `\gd`/`\gD`, selected-buffer `\bD`, Bufferline
+  name formatting, and universal buffer closing.
+- Neovim 0.12 `vim.text.diff()`, `vim.api.nvim_create_buf(true, true)`, `vim.system()`, Fzf Lua's buffer selection,
+  Gitsigns' attached-buffer metadata, and Git's `show` plumbing command.
+
+Steps:
+
+1. Replace the three current split-producing workflows—Gitsigns `\gd`, Gitsigns `\gD`, and selected-buffer `\bD`—
+   with one renderer that accepts before/after text plus labels and opens a unified diff in the current window.
+2. The renderer must:
+   - Generate hunks with `vim.text.diff(before, after, { algorithm = 'histogram', ctxlen = 3,
+     result_type = 'unified' })` and prepend conventional `---`/`+++` file labels.
+   - Create a named listed scratch buffer with `vim.api.nvim_create_buf(true, true)`, `filetype = 'diff'`,
+     `bufhidden = 'wipe'`, `swapfile = false`, and `modifiable = false` after content is populated.
+   - Store a concise buffer-local display title such as `filename ↔ index` or `filename ↔ HEAD~`; extend the existing
+     Bufferline name formatter to prefer that title and otherwise retain JDT behavior.
+   - Replace only the current window's displayed buffer. The source remains listed, so alternate/previous navigation
+     returns to it and `|`/`\bd` closes the diff exactly like another Bufferline buffer.
+   - Report an empty diff or retrieval failure without leaving an empty orphan buffer.
+3. For `\gd`, asynchronously run `git -C <gitsigns-root> show :<repository-relative-path>` to retrieve the index
+   version. For `\gD`, retrieve `HEAD~:<repository-relative-path>`. Compare that base to the current in-memory source
+   buffer so unsaved edits are included. Use an argument-vector `vim.system()` call; never concatenate a shell command.
+4. For `\bD`, keep the existing single-selection Fzf buffer picker but read both loaded buffers in memory and send
+   them to the same renderer. Remove all `:diffthis`, split creation, and source-window restoration from this action.
+5. Keep `\gp` as the existing current-hunk popup preview. Do not map `preview_hunk_inline()`, make Git's index buffer
+   writable, add a second side-by-side mode, or add Diffview.
+6. Validate in disposable fixtures:
+   - Git files with unstaged and unsaved changes produce correct, syntax-highlighted listed buffers for index and
+     previous-commit bases; headers and hunks identify the requested base.
+   - Selected-buffer diff produces the same listed-buffer properties and correct unified text.
+   - Each diff gets a stable human-readable Bufferline label, appears in visual order next to the source, survives
+     ordinary Bufferline navigation, and closes with `|` and `\bd` without any window-layout or diff-mode residue.
+   - Empty comparisons and invalid/untracked Git bases notify cleanly and create no buffer.
+   - Static inspection finds no remaining `vim.cmd('diffthis')` or Gitsigns `diffthis()` call.
+7. Update Progress, Findings and Decisions, and Audit Log with exact results. Stage only this ExecPlan and
+   `.config/nvim/init.lua`, then create a local commit such as `Add listed unified diff buffers`.
+
+Expected result: every project-owned full-buffer diff is a normal-looking, syntax-highlighted Bufferline item that can
+be navigated to and closed without managing a split layout, while current-hunk preview remains a lightweight popup.
+
+Recovery: if Git base retrieval cannot reliably represent the index or previous commit, retain the tested
+selected-buffer renderer and restore only Gitsigns `diffthis()` mappings while documenting the gap. If Bufferline
+filters the listed scratch despite its options, inspect the effective component list before changing its global filter.
+
+### Milestone 9: Follow-up regression validation and handoff
+
+Affected files:
+
+- `DEV_ENV_IMPROVEMENTS_EXECPLAN.md` and `.config/nvim/init.lua`; no exploratory fixture is committed.
+
+Steps:
+
+1. Reread this complete plan and inspect `git status --short`; preserve unrelated work.
+2. Run `git diff --check`, headless Neovim startup, and the focused Milestone 7 and 8 fixtures once against the final
+   committed configuration. Rerun the earlier global/Gitsigns/NvimTree/Bufferline integration fixtures because the
+   same mapping, panel, statusline, and tabline surfaces changed; do not rerun unrelated container tests.
+3. Confirm `/tmp/dev-env-followup-exploration.VCimnc` and all disposable Git/filesystem fixtures remain outside the
+   repository. Record any remaining physical UI checks for interactive dark/light appearance and mouse hover/close.
+4. Update Progress, Findings and Decisions, and Audit Log with exact results, then commit only the ExecPlan if the
+   validation record is the sole task-related change. Never push.
+
+Expected result: startup and all touched integration behavior pass from a clean tree; the handoff names local commits,
+the journal, exact automated results, and only genuinely interactive checks.
+
+Recovery: correct only the milestone owning a failure and repeat its focused checks. Use `git revert` on the relevant
+local milestone commit instead of resetting the branch or disturbing unrelated user work.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -500,9 +670,14 @@ limitation.
   hover/click behavior remains deferred to an interactive terminal.
 - [x] Milestone 6: consolidated source/static/headless validation passed; downstream Docker, zsh, and physical
   terminal mouse checks are documented for handoff.
+- [x] Explored the follow-up Bufferline order/highlight APIs, Mini Statusline/Completion/Keymap behavior, Gitsigns
+  blame/diff APIs, and Neovim listed unified-diff buffers; recorded evidence and a passing prototype outside the repo.
+- [ ] Milestone 7: refine Bufferline navigation/theme/title, statusline, blame, terminal, completion, and clue timing.
+- [ ] Milestone 8: replace project-owned split diffs with listed unified-diff buffers.
+- [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
 
-Exact next action: no repository implementation remains. On capable hosts, run `zsh -n .zshrc`, build and smoke-test
-the image, and confirm Bufferline hover/click behavior in a terminal that forwards mouse motion.
+Exact next action: after the user reviews the recommended color, statusline, diff, and literal `[]|` choices, implement
+Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update this log, and commit only those task changes.
 
 ## Findings and Decisions
 
@@ -562,6 +737,23 @@ the image, and confirm Bufferline hover/click behavior in a terminal that forwar
   contextual NvimTree, and Bufferline option/render/safety/offset checks against the committed configuration.
 - The final run restored both disposable Git/filesystem fixtures and confirmed the repository worktree remained
   clean. All test scripts and fixtures are under `/tmp`; no exploratory artifact is tracked.
+- Follow-up exploration on 2026-09-11 confirmed that Bufferline's `insert_after_current` sorter must be paired with
+  `BufferLineCycleNext`/`BufferLineCyclePrev`; native `bnext`/`bprevious` continue to follow numeric buffer IDs. The
+  offset supports its own text/title and alignment, making the NvimTree-local `Explorer` winbar redundant.
+- Bufferline accepts a highlight-producing function and re-resolves it from its `ColorScheme` autocmd. This supports
+  exact Gruvbox palette choices that follow runtime dark/light changes without duplicating a theme-change autocmd.
+- Mini Statusline's full `section_fileinfo()` always combines filetype, encoding/fileformat, and computed buffer size;
+  removing only the KiB display requires replacing that section. Its search-count section supports
+  `recompute = false`, and direct statusline items provide low-cost line/column and file flags.
+- Mini Completion intentionally does not map Tab. Because Mini Keymap is part of the installed Mini.nvim checkout,
+  its documented `pmenu_next`/`pmenu_prev` multistep mappings can provide completion selection with literal-Tab
+  fallback and no dependency. Mini Clue's documented default delay is 1000 ms and accepts a direct 250 ms override.
+- Gitsigns' side-panel `blame_formatter` accepts a function and can suppress repeated summaries. Its `diffthis()` is
+  specifically a split `vimdiff`; inline preview covers only the current hunk, and `show()` displays an unlisted
+  revision buffer rather than a unified diff.
+- A Neovim 0.12.4 prototype generated unified hunks with `vim.text.diff()` and opened them in a named
+  `nvim_create_buf(true, true)` scratch buffer. The result was listed, `nofile`, nonmodifiable, syntax-ready, and thus
+  suitable for the requested ordinary Bufferline lifecycle.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -612,6 +804,24 @@ the image, and confirm Bufferline hover/click behavior in a terminal that forwar
   A headless prototype with the repository's real NvimTree configuration measured a 45-column left offset. The
   existing Mini Icons mock returned a colored Lua icon through the devicons compatibility API, and MiniBufremove
   preserved a deliberately modified scratch buffer rather than silently forcing deletion.
+- Bufferline documents adjacent insertion, offset titles, theme-derived highlights, and visual-order cycle commands:
+  [options](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/doc/bufferline.txt#L120-L171),
+  [sorted navigation](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/doc/bufferline.txt#L481-L501), and
+  [highlights](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/doc/bufferline.txt#L795-L815).
+  Its source re-runs a user highlight function on colorscheme changes:
+  [dynamic resolution](https://github.com/akinsho/bufferline.nvim/blob/655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3/lua/bufferline/config.lua#L680-L719).
+- Mini's official references document the statusline sections, popup-menu Tab mappings, and 1000 ms clue default:
+  [statusline sections](https://github.com/nvim-mini/mini.nvim/blob/9d01f392b33fb2ba36fbc87fc0bf4453e63ffb0a/doc/mini-statusline.txt#L303-L359),
+  [completion mappings](https://github.com/nvim-mini/mini.nvim/blob/9d01f392b33fb2ba36fbc87fc0bf4453e63ffb0a/doc/mini-completion.txt#L170-L183),
+  [Mini Keymap steps](https://github.com/nvim-mini/mini.nvim/blob/9d01f392b33fb2ba36fbc87fc0bf4453e63ffb0a/doc/mini-keymap.txt#L85-L120), and
+  [clue window](https://github.com/nvim-mini/mini.nvim/blob/9d01f392b33fb2ba36fbc87fc0bf4453e63ffb0a/doc/mini-clue.txt#L496-L505).
+- Gitsigns documents its functional blame formatter, split diff, and current-hunk-only inline preview:
+  [blame formatter](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L1070-L1098),
+  [split diff](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L212-L240), and
+  [inline preview](https://github.com/lewis6991/gitsigns.nvim/blob/5be654f2232c10ddcad19c1607a67b6b4b78fc29/doc/gitsigns.txt#L370-L379).
+  Neovim supplies the two primitives needed by the replacement:
+  [listed scratch buffers](https://neovim.io/doc/user/api#nvim_create_buf()) and
+  [unified text diff](https://neovim.io/doc/user/lua#vim.text.diff()).
 - Neovim native menus and flat custom entries worked in a terminal, but selecting a nested custom menu reproduced
   `E335: Menu not defined for Normal mode`. A chained `:popup` workaround worked but required a multi-stage design.
   The experimental config was reverted and the user chose Mini Clue instead.
@@ -622,6 +832,7 @@ Temporary exploration material is intentionally uncommitted:
 - `/tmp/native-menu-exploration/JOURNAL.md`
 - `/tmp/neovim-keymap-architecture.EpFoTn/JOURNAL.md`
 - `/tmp/bufferline-exploration.Ih1aac/JOURNAL.md`
+- `/tmp/dev-env-followup-exploration.VCimnc/JOURNAL.md`
 
 ### Decisions
 
@@ -644,9 +855,20 @@ Temporary exploration material is intentionally uncommitted:
 - Keep the focused twelve-action Gitsigns set and omit the high-impact whole-buffer reset and lower-value duplicates.
 - Implement both blame toggle and universal `\bd`: the former gives same-key behavior from either pane, while the
   latter gives every ordinary/special buffer one canonical close action.
-- Replace Mini Tabline with Bufferline using its default visuals and buffer-ID ordering. Enable only the requested
-  hover, modified marker, safe mouse closing, JDT name formatter, and blank NvimTree offset; explicitly disable
-  diagnostics, hide the redundant global close icon, and add no Bufferline keymaps or devicons dependency.
+- Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
+  diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
+  commands, literal `[`/`]` fast navigation, literal `|` close, and a centered `File Explorer` offset title.
+- Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
+  modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
+- Use the focused statusline: mode, Git, filename/status, conditional search count, filetype, indentation, and
+  line:column. Remove diagnostics/LSP state and the inseparable fileinfo size/encoding/fileformat section.
+- Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
+  graph/heatmap.
+- Remove the Codex-specific launcher and state; keep one shell terminal panel under `\pt`.
+- Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
+  Clue's delay to 250 ms.
+- Replace all three project-owned split diffs with one listed, nonmodifiable unified-diff buffer renderer. Include
+  unsaved current-buffer content, reuse it for selected-buffer comparisons, and add no diff plugin.
 - Leave native menus untouched and use Mini Clue as the sole discovery addition.
 
 ### Inference and unresolved gaps
@@ -655,8 +877,13 @@ Temporary exploration material is intentionally uncommitted:
 - Inference: contextual NvimTree `\s` is preferable to preserving global Save in an unwritable Explorer buffer; the
   buffer-local description makes the override visible.
 - Inference: preserving Aerial source focus matches the other panel toggles and occasional-use workflow.
-- Inference: default buffer-ID order is preferable to `insert_after_current` here because it keeps the visual row
-  consistent with the already approved native `\bn`/`\bp` actions without adding Bufferline-specific mappings.
+- Inference: `insert_after_current` is the closest Bufferline-provided equivalent to VS Code's right-of-active editor
+  insertion. Pairing it with Bufferline cycle commands removes the former visible-order/native-ID mismatch.
+- Inference: the literal `[]|` request means three mappings—`[` previous, `]` next, `|` close—even though the older
+  pre-overhaul navigation used curly braces. This remains the one interpretation to confirm during user review.
+- Inference: a unified patch buffer best fits the requested single-buffer lifecycle. Gitsigns inline preview is only
+  hunk-local, while its complete diff is intrinsically split; a dedicated diff plugin would add disproportionate UI
+  and dependency complexity.
 - Unresolved until external build: the pinned base and live trixie repositories must resolve all three apt packages
   on every target architecture.
 - Unresolved until host validation: zsh syntax cannot run here because zsh is absent.
@@ -716,3 +943,10 @@ Temporary exploration material is intentionally uncommitted:
   JSON, Mini Clue, panel, Comment, macro, close, filesystem, and mutation fixtures; all passed, temporary mutations
   were restored, and the repository remained clean. Marked implementation complete and retained only the Docker
   image smoke test, unavailable zsh syntax check, and physical terminal Bufferline mouse check for downstream hosts.
+- 2026-09-11 UTC — Added follow-up Milestones 7–9 after inspecting the implemented config, installed plugin source,
+  official upstream documentation, and a disposable Neovim 0.12 unified-diff prototype. The draft now specifies
+  literal `[`/`]` visual-order navigation and `|` close, adjacent Bufferline insertion, a centered `File Explorer`
+  offset, adaptive Gruvbox highlights, a focused statusline without diagnostics or size, one-character blame authors,
+  Codex-panel removal, Mini Keymap Tab completion, 250 ms clues, and listed unified-diff buffers replacing all three
+  split workflows. Recorded alternatives and the curly-versus-square-bracket interpretation for user iteration; no
+  production configuration was changed.
