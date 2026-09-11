@@ -504,7 +504,9 @@ Steps:
 
 1. Change Bufferline to `sort_by = 'insert_after_current'`, the closest available behavior to VS Code opening a new
    editor immediately after the active editor. Traverse that sorted row, rather than numeric buffer IDs:
-   - Map Normal `[` to `:BufferLineCyclePrev` and `]` to `:BufferLineCycleNext`.
+   - Map Normal `[` to `:BufferLineCyclePrev` and `]` to `:BufferLineCycleNext`, both with `nowait = true`. Neovim
+     supplies longer bracket-prefixed mappings; immediate execution deliberately makes those defaults unreachable
+     instead of delaying these approved direct actions until `timeoutlen` expires.
    - Change `\bp` and `\bn` to those same previous/next commands so the discoverable noun group agrees with the fast
      keys.
    - Map Normal `|` to the exact same callback as `\bd`; define the callback once because it is reused.
@@ -546,19 +548,19 @@ Steps:
 5. Set Gitsigns `blame_formatter` to a function that returns only the first Unicode character of
    `blame_info.author`, highlighted with `context.hash_hl_group`, and returns `false` as its second result to suppress
    repeated summary lines. Render `?` for `Not Committed Yet`; leave the renderer-owned graph and heatmap intact.
-6. Remove `toggle_codex()`, the `\pc` mapping, Codex buffer/window state, command/title parameters that exist only to
-   support multiple terminal types, and the corresponding panel expectation. Retain and simplify the existing
-   `\pt` shell-terminal toggle, reusable terminal buffer, bottom 16-line split, insert-mode behavior, and Terminal
-   winbar.
+6. Remove only `toggle_codex()`, the `\pc` mapping, any live Codex buffer/window state, and the corresponding panel
+   expectation. Keep the working generic `toggle_terminal_panel(name, title, command)` helper and the existing
+   `toggle_terminal()` wrapper rather than restructuring them merely because they now have one caller. Retain the
+   reusable shell-terminal buffer, bottom 16-line split, insert-mode behavior, and Terminal winbar.
 7. Change `completeopt` from `menu,menuone,noinsert,fuzzy` to `menu,menuone,noselect,fuzzy`. Use the already installed
    Mini Keymap module to map Insert `<Tab>` with `{ 'pmenu_next' }` and `<S-Tab>` with `{ 'pmenu_prev' }`. When the
    completion popup is visible, the first Tab selects the first entry and further presses cycle; without a popup,
    Tab and Shift-Tab retain their literal fallback. Do not add a completion dependency or change Enter acceptance.
 8. Add `window = { delay = 250 }` to Mini Clue. Keep its existing trigger and clue graph unchanged.
 9. Validate once after the related edits:
-   - Effective Bufferline options report adjacent insertion, and a four-buffer fixture proves `[`/`]` plus
-     `\bp`/`\bn` visit the displayed order rather than buffer-ID order. `|` and `\bd` both preserve modified-buffer
-     safety and close representative special panels correctly.
+   - Effective Bufferline options report adjacent insertion, and a four-buffer fixture proves immediate `nowait`
+     `[`/`]` plus `\bp`/`\bn` visit the displayed order rather than buffer-ID order. `|` and `\bd` both preserve
+     modified-buffer safety and close representative special panels correctly.
    - A real NvimTree produces a 45-column `File Explorer` offset with no `Explorer` winbar.
    - Snapshot all overridden Bufferline highlight groups in dark and light modes; assert the table above, blue active
      indicator/offset separator, orange modified marker, and no black background. Restore the original background.
@@ -567,10 +569,12 @@ Steps:
      backgrounds have readable contrasting text. Output contains no search count, diagnostics/LSP text, size,
      encoding, raw fileformat name, total-line/column counts, or invalid evaluation marker.
    - A disposable Git fixture confirms every committed author header is one character and an uncommitted line is `?`.
-   - Static/effective map checks find no Codex callback, command, state, or `\pc`; `\pt` still opens, hides, restores,
-     and reuses the shell terminal.
-   - An attached completion fixture confirms the menu initially has no selection, first Tab selects item zero, second
-     Tab selects item one, Shift-Tab reverses, and Tab inserts ordinary indentation when no popup exists.
+   - Static/effective map checks find no Codex callback, command, state, or `\pc`; the generic panel helper remains
+     structurally unchanged and `\pt` still opens, hides, restores, and reuses the shell terminal.
+   - A deterministic native completion fixture calls `vim.fn.complete()` with two fixed candidates, then confirms the
+     menu initially has no selection, first Tab selects item zero, second Tab selects item one, and Shift-Tab reverses.
+     With no popup, Tab inserts ordinary indentation. Do not start an LSP for this mapping-level test; production Mini
+     Completion continues to populate the same native popup menu from attached LSP clients.
    - Mini Clue's effective delay is exactly 250 ms and its root/context inventory is otherwise unchanged.
 10. Update Progress, Findings and Decisions, and Audit Log with exact results. Stage only this ExecPlan and
     `.config/nvim/init.lua`, then create a local commit such as `Refine Neovim navigation and UI`.
@@ -580,9 +584,9 @@ title; the statusline and blame drawer are compact; only the useful shell termin
 and project clues appear after 250 ms.
 
 Recovery: if dynamic colors do not refresh, inspect Bufferline's `ColorScheme` callback and effective highlight
-function before adding another autocmd. If `[`/`]` pause behind default prefix maps, remove only the conflicting
-effective bracket mappings after inventorying them; do not increase timeout. If Mini Keymap changes literal Tab
-fallback, use Mini Completion's documented `pumvisible()` expression mappings with the same observed behavior.
+function before adding another autocmd. If `[`/`]` do not execute immediately, inspect their effective `nowait` flag
+before deleting any default maps or changing timeout settings. If Mini Keymap changes literal Tab fallback, use Mini
+Completion's documented `pumvisible()` expression mappings with the same observed behavior.
 
 ### Milestone 8: Make native split diffs easy to close and add inline preview
 
@@ -599,9 +603,9 @@ Steps:
    listed unified-diff buffer or adding a dependency.
 2. Add one small callback that closes the active diff layout:
    - Inspect only windows in the current tab whose window-local `diff` option is set.
-   - If the current buffer is a Gitsigns comparison buffer (`buftype` is `acwrite` for the index or `nowrite` for a
-     revision), close the current comparison window. Otherwise, preserve the current source window and close the
-     other diff comparison window or windows.
+   - If the focused diff window has a non-empty `buftype`, treat it generically as the comparison/special buffer and
+     close the current window. Otherwise, preserve the current normal source window and close the other diff window
+     or windows. Do not couple the helper to Gitsigns' current `acwrite`/`nowrite` implementation details or URI.
    - Run `:diffoff!` after closing comparison windows so diff, scroll/cursor binding, wrapping, fold, and related
      options are restored across the current tab.
    - Return whether a diff was closed so callers can toggle without duplicating window logic. Never use `:only`,
@@ -622,7 +626,8 @@ Steps:
      second press without leaving any `diff`, `scrollbind`, `cursorbind`, or altered wrap/fold state.
    - With each Gitsigns split open, `\bd` and `|` close only the comparison window, retain the source buffer and every
      unrelated panel/split, and leave no diff-mode residue. Repeat for selected-buffer `\bD`.
-   - Invoking close from a focused Gitsigns comparison pane closes that pane rather than the source.
+   - Invoking close from a focused non-empty-`buftype` Gitsigns comparison pane closes that pane rather than the
+     source, without matching an exact Gitsigns buffer type or name.
    - `\gi` renders added/deleted lines inline for the current hunk and clears on CursorMoved, InsertEnter, and
      BufLeave; `\gp` remains the popup preview.
    - The Gitsigns Mini Clue inventory contains the new `\gi` leaf and every previously approved action only.
@@ -685,6 +690,8 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
 - [x] Explored the follow-up Bufferline order/highlight APIs, Mini Statusline/Completion/Keymap behavior, Gitsigns
   blame/diff APIs, native diff cleanup, and a listed unified-diff prototype; rejected the prototype as needless
   complexity and selected toggleable native splits.
+- [x] Approved immediate bracket maps, minimal terminal cleanup, deterministic native completion validation, and
+  generic special-buffer diff detection to keep the implementation small and decoupled.
 - [ ] Milestone 7: refine Bufferline navigation/theme/title, statusline, blame, terminal, completion, and clue timing.
 - [ ] Milestone 8: make native split diffs easy to close and add inline hunk preview.
 - [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
@@ -872,7 +879,8 @@ Temporary exploration material is intentionally uncommitted:
   latter gives every ordinary/special buffer one canonical close action.
 - Replace Mini Tabline with Bufferline while retaining hover, modified marker, safe mouse closing, JDT names, no
   diagnostics, and the Mini Icons shim. The follow-up uses VS Code-like adjacent insertion, visual-order cycle
-  commands, literal `[`/`]` fast navigation, literal `|` close, and a centered `File Explorer` offset title.
+  commands, immediate `nowait` literal `[`/`]` navigation, literal `|` close, and a centered `File Explorer` offset
+  title.
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the current statusline shape with this logical order: mode, Git, filename/status, then filetype, friendly
@@ -880,11 +888,14 @@ Temporary exploration material is intentionally uncommitted:
   adaptive blue Git background, neutral filename, and adaptive purple metadata background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
-- Remove the Codex-specific launcher and state; keep one shell terminal panel under `\pt`.
+- Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
+  terminal panel under `\pt` without an otherwise unnecessary refactor.
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
-  Clue's delay to 250 ms.
+  Clue's delay to 250 ms. Validate the mapping deterministically with `vim.fn.complete()` rather than an asynchronous
+  LSP fixture; production completion remains LSP-backed.
 - Keep native split diffs, make `\gd`/`\gD` same-key toggles, and make universal `\bd`/`|` close the comparison while
-  preserving the source and unrelated windows. Finish with `:diffoff!`; add no diff plugin or custom renderer.
+  preserving the source and unrelated windows. Distinguish special comparisons only by non-empty `buftype`, finish
+  with `:diffoff!`, and add no diff plugin or custom renderer.
 - Leave native menus untouched and use Mini Clue as the sole discovery addition.
 
 ### Inference and unresolved gaps
@@ -971,3 +982,9 @@ Temporary exploration material is intentionally uncommitted:
   LF/CRLF/CR, adding line:column, and assigning blue Git plus purple metadata backgrounds. Rejected the custom listed
   unified-diff milestone as needless complexity; replaced it with native Gitsigns/selected-buffer splits that close
   via same-key `\gd`/`\gD` or universal `\bd`/`|`, clean up with `:diffoff!`, and add `\gi` inline hunk preview.
+- 2026-09-11 UTC — Applied the user's four implementation-simplification approvals to the plan only. Required
+  `nowait = true` on literal `[`/`]` so longer default bracket prefixes cannot delay tab navigation; limited Codex
+  removal to Codex-specific code while preserving the proven generic terminal helper; replaced LSP-driven completion
+  validation with deterministic `vim.fn.complete()` candidates while leaving production completion LSP-backed; and
+  generalized diff-pane detection to non-empty `buftype` instead of depending on Gitsigns' exact `acwrite`/`nowrite`
+  types or URI. No production configuration was changed.
