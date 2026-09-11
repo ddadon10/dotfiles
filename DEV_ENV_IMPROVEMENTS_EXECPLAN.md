@@ -19,9 +19,11 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
   reusable shell terminal. The `\p` group and redundant Codex launcher/state are absent. Quickfix uses direct `\q`
   for toggling and `<Space>q` for selecting entries.
 - NvimTree has no inherited plugin defaults. Its buffer-local mappings treat the selected Explorer node as the noun
-  and expose mnemonic actions and small Open/Clipboard groups through Mini Clue.
+  and expose mnemonic actions and small Open/Clipboard groups through Mini Clue. Its contextual `\c` copies the
+  selected node instead of advertising the global Comment action.
 - Mini Clue describes the project-owned `g`, literal-Space, and backslash families, including mappings added later by
-  Gitsigns and NvimTree attachment, after a 250 ms delay.
+  Gitsigns and NvimTree attachment, after a 250 ms delay. Leaf descriptions contain only the action, without redundant
+  `Explorer:`, `Search:`, `Git:`, `Panel:`, `Buffer:`, or `Quickfix:` prefixes.
 - Bufferline replaces Mini Tabline with a Gruvbox-adaptive, VS Code-style adjacent-insertion buffer row, a blue active
   indicator, a modified marker, hover-revealed close controls, safe MiniBufremove-backed mouse closing, and a titled
   `Explorer` offset matching the NvimTree sidebar. Literal `{`/`}` traverse its visual order and literal `|`
@@ -71,9 +73,9 @@ Assumptions and boundaries:
 - Keep project `[q`/`]q` and `+` absent. Use literal `{`/`}` as fast previous/next visual Bufferline actions and
   literal `|` as universal close. Leave `[`/`]` free for Neovim's bracket-prefixed mappings and restore `qq` as
   Save-all-and-quit.
-- Keep direct global `\c` Comment and `qq` Save-all-and-quit stable inside NvimTree. NvimTree clipboard actions live
-  under `\y`. Contextual NvimTree `\s` intentionally shadows Save because the Explorer scratch buffer cannot
-  meaningfully be written; the former `\x` mapping is removed.
+- Keep `qq` Save-all-and-quit stable inside NvimTree. Contextual NvimTree `\c` copies nodes and replaces the redundant
+  `\yc`; the remaining clipboard variants live under `\y`. Contextual NvimTree `\s` intentionally shadows Save
+  because the Explorer scratch buffer cannot meaningfully be written; the former `\x` mapping is removed.
 - Do not map Gitsigns whole-buffer reset, hunk selection, stage-buffer, or display toggles. The balanced trim exposes
   the original twelve actions plus the later-approved `\gi` inline hunk preview.
 - JSON formatting already works. Do not add `provideFormatter`, format-on-save, SchemaStore, or another formatter;
@@ -1076,6 +1078,33 @@ and the unnecessary Panels submenu no longer exists.
 Recovery: restore the three `\p...` mappings and explicit Panels clue together if the direct leader namespace becomes
 too crowded; do not leave both flat and grouped aliases active.
 
+### Milestone 26: Make Explorer Comment contextual and simplify clue labels
+
+Affected file and interfaces:
+
+- `.config/nvim/init.lua`: NvimTree buffer-local mappings and every project mapping description consumed by Mini Clue.
+
+Steps:
+
+1. In `attach_nvim_tree()`, map Normal and Visual `\c` to `api.fs.copy.node` with description `copy`. Remove the
+   duplicate `\yc` mapping. Outside Explorer, global `\c` remains Comment.
+2. Remove redundant noun/category prefixes from project leaf descriptions. Gitsigns and NvimTree mapping helpers must
+   use their supplied action descriptions directly; Space picker, direct buffer, panel, and quickfix descriptions
+   must similarly describe only their action.
+3. Retain explicit `+Git search`, `+Git actions`, `+Open`, and `+Clipboard` labels because these name real nested
+   groups rather than repeating a leaf's already-known context.
+4. Validate with `git diff --check`, headless startup, and an exact effective-map fixture. Confirm all project leaves
+   have no colon prefix, Explorer `\c`/Visual `\c` copy a real selected node, `\yc` is absent, leaving Explorer
+   restores global Comment, and the touched panel, Bufferline, blame, and Gitsigns fixtures pass.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: Mini Clue shows concise actions such as `copy`, `files`, `next hunk`, and `Explorer`; it never shows
+the misleading `Comment line` action in Explorer, while Comment remains unchanged in editable buffers.
+
+Recovery: restore `\yc` and remove the contextual `\c` if copy should return to the Clipboard subgroup. Prefixes can
+be restored independently without changing mapping behavior; do not disable Mini Clue for Explorer merely to hide a
+global description.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -1137,6 +1166,8 @@ too crowded; do not leave both flat and grouped aliases active.
   focused formatter and real-drawer checks pass.
 - [x] Milestone 25: flattened Explorer, outline, and terminal to `\e`, `\o`, and `\t`; removed the `\p` group and
   passed exact mapping/clue, real panel-cycle, startup, and touched-regression checks.
+- [x] Milestone 26: made Explorer `\c` contextual Copy, removed `\yc`, stripped redundant prefixes from every project
+  leaf description, and passed exact clue/map behavior plus touched regressions.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1254,6 +1285,14 @@ physical terminal UI checks remain downstream.
   family or Panels clue, and real open/close cycles for NvimTree, Aerial with source focus retained, and the reusable
   terminal returning to its source window. NvimTree's intentional buffer-local `\o...` Open group remains contextual;
   `\e` closes Explorer from its own buffer.
+- Mini Clue concatenates configured clues with global and current-buffer mappings; buffer-local clue configuration does
+  not replace the global mapping catalog and there is no selective exclusion list. That is why global `\c = Comment`
+  appeared in Explorer. Milestone 26 resolves the semantic mismatch through a real buffer-local `\c = copy` mapping,
+  whose description and behavior override the global mapping there; leaving Explorer restores `Comment line`.
+- Milestone 26's focused fixture found no colon-prefixed project leaf description, invoked Explorer `\c` against
+  `alpha.txt`, observed it in NvimTree's copy state, confirmed `\yc` absent in Normal and Visual modes, and retained
+  the four meaningful group labels. Startup, panels, Bufferline/statusline, blame, and current Gitsigns diff/preview
+  regressions passed. The Gitsigns fixture was explicitly made dirty for the test and restored afterward.
 - Remaining manual checks are limited to appearance and physical input: inspect both Gruvbox modes interactively;
   confirm Bufferline hover, left-click close, and right-click safe close in a terminal forwarding mouse motion; and
   physically exercise NvimTree double-click. The previously documented Docker image smoke and host zsh syntax checks
@@ -1417,7 +1456,7 @@ Temporary exploration material is intentionally uncommitted:
 - Remove the duplicate `\w` family and retain only `<A-h/j/k/l>` for window focus.
 - Use direct `\q` toggle plus `<Space>q` selection instead of a Quickfix navigation subgroup.
 - Treat NvimTree's current buffer as the implicit Explorer noun, replace all defaults, group only Open and Clipboard
-  variants, and restore Mini Clue triggers last.
+  variants, expose the common node copy as contextual `\c`, and restore Mini Clue triggers last.
 - Use `rename_full()` for NvimTree `\m`; direct `api.fs.move()` would misleadingly require a prior cut.
 - Keep the focused Gitsigns set, add the approved `\gi` inline preview, and continue omitting the high-impact
   whole-buffer reset and lower-value duplicates.
@@ -1441,6 +1480,8 @@ Temporary exploration material is intentionally uncommitted:
   terminal panel under direct `\t` without an otherwise unnecessary refactor.
 - Expose the three global panels directly as `\e` Explorer, `\o` outline, and `\t` terminal; remove the `\p` group.
   Let NvimTree's buffer-local `\o...` Open group retain precedence while that contextual buffer is active.
+- Keep Mini Clue leaf descriptions action-only. Remove redundant category prefixes from every project mapping while
+  retaining explicit labels for real nested groups.
 - Use Mini Keymap's popup-menu steps for Tab/Shift-Tab completion navigation, retain literal fallback, and set Mini
   Clue's delay to 250 ms. Validate the mapping deterministically with `vim.fn.complete()` rather than an asynchronous
   LSP fixture; production completion remains LSP-backed.
@@ -1634,3 +1675,9 @@ Temporary exploration material is intentionally uncommitted:
   direct `\e`/`\o`/`\t`, and removed the explicit Panels Mini Clue group. Exact effective-map/clue assertions, real
   open/close cycles for all three panels, headless startup, whitespace, and the touched Milestone 7 fixture passed.
   Preserved NvimTree's contextual buffer-local `\o...` Open group and the existing terminal implementation.
+- 2026-09-11 UTC — Completed Milestone 26: mapped Explorer Normal/Visual `\c` to node Copy, removed duplicate `\yc`,
+  and stripped redundant `Explorer:`, `Search:`, `Git search:`, `Git:`, `Panel:`, `Buffer:`, and `Quickfix:` prefixes
+  from project leaf descriptions while retaining actual group labels. Exact map/clue inspection and a real selected-node
+  copy passed, as did startup, whitespace, panel, Bufferline/statusline, blame, and current Gitsigns regressions. A
+  stale temporary Milestone 8 fixture still exercised previously removed `\b` mappings and selected-buffer diff; it
+  was narrowed to the current Gitsigns split/inline-preview surface, made deterministically dirty, and restored.
