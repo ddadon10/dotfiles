@@ -493,14 +493,14 @@ limitation.
   configuration, and the real 45-column NvimTree offset; selected the simple stable-order draft.
 - [x] Revised this self-contained ExecPlan with the selected graph and began implementation from a clean worktree.
 - [x] Milestone 1: updated container packages, npm policy, and both alias surfaces; focused source checks pass.
-- [ ] Milestone 2: implement and validate the global keymap graph, panels, JSON format mapping, and Mini Clue.
+- [x] Milestone 2: implemented and validated the global keymap graph, panels, JSON format mapping, and Mini Clue.
 - [ ] Milestone 3: implement and validate contextual Gitsigns actions and blame closing.
 - [ ] Milestone 4: replace and validate NvimTree's buffer-local mappings.
 - [ ] Milestone 5: replace Mini Tabline with the approved Bufferline configuration and validate its UI behavior.
 - [ ] Milestone 6: run consolidated validation and hand off deferred environment checks.
 
-Exact next action: implement Milestone 2 in `.config/nvim/init.lua`, beginning with the leader variables and complete
-global mapping graph, then configure Mini Clue and run the milestone's focused Neovim checks.
+Exact next action: implement Milestone 3 in `.config/nvim/init.lua`, beginning with the shared blame-toggle callback
+and Gitsigns `on_attach`, then validate contextual maps and Git behavior in a disposable repository.
 
 ## Findings and Decisions
 
@@ -512,6 +512,18 @@ global mapping graph, then configure Mini Clue and run the milestone's focused N
 - The original repository-wide `gcheckout` validation was self-referential because this ExecPlan documents the
   removed alias. The executable check now targets `docker/.bashrc` and `.zshrc`, which are the complete alias and
   guidance surfaces in scope.
+- Milestone 2's headless behavioral fixture passed on 2026-09-11. It verified the literal backslash leaders, all
+  approved `g`, Space, direct-action, buffer, panel, and quickfix mappings and descriptions; restored macro recording;
+  normal and Visual comments; ordinary and special-buffer closing; real Codex, Explorer, Aerial, terminal, and
+  Quicker open/close cycles; source focus for Aerial; and all selected Fzf provider functions.
+- In the same fixture, `jsonls` attached to a real JSON file with formatting capability and `\f` reformatted compact
+  JSON to the expected four-space indentation. No JSON-specific formatter or extra LSP setting was added.
+- Mini Clue creates triggers from `BufWinEnter`, `LspAttach`, and selected filetype events, all of which can precede
+  setup for the startup buffer. Calling `MiniClue.ensure_buf_triggers()` once immediately after setup makes all six
+  project root triggers available in the initial buffer; the fixture confirmed they are buffer-local.
+- Neovim 0.12 itself supplies `[q` and `]q` with `:cprevious` and `:cnext` descriptions. The former project mappings
+  are removed from `init.lua`; the built-in mappings remain intentionally because default-key removal is outside the
+  approved project-map graph.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -642,3 +654,9 @@ Temporary exploration material is intentionally uncommitted:
   npm's three-day `min-release-age`, and removed `gcheckout` from both shell surfaces and host guidance. Recorded the
   passing npm, Bash, apt-list, alias, and whitespace checks and retained the planned Docker/zsh deferrals. Corrected
   the self-referential alias validation to inspect the two in-scope shell files instead of this documenting ExecPlan.
+- 2026-09-11 UTC — Completed Milestone 2: changed both leaders to backslash; installed the approved cursor, literal
+  Space picker, Git-search, direct action, buffer, panel, and quickfix mappings; removed the superseded project maps;
+  and configured Mini Clue for only the three project roots and named groups. Added an immediate trigger ensure for
+  the initial buffer after discovering setup events can already have passed. Recorded passing effective-map, macro,
+  Comment, JSON LSP formatting, universal close, real panel-toggle, Fzf-provider, and Mini Clue checks, including the
+  distinction between removed project quickfix maps and Neovim's own `[q`/`]q` defaults.

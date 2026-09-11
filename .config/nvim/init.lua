@@ -1,8 +1,8 @@
 -- Options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = '\\'
+vim.g.maplocalleader = '\\'
 vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
@@ -479,7 +479,6 @@ local function lsp_opts(title, jump1)
     }
 end
 
-vim.keymap.set('n', 'qq', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
 vim.keymap.set('n', 'S', '?', { desc = 'Search backward' })
@@ -491,7 +490,7 @@ vim.keymap.set('c', '<CR>', function()
         end)
     end
     return '<CR>'
-end, { expr = true })
+end, { desc = 'Accept command and clear search highlight', expr = true })
 vim.keymap.set('n', '<A-h>', '<C-w>h', { desc = 'Move to left window' })
 vim.keymap.set('n', '<A-j>', '<C-w>j', { desc = 'Move to lower window' })
 vim.keymap.set('n', '<A-k>', '<C-w>k', { desc = 'Move to upper window' })
@@ -501,9 +500,10 @@ vim.keymap.set('t', '<A-j>', '<C-\\><C-n><C-w>j', { desc = 'Move to lower window
 vim.keymap.set('t', '<A-k>', '<C-\\><C-n><C-w>k', { desc = 'Move to upper window' })
 vim.keymap.set('t', '<A-l>', '<C-\\><C-n><C-w>l', { desc = 'Move to right window' })
 vim.keymap.set('x', '<D-c>', '"+y', { desc = 'Copy selection to system clipboard' })
-vim.keymap.set({ 'n', 'v' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
+vim.keymap.set({ 'n', 'x' }, 'ga', function() fzf.lsp_code_actions({ previewer = false, winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Actions' } }) end, { desc = 'Go to action' })
 vim.keymap.set('n', 'gd', function() fzf.lsp_definitions(lsp_opts('Definitions')) end, { desc = 'Go to definition' })
 vim.keymap.set('n', 'ge', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Go to next diagnostic' })
+vim.keymap.set('n', 'gE', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Go to previous diagnostic' })
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = 'Hover' })
 vim.keymap.set('n', 'gi', function() fzf.lsp_implementations(lsp_opts('Implementations')) end, { desc = 'Go to implementation' })
 vim.keymap.set('n', 'gl', function()
@@ -517,21 +517,46 @@ vim.keymap.set('n', 'gt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions
 vim.keymap.set('n', 'gu', function() fzf.lsp_references(lsp_opts('Usage')) end, { desc = 'Go to references' })
 vim.keymap.set('n', 'gw', function() fzf.grep_cword({ winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = 'Word Usage' } }) end, { desc = 'Grep word under cursor' })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = 'Rename symbol' })
-vim.keymap.set('n', '[q', '<cmd>cprevious<cr>', { desc = 'Previous quickfix item' })
-vim.keymap.set('n', ']q', '<cmd>cnext<cr>', { desc = 'Next quickfix item' })
-vim.keymap.set('n', '+', '<cmd>buffer #<cr>', { desc = 'Alternate buffer' })
-vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
-vim.keymap.set('n', '|', function() MiniBufremove.delete() end, { desc = 'Close buffer' })
-vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-vim.keymap.set('n', '<Leader><Leader>', function() fzf.live_grep({ winopts = { title = 'Global Grep' } }) end, { desc = 'Global grep' })
-vim.keymap.set('x', '<Leader><Leader>', function() fzf.grep_visual({ winopts = { title = 'Selection Search' } }) end, { desc = 'Global grep on selection' })
-vim.keymap.set('n', '<Leader>.', function() fzf.resume() end, { desc = 'Resume last picker' })
-vim.keymap.set('n', '<Leader>?', function() fzf.keymaps({ previewer = false, winopts = { height = 0.50, title = 'Keymaps' } }) end, { desc = 'Keymaps' })
-vim.keymap.set('n', '<Leader>a', function() fzf.builtin({ previewer = false, winopts = { height = 0.50, title = 'Pickers' } }) end, { desc = 'All pickers' })
-vim.keymap.set('n', '<Leader>b', function() require('gitsigns').blame() end, { desc = 'Blame' })
-vim.keymap.set('n', '<Leader>c', toggle_codex, { desc = 'Toggle Codex' })
-vim.keymap.set('n', '<Leader>d', function() require('gitsigns').diffthis() end, { desc = 'Git diff' })
-vim.keymap.set('n', '<Leader>D', function()
+
+vim.keymap.set('n', '<Space><Space>', function() fzf.live_grep({ winopts = { title = 'Global Grep' } }) end, { desc = 'Search: global grep' })
+vim.keymap.set('x', '<Space><Space>', function() fzf.grep_visual({ winopts = { title = 'Selection Search' } }) end, { desc = 'Search: selection' })
+vim.keymap.set('n', '<Space>.', function() fzf.resume() end, { desc = 'Search: resume last picker' })
+vim.keymap.set('n', '<Space>?', function() fzf.keymaps({ previewer = false, winopts = { height = 0.50, title = 'Keymaps' } }) end, { desc = 'Search: keymaps' })
+vim.keymap.set('n', '<Space>a', function() fzf.builtin({ previewer = false, winopts = { height = 0.50, title = 'Pickers' } }) end, { desc = 'Search: all pickers' })
+vim.keymap.set('n', '<Space>b', function() fzf.buffers() end, { desc = 'Search: buffers' })
+vim.keymap.set('n', '<Space>c', function() fzf.commands() end, { desc = 'Search: commands' })
+vim.keymap.set('n', '<Space>d', function() fzf.diagnostics_workspace() end, { desc = 'Search: diagnostics' })
+vim.keymap.set('n', '<Space>f', function() fzf.files() end, { desc = 'Search: files' })
+vim.keymap.set('n', '<Space>h', function() fzf.helptags() end, { desc = 'Search: help' })
+vim.keymap.set('n', '<Space>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Search: jumps' })
+vim.keymap.set('n', '<Space>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Search: marks' })
+vim.keymap.set('n', '<Space>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Search: global picker' })
+vim.keymap.set('n', '<Space>q', function() fzf.quickfix() end, { desc = 'Search: quickfix' })
+vim.keymap.set('n', '<Space>r', function() fzf.history() end, { desc = 'Search: history' })
+vim.keymap.set('n', '<Space>s', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Search: current buffer' })
+vim.keymap.set('n', '<Space>gb', function() fzf.git_branches() end, { desc = 'Git search: branches' })
+vim.keymap.set('n', '<Space>gc', function() fzf.git_commits() end, { desc = 'Git search: commits' })
+vim.keymap.set('n', '<Space>gf', function() fzf.git_bcommits() end, { desc = 'Git search: current file commits' })
+vim.keymap.set('n', '<Space>gh', function() fzf.git_hunks() end, { desc = 'Git search: hunks' })
+vim.keymap.set('n', '<Space>gr', function() fzf.git_reflog() end, { desc = 'Git search: reflog' })
+vim.keymap.set('n', '<Space>gs', function() fzf.git_status() end, { desc = 'Git search: status' })
+vim.keymap.set('n', '<Space>gt', function() fzf.git_tags() end, { desc = 'Git search: tags' })
+vim.keymap.set('n', '<Space>gw', function() fzf.git_worktrees() end, { desc = 'Git search: worktrees' })
+
+vim.keymap.set('n', '<Leader>c', 'gcc', { desc = 'Comment line', remap = true })
+vim.keymap.set('x', '<Leader>c', 'gc', { desc = 'Comment selection', remap = true })
+vim.keymap.set({ 'n', 'x' }, '<Leader>f', function() vim.lsp.buf.format() end, { desc = 'Format' })
+vim.keymap.set('n', '<Leader>s', '<cmd>write<cr>', { desc = 'Save buffer' })
+vim.keymap.set('n', '<Leader>x', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
+vim.keymap.set('n', '<Leader>ba', '<cmd>buffer #<cr>', { desc = 'Buffer: alternate' })
+vim.keymap.set('n', '<Leader>bd', function()
+    if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
+        vim.api.nvim_win_close(0, false)
+    else
+        MiniBufremove.delete()
+    end
+end, { desc = 'Buffer: close current' })
+vim.keymap.set('n', '<Leader>bD', function()
     local source_window = vim.api.nvim_get_current_win()
     fzf.buffers({
         actions = {
@@ -548,10 +573,30 @@ vim.keymap.set('n', '<Leader>D', function()
         show_unloaded = false,
         winopts = { height = 0.50, title = 'Diff Buffer' },
     })
-end, { desc = 'Diff buffer' })
-vim.keymap.set('n', '<Leader>j', function() fzf.jumps({ previewer = false, winopts = { height = 0.50, title = 'Jumps' } }) end, { desc = 'Jumps' })
-vim.keymap.set('n', '<Leader>m', function() fzf.marks({ previewer = false, winopts = { height = 0.50, title = 'Marks' } }) end, { desc = 'Marks' })
-vim.keymap.set('n', '<Leader>p', function() fzf.global({ cwd_prompt = false, previewer = false, winopts = { height = 0.50, title = 'Pick' } }) end, { desc = 'Global picker' })
-vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Toggle quickfix' })
-vim.keymap.set('n', '<Leader>s', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Grep current buffer' })
-vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle terminal' })
+end, { desc = 'Buffer: diff selected' })
+vim.keymap.set('n', '<Leader>bn', '<cmd>bnext<cr>', { desc = 'Buffer: next' })
+vim.keymap.set('n', '<Leader>bp', '<cmd>bprevious<cr>', { desc = 'Buffer: previous' })
+vim.keymap.set('n', '<Leader>pc', toggle_codex, { desc = 'Panel: Codex' })
+vim.keymap.set('n', '<Leader>pe', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Panel: Explorer' })
+vim.keymap.set('n', '<Leader>po', '<cmd>AerialToggle!<cr>', { desc = 'Panel: outline' })
+vim.keymap.set('n', '<Leader>pt', toggle_terminal, { desc = 'Panel: terminal' })
+vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Quickfix: toggle' })
+
+local miniclue = require('mini.clue')
+miniclue.setup({
+    clues = {
+        { mode = 'n', keys = '<Space>g', desc = '+Git search' },
+        { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
+        { mode = 'n', keys = '<Leader>g', desc = '+Git actions' },
+        { mode = 'n', keys = '<Leader>p', desc = '+Panels' },
+    },
+    triggers = {
+        { mode = 'n', keys = '<Leader>' },
+        { mode = 'x', keys = '<Leader>' },
+        { mode = 'n', keys = '<Space>' },
+        { mode = 'x', keys = '<Space>' },
+        { mode = 'n', keys = 'g' },
+        { mode = 'x', keys = 'g' },
+    },
+})
+miniclue.ensure_buf_triggers()
