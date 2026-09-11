@@ -34,8 +34,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 
 Relevant repository state:
 
-- Branch `20260911-improvement` is clean at commit `e9071af` before this approved-design revision. Milestones 1–6 are
-  implemented in the six local commits ending at `0708952`; `e9071af` added the first follow-up draft.
+- Branch `20260911-improvement` was clean at commit `cfe0dba` when approved follow-up implementation began.
+  Milestones 1–6 are implemented in the six local commits ending at `0708952`; the later plan commits resolve the
+  follow-up design.
 - `docker/Dockerfile` uses Debian trixie and contains exactly one package entry each for `npm`, `python3-venv`, and
   `yarnpkg`.
 - `.npmrc` is copied to `/root/.npmrc` by the development image.
@@ -692,12 +693,13 @@ local milestone commit instead of resetting the branch or disturbing unrelated u
   complexity and selected toggleable native splits.
 - [x] Approved immediate bracket maps, minimal terminal cleanup, deterministic native completion validation, and
   generic special-buffer diff detection to keep the implementation small and decoupled.
-- [ ] Milestone 7: refine Bufferline navigation/theme/title, statusline, blame, terminal, completion, and clue timing.
+- [x] Milestone 7: refined and validated Bufferline navigation/theme/title, statusline, blame, terminal, completion,
+  and clue timing.
 - [ ] Milestone 8: make native split diffs easy to close and add inline hunk preview.
 - [ ] Milestone 9: rerun focused regressions and hand off the follow-up implementation.
 
-Exact next action: implement the user-approved Milestone 7 in `.config/nvim/init.lua`, run its focused checks, update
-this log, and commit only those task changes.
+Exact next action: implement Milestone 8's shared native-diff close callback and `\gi` mapping in
+`.config/nvim/init.lua`, run its disposable Git and selected-buffer checks, update this log, and commit those changes.
 
 ## Findings and Decisions
 
@@ -776,6 +778,17 @@ this log, and commit only those task changes.
 - Gitsigns inline preview covers the current hunk and clears itself on CursorMoved, InsertEnter, or BufLeave, making it
   a useful low-cost companion to the full split. A Neovim 0.12.4 listed unified-diff prototype also passed, but the
   user rejected its Git-base retrieval and lifecycle code as disproportionate complexity.
+- Milestone 7 passed focused validation on 2026-09-11. Bufferline uses adjacent insertion; direct `[`/`]` have the
+  effective `nowait` flag; direct and discoverable navigation follow a verified `a, c, b` visual order; and dark/light
+  highlight snapshots match every approved layered fill/inactive/selected, blue indicator/offset, and orange modified
+  color. A real NvimTree rendered a centered 45-column `File Explorer` offset with an empty window winbar.
+- Statusline rendering showed mode, Git, modified filename, icon/filetype, CRLF, indentation, and line:column in order
+  with adaptive blue Git and purple metadata backgrounds. It contained no search, diagnostics/LSP, size, encoding, or
+  raw fileformat label. Functional and real-drawer blame checks rendered a single Unicode author initial and `?` for
+  the uncommitted formatter without a full author name.
+- The generic terminal helper remained unchanged while Codex code and `\pc` disappeared; `\pt` opened and reused the
+  shell terminal. Mini Clue reported exactly 250 ms. A deterministic `vim.fn.complete()` fixture proved initial
+  no-selection, forward/reverse Tab cycling, and ordinary four-space Tab fallback without starting an LSP.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -988,3 +1001,8 @@ Temporary exploration material is intentionally uncommitted:
   validation with deterministic `vim.fn.complete()` candidates while leaving production completion LSP-backed; and
   generalized diff-pane detection to non-empty `buftype` instead of depending on Gitsigns' exact `acwrite`/`nowrite`
   types or URI. No production configuration was changed.
+- 2026-09-11 UTC — Completed Milestone 7 in `.config/nvim/init.lua`: installed immediate visual-order Bufferline
+  navigation and universal `|` close; adjacent ordering; the centered Explorer title; dark/light Layered Gruvbox
+  Bufferline colors; the approved blue/neutral/purple statusline with friendly line endings and cursor position;
+  one-character blame headers; Codex-only removal; Mini Keymap Tab selection; and 250 ms Mini Clue. Focused startup,
+  static, palette/order/statusline/Explorer/terminal, real blame, and deterministic completion checks all passed.

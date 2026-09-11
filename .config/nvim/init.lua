@@ -6,7 +6,7 @@ vim.g.maplocalleader = '\\'
 vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
-vim.o.completeopt = 'menu,menuone,noinsert,fuzzy'
+vim.o.completeopt = 'menu,menuone,noselect,fuzzy'
 vim.o.cursorline = true
 vim.o.expandtab = true
 vim.o.fillchars = 'eob: '
@@ -69,6 +69,9 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceRead = { bg = pal[bg .. '2'], fg = pal[accent .. '_blue'] },
                 LspReferenceText = { bg = pal[bg .. '2'], fg = pal[accent .. '_purple'] },
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
+                MiniStatuslineDevinfo = { bg = pal[accent .. '_blue'], fg = pal[bg .. '0'] },
+                MiniStatuslineFileinfo = { bg = pal[accent .. '_purple'], fg = pal[bg .. '0'] },
+                MiniStatuslineFilename = { bg = pal[bg .. '1'], fg = pal[fg .. '1'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
@@ -191,6 +194,10 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 require('gitsigns').setup({
+    blame_formatter = function(_, info, context)
+        local author = info.author == 'Not Committed Yet' and '?' or vim.fn.strcharpart(info.author, 0, 1)
+        return { { author, context.hash_hl_group } }, false
+    end,
     numhl = false,
     on_attach = function(bufnr)
         local gitsigns = require('gitsigns')
@@ -231,11 +238,15 @@ end
 
 local function statusline()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = statusline_trunc_width })
-    local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = statusline_trunc_width })
     local info = jdt_info(vim.api.nvim_buf_get_name(0))
-    local filename = info and info.library .. ' › ' .. info.symbol .. '%r'
-        or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%r' or '%F%r')
-    local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = statusline_trunc_width })
+    local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r'
+        or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')
+    local filetype = vim.bo.filetype
+    if filetype ~= '' then
+        local icon = MiniIcons.get('filetype', filetype)
+        filetype = (icon and icon .. ' ' or '') .. filetype
+    end
+    local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
@@ -243,8 +254,7 @@ local function statusline()
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<',
         '%=',
-        { hl = 'MiniStatuslineModeVisual', strings = { diagnostics } },
-        { hl = 'MiniStatuslineFileinfo', strings = { fileinfo, statusline_indent() } },
+        { hl = 'MiniStatuslineFileinfo', strings = { filetype, fileformat, statusline_indent(), '%l:%c' } },
     })
 end
 
@@ -299,10 +309,6 @@ local function toggle_terminal_panel(name, title, command)
     configure_terminal_panel(title)
 end
 
-local function toggle_codex()
-    toggle_terminal_panel('codex', 'Codex', 'codex')
-end
-
 local function toggle_terminal()
     toggle_terminal_panel('terminal', 'Terminal')
 end
@@ -310,6 +316,42 @@ end
 -- Full layout
 -- Tabline
 require('bufferline').setup({
+    highlights = function()
+        local pal = require('gruvbox').palette
+        local bg = vim.o.background
+        local fg = bg == 'dark' and 'light' or 'dark'
+        local accent = bg == 'dark' and 'bright' or 'faded'
+        local fill = pal[bg .. '0_soft']
+        local inactive = pal[bg .. '1']
+        local selected = pal[bg .. '2']
+        local text = pal[fg .. '1']
+        local blue = pal[accent .. '_blue']
+        local orange = pal[accent .. '_orange']
+
+        return {
+            background = { bg = inactive, fg = pal.gray },
+            buffer = { bg = inactive, fg = pal.gray },
+            buffer_selected = { bg = selected, bold = true, fg = text, italic = false },
+            buffer_visible = { bg = inactive, fg = pal.gray },
+            close_button = { bg = inactive, fg = pal.gray },
+            close_button_selected = { bg = selected, fg = text },
+            close_button_visible = { bg = inactive, fg = pal.gray },
+            duplicate = { bg = inactive, fg = pal.gray, italic = true },
+            duplicate_selected = { bg = selected, fg = text, italic = true },
+            duplicate_visible = { bg = inactive, fg = pal.gray, italic = true },
+            fill = { bg = fill, fg = pal.gray },
+            indicator_selected = { bg = selected, fg = blue },
+            indicator_visible = { bg = inactive, fg = inactive },
+            modified = { bg = inactive, fg = orange },
+            modified_selected = { bg = selected, fg = orange },
+            modified_visible = { bg = inactive, fg = orange },
+            offset_separator = { bg = fill, fg = blue },
+            separator = { bg = inactive, fg = fill },
+            separator_selected = { bg = selected, fg = fill },
+            separator_visible = { bg = inactive, fg = fill },
+            trunc_marker = { bg = fill, fg = pal.gray },
+        }
+    end,
     options = {
         close_command = function(bufnr) MiniBufremove.delete(bufnr) end,
         diagnostics = false,
@@ -317,10 +359,11 @@ require('bufferline').setup({
         modified_icon = '●',
         name_formatter = function(buf) local info = jdt_info(buf.path); return info and info.filename end,
         offsets = {
-            { filetype = 'NvimTree', separator = true },
+            { filetype = 'NvimTree', text = 'File Explorer', text_align = 'center', separator = true },
         },
         right_mouse_command = function(bufnr) MiniBufremove.delete(bufnr) end,
         show_close_icon = false,
+        sort_by = 'insert_after_current',
     },
 })
 
@@ -401,7 +444,6 @@ vim.api.nvim_create_autocmd('VimEnter', {
         layout_windows.editor = editor_window
 
         require('nvim-tree.api').tree.open()
-        vim.wo.winbar = '%= Explorer %='
 
         vim.api.nvim_set_current_win(editor_window)
     end,
@@ -533,6 +575,8 @@ vim.lsp.enable({
 
 -- Completion
 require('mini.completion').setup({ delay = { completion = 250, info = 0, signature = 0 } })
+require('mini.keymap').map_multistep('i', '<Tab>', { 'pmenu_next' })
+require('mini.keymap').map_multistep('i', '<S-Tab>', { 'pmenu_prev' })
 
 vim.api.nvim_create_autocmd('FileType', {
     group = vim.api.nvim_create_augroup('ConfigCompletion', { clear = true }),
@@ -637,13 +681,14 @@ vim.keymap.set({ 'n', 'x' }, '<Leader>f', function() vim.lsp.buf.format() end, {
 vim.keymap.set('n', '<Leader>s', '<cmd>write<cr>', { desc = 'Save buffer' })
 vim.keymap.set('n', '<Leader>x', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
 vim.keymap.set('n', '<Leader>ba', '<cmd>buffer #<cr>', { desc = 'Buffer: alternate' })
-vim.keymap.set('n', '<Leader>bd', function()
+local function close_current_buffer()
     if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
         vim.api.nvim_win_close(0, false)
     else
         MiniBufremove.delete()
     end
-end, { desc = 'Buffer: close current' })
+end
+vim.keymap.set('n', '<Leader>bd', close_current_buffer, { desc = 'Buffer: close current' })
 vim.keymap.set('n', '<Leader>bD', function()
     local source_window = vim.api.nvim_get_current_win()
     fzf.buffers({
@@ -662,9 +707,11 @@ vim.keymap.set('n', '<Leader>bD', function()
         winopts = { height = 0.50, title = 'Diff Buffer' },
     })
 end, { desc = 'Buffer: diff selected' })
-vim.keymap.set('n', '<Leader>bn', '<cmd>bnext<cr>', { desc = 'Buffer: next' })
-vim.keymap.set('n', '<Leader>bp', '<cmd>bprevious<cr>', { desc = 'Buffer: previous' })
-vim.keymap.set('n', '<Leader>pc', toggle_codex, { desc = 'Panel: Codex' })
+vim.keymap.set('n', '<Leader>bn', '<cmd>BufferLineCycleNext<cr>', { desc = 'Buffer: next' })
+vim.keymap.set('n', '<Leader>bp', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Buffer: previous' })
+vim.keymap.set('n', '[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Buffer: previous', nowait = true })
+vim.keymap.set('n', ']', '<cmd>BufferLineCycleNext<cr>', { desc = 'Buffer: next', nowait = true })
+vim.keymap.set('n', '|', close_current_buffer, { desc = 'Buffer: close current' })
 vim.keymap.set('n', '<Leader>pe', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Panel: Explorer' })
 vim.keymap.set('n', '<Leader>po', '<cmd>AerialToggle!<cr>', { desc = 'Panel: outline' })
 vim.keymap.set('n', '<Leader>pt', toggle_terminal, { desc = 'Panel: terminal' })
@@ -686,5 +733,6 @@ miniclue.setup({
         { mode = 'n', keys = 'g' },
         { mode = 'x', keys = 'g' },
     },
+    window = { delay = 250 },
 })
 miniclue.ensure_buf_triggers()
