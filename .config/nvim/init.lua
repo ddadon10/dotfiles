@@ -257,11 +257,7 @@ local function statusline()
     local info = jdt_info(vim.api.nvim_buf_get_name(0))
     local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r'
         or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')
-    local filetype = vim.bo.filetype
-    if filetype ~= '' then
-        local icon = MiniIcons.get('filetype', filetype)
-        filetype = (icon and icon .. ' ' or '') .. filetype:gsub('^%l', string.upper)
-    end
+    local filetype = vim.bo.filetype:gsub('^%l', string.upper)
     local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
     local encoding = (vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding):upper()
     local indentation = vim.bo.expandtab and 'Spaces:' .. vim.bo.shiftwidth or 'Tabs:' .. vim.bo.tabstop
