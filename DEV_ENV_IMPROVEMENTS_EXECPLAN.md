@@ -28,8 +28,9 @@ contextual, Mini Clue-discoverable command graph. The observable result is:
 - The statusline retains mode, Git, filename/status, cursor location, total lines, line-ending format, indentation,
   and filetype while omitting diagnostics/LSP state, search count, encoding, and buffer size. The right metadata,
   including Git, uses an adaptive purple background; Normal mode uses a subdued adaptive neutral, and location remains
-  stable as line or column digits change. The right block ends with a Nerd Font branch icon and Git status; its
-  entries use centered `  │  ` separators.
+  stable as line or column digits change. Location uses the path's neutral background and expands left as one grouped
+  value; an unpadded `│` starts the purple metadata, whose later entries use compact centered ` │ ` separators and
+  end with a Nerd Font branch icon and Git status.
 - Gitsigns blame uses a one-character author label. Existing split diffs become same-key toggles and close through
   their opening key or `|` with complete diff-option cleanup; `\gi` adds an automatically dismissed inline preview.
 - Normal `qq` saves all buffers and quits Neovim; the former `\x` alias is absent.
@@ -815,6 +816,34 @@ Expected result: the statusline ends with an evenly separated purple metadata se
 Recovery: revert only the metadata construction and Git group placement if truncation becomes unacceptable; do not
 change the approved Bufferline or statusline color configuration.
 
+### Milestone 15: Left-expand the composite location field
+
+Affected file and interface:
+
+- `.config/nvim/init.lua`: Mini Statusline's location formatting, highlight boundary, and metadata separators.
+
+Steps:
+
+1. Replace the independently padded `%4l:%-3c` fields with the grouped statusline item `%8(%l:%c%)`. Its default
+   right alignment pads the complete `line:column` value on the left, keeps the column adjacent to `:`, and expands
+   farther left when it exceeds eight characters.
+2. Render location with `MiniStatuslineFilename`, the same neutral background as the path. Transition directly to
+   `MiniStatuslineFileinfo` at the first `│`, with no spaces around that boundary: `111:1│120 lines`.
+3. Compact every later metadata separator from `  │  ` to centered ` │ `. Keep the Milestone 14 order, conditional
+   Git behavior, and one trailing statusline-edge space.
+4. Validate with `git diff --check`, headless startup, and the focused UI fixture:
+   - Locations at lines 99/111 and columns 1/99/120 occupy an eight-character group padded only on the left.
+   - The first boundary renders as `location│total lines`, and the four later populated separators render as ` │ `.
+   - Total lines, line ending, indentation, filetype, and far-right Git retain their approved order.
+   - Branchless rendering retains no orphan Git divider.
+5. Update Progress, Findings and Decisions, and Audit Log, then commit only this ExecPlan and `.config/nvim/init.lua`.
+
+Expected result: the statusline ends with a neutral fixed-width location flowing directly into compact purple
+metadata, resembling `   111:1│120 lines │ LF │ spaces:4 │ lua │  main`.
+
+Recovery: if grouped statusline width behaves differently in a future Neovim, verify `%8(%l:%c%)` against
+`:help statusline` before replacing it with Lua-computed text, which could evaluate in the wrong window context.
+
 ## Progress
 
 - [x] Inspected the repository, installed tools/plugins, aliases, apt list, npm configuration, LSP behavior, and all
@@ -860,6 +889,8 @@ change the approved Bufferline or statusline color configuration.
   lines 99/111 and columns 99/120.
 - [x] Milestone 14: moved Git to the far right, added the unpadded total-line label, right-padded the column field,
   and verified exact two-space separator centering.
+- [x] Milestone 15: grouped and left-padded the complete location on the path background, removed spacing at its
+  purple boundary, compacted later separators, and passed focused rendering checks.
 
 Exact next action: none. Implementation and automated validation are complete; only the documented host/image and
 physical terminal UI checks remain downstream.
@@ -1004,6 +1035,10 @@ physical terminal UI checks remain downstream.
   indentation, icon/filetype, then Git; all five dividers are exactly `  │  `. `%4l:%-3c` keeps columns 1, 99, and
   120 adjacent to the colon while padding on the right, and branchless rendering has neither a Git glyph nor an
   orphan divider. Whitespace, startup, dark/light colors, and the rest of the focused UI fixture remain passing.
+- Milestone 15 passed focused validation on 2026-09-11. Neovim's `%8(%l:%c%)` group rendered `    99:1`,
+  `   111:1`, `  111:99`, and ` 111:120`, moving all stabilization padding before the composite location. The first
+  boundary is the direct neutral-to-purple `2:3│2 lines`; all four later populated dividers are ` │ `. Field order,
+  conditional Git, whitespace, startup, dark/light colors, and the rest of the focused UI fixture remain passing.
 
 - Debian trixie publishes the requested packages: [python3-venv](https://packages.debian.org/trixie/python3-venv),
   [npm](https://packages.debian.org/trixie/npm), and [yarnpkg](https://packages.debian.org/trixie/yarnpkg).
@@ -1112,10 +1147,10 @@ Temporary exploration material is intentionally uncommitted:
 - Use the soft Gruvbox Bufferline palette recorded in Milestone 7. Keep its indicator and Explorer separator blue,
   modified marker orange, and recompute all state colors for dark/light modes through Bufferline's highlight callback.
 - Preserve the statusline shape with this logical order: mode, filename/status, then location, `%L lines`, friendly
-  LF/CRLF/CR label, indentation, icon/filetype, and `` plus Git at the far right. Use no separators on the left and
-  exact centered `  │  ` separators between entries in the single-purple-background right block. Remove search,
-  diagnostics/LSP state, size, and encoding. Give Normal mode a subdued `dark2`/`light2` adaptive background, keep
-  the filename neutral, and render location as `%4l:%-3c` so line padding leads and column padding trails.
+  LF/CRLF/CR label, indentation, icon/filetype, and `` plus Git at the far right. Render location on the filename's
+  neutral background as right-aligned `%8(%l:%c%)`, followed immediately by the purple block's first `│`; use
+  centered ` │ ` separators for its later entries. Remove search, diagnostics/LSP state, size, and encoding, and
+  give Normal mode a subdued `dark2`/`light2` adaptive background.
 - Compact the full blame drawer to a one-character author label and suppress repeated summaries while retaining its
   graph/heatmap.
 - Remove only the Codex-specific launcher, mapping, and state; keep the proven generic terminal helper and one shell
@@ -1271,3 +1306,7 @@ Temporary exploration material is intentionally uncommitted:
   position; changed the location to `%4l:%-3c`; inserted the unpadded `%L lines` field; and centered every populated
   right-side divider within exactly two spaces on either side. Whitespace, headless startup, and the focused UI
   fixture passed exact order/spacing, line 99/111, column 99/120, and branchless-rendering checks.
+- 2026-09-11 UTC — Completed Milestone 15: changed location to right-aligned composite `%8(%l:%c%)` on the neutral
+  filename background, placed the purple metadata boundary directly at `location│lines`, and compacted its remaining
+  dividers to ` │ `. Whitespace, headless startup, and focused UI checks passed exact padding at lines 99/111 and
+  columns 1/99/120, boundary/later separator spacing, field order, and branchless rendering.
