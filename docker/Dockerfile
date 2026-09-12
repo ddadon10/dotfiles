@@ -73,9 +73,9 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
-RUN npm install -g typescript
+RUN --mount=type=cache,target=/root/.npm npm install -g typescript
 
-RUN npm install -g \
+RUN --mount=type=cache,target=/root/.npm npm install -g \
     @tailwindcss/language-server \
     bash-language-server \
     dockerfile-language-server-nodejs \
@@ -131,16 +131,18 @@ RUN <<EOF
     rm -rf /var/lib/apt/lists/*
 EOF
 
-RUN npm install -g firebase-tools
+RUN --mount=type=cache,target=/root/.npm npm install -g firebase-tools
 
-RUN go install github.com/jesseduffield/lazygit@latest
-RUN go install github.com/sosedoff/pgweb@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod \
+    go install github.com/jesseduffield/lazygit@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod \
+    go install github.com/sosedoff/pgweb@latest
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN npm install -g ccusage
-RUN npm install -g @openai/codex@0.154.0
+RUN --mount=type=cache,target=/root/.npm npm install -g ccusage
+RUN --mount=type=cache,target=/root/.npm npm install -g @openai/codex@0.154.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim

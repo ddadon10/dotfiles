@@ -25,8 +25,8 @@ Assumptions:
 
 Affected file and interface: `docker/Dockerfile`; every `RUN npm install -g ...` instruction.
 
-- Add the stable Dockerfile syntax directive required to make cache-mount usage explicit while retaining the existing
-  build check directive.
+- Retain the existing build check directive without adding a Dockerfile syntax directive; the current Docker Desktop
+  frontend already supports cache mounts.
 - Add `--mount=type=cache,target=/root/.npm` to each global npm installation instruction:
   - TypeScript
   - language servers
@@ -89,11 +89,11 @@ instruction with the prior Dockerfile and revert only its cache mount before reb
 # Progress
 
 - [x] Record the cache-size baseline and identify the affected Dockerfile instructions.
-- [ ] Add npm cache mounts to all global npm installations.
-- [ ] Add Go build and module cache mounts to both Go installations.
+- [x] Add npm cache mounts to all global npm installations.
+- [x] Add Go build and module cache mounts to both Go installations.
 - [ ] Build and run focused executable/cache validation.
 - [ ] Record post-build image and layer sizes.
-- [ ] Exact next action: edit `docker/Dockerfile` to add the Dockerfile syntax directive and npm cache mounts.
+- [ ] Exact next action: build `ddadon/dev:current` on the Docker-capable macOS host.
 
 # Findings and Decisions
 
@@ -104,10 +104,19 @@ instruction with the prior Dockerfile and revert only its cache mount before reb
   while preserving reusable cache data for subsequent builds.
 - Decision: keep existing install instructions separate to avoid trading cache removal for larger combined layers.
 - Decision: defer apt-layer splitting so cache removal can be implemented and measured independently.
-- Unresolved until implementation: exact image-size reduction and whether every tool's version command exits cleanly.
+- Decision: do not add `# syntax=docker/dockerfile:1`; it repeats current Docker Desktop behavior and is unnecessary
+  for this repository's existing BuildKit frontend.
+- Validation: static checks confirmed all five npm installs have an npm cache mount, both Go installs have build and
+  module cache mounts, and `git diff --check` passes.
+- Unresolved until the macOS build: exact image-size reduction and whether every tool's version command exits cleanly.
 
 # Audit Log
 
 - 2026-09-12: Created the cache-only implementation plan from the measured image baseline. No implementation files
   were changed.
 - 2026-09-12: Corrected the Go fallback recovery wording so the cleanup requirement is unambiguous.
+- 2026-09-12: Added the Dockerfile syntax directive, npm cache mounts to five npm installations, and Go build/module
+  cache mounts to both Go installations. Static validation passed; Docker build validation remains pending because
+  Docker is unavailable in the workspace container.
+- 2026-09-12: Removed the explicit Dockerfile syntax directive at the user's request because the current frontend
+  already supports cache mounts; retained all npm and Go cache mounts.
