@@ -131,15 +131,17 @@ RUN <<EOF
     rm -rf /var/lib/apt/lists/*
 EOF
 
-RUN npm install -g firebase-tools && npm cache clean --force
-
-RUN go install github.com/jesseduffield/lazygit@latest && go clean -cache -modcache
-RUN go install github.com/sosedoff/pgweb@latest && go clean -cache -modcache
-
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
+RUN npm install -g firebase-tools && npm cache clean --force
+
+RUN go install github.com/jesseduffield/lazygit@latest && go clean -cache -modcache
+
+RUN go install github.com/sosedoff/pgweb@latest && go clean -cache -modcache
+
 RUN npm install -g ccusage && npm cache clean --force
+
 RUN npm install -g @openai/codex@0.154.0 && npm cache clean --force
 
 COPY .vimrc /root/.vimrc
