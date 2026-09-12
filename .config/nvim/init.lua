@@ -1,8 +1,6 @@
 -- Options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.g.mapleader = '\\'
-vim.g.maplocalleader = '\\'
 vim.g.qs_highlight_on_keys = { 'f', 'F', 't', 'T' }
 vim.o.breakindent = true
 vim.o.completeitemalign = 'kind,abbr,menu'
@@ -44,7 +42,6 @@ vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged', 'BufLeave', 'FocusLo
             or vim.api.nvim_buf_get_name(args.buf) == '' then
             return
         end
-
         vim.cmd('lockmarks silent update')
     end,
 })
@@ -64,6 +61,54 @@ vim.pack.add({
     'https://github.com/unblevable/quick-scope',
 }, {
     confirm = false,
+})
+
+-- MiniClue
+local miniclue = require('mini.clue')
+miniclue.setup({
+    clues = {
+        { mode = 'n', keys = '<Space>g', desc = '+Git' },
+        { mode = 'n', keys = '<Space>l', desc = '+LSP' },
+        { mode = 'n', keys = '<Leader>g', desc = '+Git' },
+        { mode = { 'n', 'x' }, keys = 'gr', desc = '+LSP' },
+    },
+    triggers = {
+        { mode = 'n', keys = '<Leader>' },
+        { mode = 'x', keys = '<Leader>' },
+        { mode = 'n', keys = '<Space>' },
+        { mode = 'x', keys = '<Space>' },
+        { mode = 'n', keys = 'g' },
+        { mode = 'x', keys = 'g' },
+    },
+    window = { delay = 250 },
+})
+miniclue.ensure_buf_triggers()
+
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = vim.api.nvim_create_augroup('ConfigClues', { clear = true }),
+    once = true,
+    callback = function()
+        for _, mapping in ipairs({
+            { mode = 'n', keys = 'g%', desc = 'Previous Matching Group' },
+            { mode = 'n', keys = 'gO', desc = 'Document Symbols' },
+            { mode = 'n', keys = 'gc', desc = '+Comment' },
+            { mode = 'n', keys = 'gcc', desc = 'Toggle Line Comment' },
+            { mode = { 'n', 'x' }, keys = 'gra', desc = 'Code Actions' },
+            { mode = 'n', keys = 'gri', desc = 'Implementation' },
+            { mode = 'n', keys = 'grn', desc = 'Rename' },
+            { mode = 'n', keys = 'grr', desc = 'References' },
+            { mode = 'n', keys = 'grt', desc = 'Type Definition' },
+            { mode = 'n', keys = 'grx', desc = 'Run Code Lens' },
+            { mode = 'x', keys = 'gc', desc = 'Toggle Comment' },
+            { mode = 'x', keys = 'gx', desc = 'Open Path or URI' },
+        }) do
+            for _, mode in ipairs(type(mapping.mode) == 'table' and mapping.mode or { mapping.mode }) do
+                if not vim.tbl_isempty(vim.fn.maparg(mapping.keys, mode, false, true)) then
+                    miniclue.set_mapping_desc(mode, mapping.keys, mapping.desc)
+                end
+            end
+        end
+    end,
 })
 
 -- Colorscheme
@@ -194,9 +239,7 @@ local function close_active_diff()
     local current_window = vim.api.nvim_get_current_win()
     if not vim.wo[current_window].diff then return false end
 
-    local diff_windows = vim.iter(vim.api.nvim_tabpage_list_wins(0))
-        :filter(function(win) return vim.wo[win].diff end)
-        :totable()
+    local diff_windows = vim.iter(vim.api.nvim_tabpage_list_wins(0)):filter(function(win) return vim.wo[win].diff end):totable()
     if vim.bo[vim.api.nvim_win_get_buf(current_window)].buftype ~= '' then
         if #vim.api.nvim_tabpage_list_wins(0) > 1 then vim.api.nvim_win_close(current_window, false) end
     else
@@ -216,7 +259,6 @@ local function toggle_git_blame()
             return
         end
     end
-
     require('gitsigns').blame()
 end
 
@@ -225,7 +267,7 @@ vim.api.nvim_create_autocmd('FileType', {
     pattern = 'gitsigns-blame',
     callback = function(args)
         vim.keymap.set('n', '<Leader>gb', toggle_git_blame, { buffer = args.buf, desc = 'Toggle Blame Drawer' })
-        if _G.MiniClue then MiniClue.ensure_buf_triggers(args.buf) end
+        miniclue.ensure_buf_triggers(args.buf)
     end,
 })
 
@@ -240,17 +282,11 @@ require('gitsigns').setup({
     numhl = false,
     on_attach = function(bufnr)
         local gitsigns = require('gitsigns')
-        local function map(mode, lhs, rhs, desc)
-            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
-        end
+        local function map(mode, lhs, rhs, desc) vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc }) end
 
         map('n', '<Leader>gb', toggle_git_blame, 'Toggle Blame Drawer')
-        map('n', '<Leader>gd', function()
-            if not close_active_diff() then gitsigns.diffthis() end
-        end, 'Diff Index')
-        map('n', '<Leader>gD', function()
-            if not close_active_diff() then gitsigns.diffthis('~') end
-        end, 'Diff Previous Commit')
+        map('n', '<Leader>gd', function() if not close_active_diff() then gitsigns.diffthis() end end, 'Diff Index')
+        map('n', '<Leader>gD', function() if not close_active_diff() then gitsigns.diffthis('~') end end, 'Diff Previous Commit')
         map('n', '<Leader>gi', function() gitsigns.preview_hunk_inline() end, 'Preview Hunk Inline')
         map('n', '<Leader>gj', function() gitsigns.nav_hunk('next') end, 'Next Hunk')
         map('n', '<Leader>gk', function() gitsigns.nav_hunk('prev') end, 'Previous Hunk')
@@ -263,7 +299,7 @@ require('gitsigns').setup({
         map('n', '<Leader>gs', function() gitsigns.stage_hunk() end, 'Stage/Unstage Hunk')
         map('x', '<Leader>gs', function() gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end, 'Stage/Unstage Selection')
         map('n', '<Leader>gu', function() gitsigns.undo_stage_hunk() end, 'Undo Staged Hunk')
-        if _G.MiniClue then MiniClue.ensure_buf_triggers(bufnr) end
+        miniclue.ensure_buf_triggers(bufnr)
     end,
     signcolumn = true,
 })
@@ -380,9 +416,7 @@ require('aerial').setup({
 -- NvimTree
 local function attach_nvim_tree(bufnr)
     local api = require('nvim-tree.api')
-    local function map(mode, lhs, rhs, desc)
-        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
-    end
+    local function map(mode, lhs, rhs, desc) vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc }) end
 
     map('n', '<CR>', api.node.open.edit, 'Open')
     map('n', '<2-LeftMouse>', api.node.open.edit, 'Open')
@@ -420,7 +454,7 @@ local function attach_nvim_tree(bufnr)
             { mode = 'x', keys = '<Leader>y', desc = '+Clipboard' },
         },
     }
-    if _G.MiniClue then MiniClue.ensure_buf_triggers(bufnr) end
+    miniclue.ensure_buf_triggers(bufnr)
 end
 
 require('nvim-tree').setup({
@@ -572,8 +606,10 @@ vim.lsp.enable({
 
 -- Completion
 require('mini.completion').setup({ delay = { completion = 250, info = 0, signature = 0 } })
-require('mini.keymap').map_multistep('i', '<Tab>', { 'pmenu_next' })
-require('mini.keymap').map_multistep('i', '<S-Tab>', { 'pmenu_prev' })
+local map_multistep = require('mini.keymap').map_multistep
+map_multistep('i', '<Tab>', { 'pmenu_next' })
+map_multistep('i', '<S-Tab>', { 'pmenu_prev' })
+map_multistep('i', '<CR>', { 'pmenu_accept', 'minipairs_cr' })
 
 vim.api.nvim_create_autocmd('FileType', {
     group = vim.api.nvim_create_augroup('ConfigCompletion', { clear = true }),
@@ -606,6 +642,15 @@ local function lsp_opts(title, jump1)
         _fmt = { _from = function(entry) return entry:match(separator .. '(.*)$') or entry end },
         winopts = { relative = 'cursor', row = 1, col = 0, height = 0.30, width = 0.50, title = title },
     }
+end
+
+local function close_current_buffer()
+    if close_active_diff() then return end
+    if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
+        vim.api.nvim_win_close(0, false)
+    else
+        MiniBufremove.wipeout()
+    end
 end
 
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
@@ -663,36 +708,16 @@ vim.keymap.set('n', '<Space>p', function() fzf.global({ cwd_prompt = false, prev
 vim.keymap.set('n', '<Space>q', function() fzf.quickfix() end, { desc = 'Quickfix' })
 vim.keymap.set('n', '<Space>r', function() fzf.history() end, { desc = 'History' })
 vim.keymap.set('n', '<Space>s', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Current Buffer' })
-vim.keymap.set('n', '<Space>la', function()
-    fzf.lsp_finder(lsp_opts('All Locations', false))
-end, { desc = 'All Locations' })
-vim.keymap.set('n', '<Space>ld', function()
-    fzf.lsp_definitions(lsp_opts('Definitions', false))
-end, { desc = 'Definitions' })
-vim.keymap.set('n', '<Space>lD', function()
-    fzf.lsp_declarations(lsp_opts('Declarations', false))
-end, { desc = 'Declarations' })
-vim.keymap.set('n', '<Space>li', function()
-    fzf.lsp_implementations(lsp_opts('Implementations', false))
-end, { desc = 'Implementations' })
-vim.keymap.set('n', '<Space>lr', function()
-    fzf.lsp_references(lsp_opts('References', false))
-end, { desc = 'References' })
-vim.keymap.set('n', '<Space>lt', function()
-    fzf.lsp_typedefs(lsp_opts('Type Definitions', false))
-end, { desc = 'Type Definitions' })
-vim.keymap.set('n', '<Space>ls', function()
-    fzf.lsp_document_symbols({ jump1 = false, winopts = { title = 'Document Symbols' } })
-end, { desc = 'Document Symbols' })
-vim.keymap.set('n', '<Space>lw', function()
-    fzf.lsp_live_workspace_symbols({ jump1 = false, winopts = { title = 'Workspace Symbols' } })
-end, { desc = 'Workspace Symbols' })
-vim.keymap.set('n', '<Space>lI', function()
-    fzf.lsp_incoming_calls(lsp_opts('Incoming Calls', false))
-end, { desc = 'Incoming Calls' })
-vim.keymap.set('n', '<Space>lO', function()
-    fzf.lsp_outgoing_calls(lsp_opts('Outgoing Calls', false))
-end, { desc = 'Outgoing Calls' })
+vim.keymap.set('n', '<Space>la', function() fzf.lsp_finder(lsp_opts('All Locations', false)) end, { desc = 'All Locations' })
+vim.keymap.set('n', '<Space>ld', function() fzf.lsp_definitions(lsp_opts('Definitions', false)) end, { desc = 'Definitions' })
+vim.keymap.set('n', '<Space>lD', function() fzf.lsp_declarations(lsp_opts('Declarations', false)) end, { desc = 'Declarations' })
+vim.keymap.set('n', '<Space>li', function() fzf.lsp_implementations(lsp_opts('Implementations', false)) end, { desc = 'Implementations' })
+vim.keymap.set('n', '<Space>lr', function() fzf.lsp_references(lsp_opts('References', false)) end, { desc = 'References' })
+vim.keymap.set('n', '<Space>lt', function() fzf.lsp_typedefs(lsp_opts('Type Definitions', false)) end, { desc = 'Type Definitions' })
+vim.keymap.set('n', '<Space>ls', function() fzf.lsp_document_symbols({ jump1 = false, winopts = { title = 'Document Symbols' } }) end, { desc = 'Document Symbols' })
+vim.keymap.set('n', '<Space>lw', function() fzf.lsp_live_workspace_symbols({ jump1 = false, winopts = { title = 'Workspace Symbols' } }) end, { desc = 'Workspace Symbols' })
+vim.keymap.set('n', '<Space>lI', function() fzf.lsp_incoming_calls(lsp_opts('Incoming Calls', false)) end, { desc = 'Incoming Calls' })
+vim.keymap.set('n', '<Space>lO', function() fzf.lsp_outgoing_calls(lsp_opts('Outgoing Calls', false)) end, { desc = 'Outgoing Calls' })
 vim.keymap.set('n', '<Space>gb', function() fzf.git_branches() end, { desc = 'Branches' })
 vim.keymap.set('n', '<Space>gc', function() fzf.git_commits() end, { desc = 'Commits' })
 vim.keymap.set('n', '<Space>gf', function() fzf.git_bcommits() end, { desc = 'Current File Commits' })
@@ -707,14 +732,6 @@ vim.keymap.set('x', '<Leader>c', 'gc', { desc = 'Toggle Comment', remap = true }
 vim.keymap.set({ 'n', 'x' }, '<Leader>f', function() vim.lsp.buf.format() end, { desc = 'Format' })
 vim.keymap.set('n', '<Leader>s', '<cmd>write<cr>', { desc = 'Save Buffer' })
 vim.keymap.set('n', 'qq', '<cmd>wqall<cr>', { desc = 'Save all buffers and quit Neovim' })
-local function close_current_buffer()
-    if close_active_diff() then return end
-    if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
-        vim.api.nvim_win_close(0, false)
-    else
-        MiniBufremove.wipeout()
-    end
-end
 vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 vim.keymap.set('n', '|', close_current_buffer, { desc = 'Close current buffer' })
@@ -722,50 +739,3 @@ vim.keymap.set('n', '<Leader>e', function() require('nvim-tree.api').tree.toggle
 vim.keymap.set('n', '<Leader>o', '<cmd>AerialToggle!<cr>', { desc = 'Toggle Outline' })
 vim.keymap.set('n', '<Leader>t', toggle_terminal, { desc = 'Toggle Terminal' })
 vim.keymap.set('n', '<Leader>q', function() require('quicker').toggle({ focus = true, height = 16, open_cmd_mods = { split = 'botright' } }) end, { desc = 'Toggle Quickfix' })
-
-local miniclue = require('mini.clue')
-miniclue.setup({
-    clues = {
-        { mode = 'n', keys = '<Space>g', desc = '+Git' },
-        { mode = 'n', keys = '<Space>l', desc = '+LSP' },
-        { mode = 'n', keys = '<Leader>g', desc = '+Git' },
-        { mode = { 'n', 'x' }, keys = 'gr', desc = '+LSP' },
-    },
-    triggers = {
-        { mode = 'n', keys = '<Leader>' },
-        { mode = 'x', keys = '<Leader>' },
-        { mode = 'n', keys = '<Space>' },
-        { mode = 'x', keys = '<Space>' },
-        { mode = 'n', keys = 'g' },
-        { mode = 'x', keys = 'g' },
-    },
-    window = { delay = 250 },
-})
-miniclue.ensure_buf_triggers()
-
-vim.api.nvim_create_autocmd('VimEnter', {
-    group = vim.api.nvim_create_augroup('ConfigClues', { clear = true }),
-    once = true,
-    callback = function()
-        for _, mapping in ipairs({
-            { mode = 'n', keys = 'g%', desc = 'Previous Matching Group' },
-            { mode = 'n', keys = 'gO', desc = 'Document Symbols' },
-            { mode = 'n', keys = 'gc', desc = '+Comment' },
-            { mode = 'n', keys = 'gcc', desc = 'Toggle Line Comment' },
-            { mode = { 'n', 'x' }, keys = 'gra', desc = 'Code Actions' },
-            { mode = 'n', keys = 'gri', desc = 'Implementation' },
-            { mode = 'n', keys = 'grn', desc = 'Rename' },
-            { mode = 'n', keys = 'grr', desc = 'References' },
-            { mode = 'n', keys = 'grt', desc = 'Type Definition' },
-            { mode = 'n', keys = 'grx', desc = 'Run Code Lens' },
-            { mode = 'x', keys = 'gc', desc = 'Toggle Comment' },
-            { mode = 'x', keys = 'gx', desc = 'Open Path or URI' },
-        }) do
-            for _, mode in ipairs(type(mapping.mode) == 'table' and mapping.mode or { mapping.mode }) do
-                if not vim.tbl_isempty(vim.fn.maparg(mapping.keys, mode, false, true)) then
-                    miniclue.set_mapping_desc(mode, mapping.keys, mapping.desc)
-                end
-            end
-        end
-    end,
-})
