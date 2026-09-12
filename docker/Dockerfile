@@ -12,20 +12,15 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \
     bat \
     bind9-dnsutils \
-    build-essential \
     ca-certificates \
-    chromium \
     curl \
     fd-find \
     fzf \
     git \
     git-delta \
     gnupg \
-    golang \
-    gopls \
     gron \
     htop \
-    httpie \
     iproute2 \
     iputils-ping \
     jq \
@@ -38,29 +33,57 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
-    neovim \
-    nodejs \
-    npm \
-    openjdk-21-jdk-headless \
     procps \
-    postgresql \
     psmisc \
-    python3 \
-    python3-pip \
-    python3-venv \
     ripgrep \
     rsync \
     shellcheck \
     strace \
     sudo \
     tree \
-    tree-sitter-cli \
     unzip \
     vim \
     xz-utils \
-    yarnpkg \
     yq \
     zip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    golang \
+    gopls \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    nodejs \
+    npm \
+    yarnpkg \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    openjdk-21-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    chromium \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    postgresql \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    neovim \
+    tree-sitter-cli \
     && rm -rf /var/lib/apt/lists/*
 
 RUN <<EOF
