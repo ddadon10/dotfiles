@@ -12,20 +12,15 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     bash-completion \
     bat \
     bind9-dnsutils \
-    build-essential \
     ca-certificates \
-    chromium \
     curl \
     fd-find \
     fzf \
     git \
     git-delta \
     gnupg \
-    golang \
-    gopls \
     gron \
     htop \
-    httpie \
     iproute2 \
     iputils-ping \
     jq \
@@ -38,29 +33,57 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     manpages-dev \
     ncdu \
     ncurses-term \
-    neovim \
-    nodejs \
-    npm \
-    openjdk-21-jdk-headless \
     procps \
-    postgresql \
     psmisc \
-    python3 \
-    python3-pip \
-    python3-venv \
     ripgrep \
     rsync \
     shellcheck \
     strace \
     sudo \
     tree \
-    tree-sitter-cli \
     unzip \
     vim \
     xz-utils \
-    yarnpkg \
     yq \
     zip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    golang \
+    gopls \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    nodejs \
+    npm \
+    yarnpkg \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    openjdk-21-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    chromium \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    postgresql \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+    neovim \
+    tree-sitter-cli \
     && rm -rf /var/lib/apt/lists/*
 
 RUN <<EOF
@@ -73,9 +96,9 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
-RUN npm install -g typescript
+RUN --mount=type=cache,target=/root/.npm npm install -g typescript
 
-RUN npm install -g \
+RUN --mount=type=cache,target=/root/.npm npm install -g \
     @tailwindcss/language-server \
     bash-language-server \
     dockerfile-language-server-nodejs \
@@ -131,16 +154,16 @@ RUN <<EOF
     rm -rf /var/lib/apt/lists/*
 EOF
 
-RUN npm install -g firebase-tools
+RUN --mount=type=cache,target=/root/.npm npm install -g firebase-tools
 
-RUN go install github.com/jesseduffield/lazygit@latest
-RUN go install github.com/sosedoff/pgweb@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/jesseduffield/lazygit@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/sosedoff/pgweb@latest
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN npm install -g ccusage
-RUN npm install -g @openai/codex@0.154.0
+RUN --mount=type=cache,target=/root/.npm npm install -g ccusage
+RUN --mount=type=cache,target=/root/.npm npm install -g @openai/codex@0.154.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
