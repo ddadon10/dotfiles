@@ -619,7 +619,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
--- Keymaps
+-- Utils
 local fzf = require('fzf-lua')
 
 local function lsp_opts(title, jump1)
@@ -646,13 +646,11 @@ end
 
 local function close_current_buffer()
     if close_active_diff() then return end
-    if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
-        vim.api.nvim_win_close(0, false)
-    else
-        MiniBufremove.wipeout()
-    end
+    if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then return vim.api.nvim_win_close(0, false) end
+    MiniBufremove.wipeout()
 end
 
+-- Keymap
 vim.keymap.set({ 'n', 'x' }, 'd', '"_d', { desc = 'Delete without copying' })
 vim.keymap.set('n', 's', '/', { desc = 'Search forward' })
 vim.keymap.set('n', 'S', '?', { desc = 'Search backward' })
