@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     psmisc \
     python3 \
     python3-pip \
+    python3-venv \
     ripgrep \
     rsync \
     shellcheck \
@@ -57,6 +58,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     unzip \
     vim \
     xz-utils \
+    yarnpkg \
     yq \
     zip \
     && rm -rf /var/lib/apt/lists/*
@@ -138,7 +140,7 @@ RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
 RUN npm install -g ccusage
-RUN npm install -g @openai/codex@0.153.2
+RUN npm install -g @openai/codex@0.154.0
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
