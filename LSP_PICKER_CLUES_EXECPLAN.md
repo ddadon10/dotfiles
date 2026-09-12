@@ -124,13 +124,12 @@ use supported pickers for the interactive smoke test.
 ## Progress
 
 - [x] Drafted and reviewed the corrected mapping model against the current configuration and installed plugin APIs.
-- [ ] Milestone 1: Add the ten picker-only `<Space>l...` mappings.
-- [ ] Milestone 2: Add the `<Space>l` MiniClue group.
-- [ ] Milestone 3: Preserve `gt` and customize the `gr`, `gO`, and `g%` clue text.
-- [ ] Milestone 4: Run focused headless and interactive validation.
+- [x] Milestone 1: Added the ten picker-only `<Space>l...` mappings.
+- [x] Milestone 2: Added the `<Space>l` MiniClue group.
+- [x] Milestone 3: Preserved `gt` and customized the `gr`, `gO`, and `g%` clue text.
+- [x] Milestone 4: Ran focused headless and interactive validation.
 
-Exact next action: edit the picker keymap block in `.config/nvim/init.lua` to add the mappings specified in
-Milestone 1, without modifying `gt` or any other `g` mapping.
+Exact next action: none; implementation and validation are complete, pending user review.
 
 ## Findings and Decisions
 
@@ -148,9 +147,23 @@ Milestone 1, without modifying `gt` or any other `g` mapping.
   may intentionally overlap in subject matter.
 - Decision: keep the picker set focused. Diagnostics and code actions retain their established keys, live workspace
   symbols replace a redundant pair of workspace-symbol choices, and type-hierarchy pickers are deferred.
+- Outcome: all ten `<Space>l...` callbacks call the planned fzf-lua function, supply the expected title, and set
+  `jump1 = false`. There is no direct `<Space>l` mapping.
+- Outcome: a rendered MiniClue window showed `All locations`, `Declarations`, `Definitions`, `Incoming calls`,
+  `Implementations`, `Outgoing calls`, `References`, `Document symbols`, `Type definitions`, and `Workspace symbols`.
+- Outcome: the rendered `g` clue window retained `gt` as `Go to type definition` and showed `gO` as
+  `Document symbols`, `gr` as `+LSP`, and `g%` as `Previous matching group`.
+- Outcome: `gO` retained its callback, `g%` retained `<Plug>(MatchitNormalBackward)`, and an HTML-buffer test confirmed
+  `%` and `g%` still navigate forward and backward between matching tags.
+- Outcome: an interactive Neovim session loaded with the workspace configuration attached `lua_ls`; `<Space>ls`
+  opened a populated fzf-lua document-symbol picker. Headless startup, mapping assertions, MiniClue's 250 ms delay,
+  and `git diff --check` also passed.
 
 ## Audit Log
 
 - 2026-09-12: Created this ExecPlan after correcting the proposed design: retained `gt` under the cursor-dependent `g`
   root, defined `<Space>l` as a picker-only namespace, and replaced deletion/hiding of useful runtime mappings with
   supported MiniClue description customization. No implementation files were changed.
+- 2026-09-12: Implemented all four milestones in `.config/nvim/init.lua`. Added the ten picker-only LSP mappings and
+  both group clues, used a guarded one-shot `VimEnter` autocmd to relabel the late runtime mappings without replacing
+  them, and completed deterministic, rendered-clue, Matchit, and live `lua_ls`/fzf-lua validation.

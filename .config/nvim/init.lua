@@ -660,6 +660,36 @@ vim.keymap.set('n', '<Space>p', function() fzf.global({ cwd_prompt = false, prev
 vim.keymap.set('n', '<Space>q', function() fzf.quickfix() end, { desc = 'Quickfix' })
 vim.keymap.set('n', '<Space>r', function() fzf.history() end, { desc = 'History' })
 vim.keymap.set('n', '<Space>s', function() fzf.lgrep_curbuf({ winopts = { title = 'Buffer Search' } }) end, { desc = 'Current buffer' })
+vim.keymap.set('n', '<Space>la', function()
+    fzf.lsp_finder(lsp_opts('All Locations', false))
+end, { desc = 'All locations' })
+vim.keymap.set('n', '<Space>ld', function()
+    fzf.lsp_definitions(lsp_opts('Definitions', false))
+end, { desc = 'Definitions' })
+vim.keymap.set('n', '<Space>lD', function()
+    fzf.lsp_declarations(lsp_opts('Declarations', false))
+end, { desc = 'Declarations' })
+vim.keymap.set('n', '<Space>li', function()
+    fzf.lsp_implementations(lsp_opts('Implementations', false))
+end, { desc = 'Implementations' })
+vim.keymap.set('n', '<Space>lr', function()
+    fzf.lsp_references(lsp_opts('References', false))
+end, { desc = 'References' })
+vim.keymap.set('n', '<Space>lt', function()
+    fzf.lsp_typedefs(lsp_opts('Type Definitions', false))
+end, { desc = 'Type definitions' })
+vim.keymap.set('n', '<Space>ls', function()
+    fzf.lsp_document_symbols({ jump1 = false, winopts = { title = 'Document Symbols' } })
+end, { desc = 'Document symbols' })
+vim.keymap.set('n', '<Space>lw', function()
+    fzf.lsp_live_workspace_symbols({ jump1 = false, winopts = { title = 'Workspace Symbols' } })
+end, { desc = 'Workspace symbols' })
+vim.keymap.set('n', '<Space>lI', function()
+    fzf.lsp_incoming_calls(lsp_opts('Incoming Calls', false))
+end, { desc = 'Incoming calls' })
+vim.keymap.set('n', '<Space>lO', function()
+    fzf.lsp_outgoing_calls(lsp_opts('Outgoing Calls', false))
+end, { desc = 'Outgoing calls' })
 vim.keymap.set('n', '<Space>gb', function() fzf.git_branches() end, { desc = 'Branches' })
 vim.keymap.set('n', '<Space>gc', function() fzf.git_commits() end, { desc = 'Commits' })
 vim.keymap.set('n', '<Space>gf', function() fzf.git_bcommits() end, { desc = 'Current file commits' })
@@ -694,7 +724,9 @@ local miniclue = require('mini.clue')
 miniclue.setup({
     clues = {
         { mode = 'n', keys = '<Space>g', desc = '+Git search' },
+        { mode = 'n', keys = '<Space>l', desc = '+LSP' },
         { mode = 'n', keys = '<Leader>g', desc = '+Git actions' },
+        { mode = 'n', keys = 'gr', desc = '+LSP' },
     },
     triggers = {
         { mode = 'n', keys = '<Leader>' },
@@ -707,3 +739,15 @@ miniclue.setup({
     window = { delay = 250 },
 })
 miniclue.ensure_buf_triggers()
+
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = vim.api.nvim_create_augroup('ConfigClues', { clear = true }),
+    once = true,
+    callback = function()
+        for keys, desc in pairs({ ['g%'] = 'Previous matching group', gO = 'Document symbols' }) do
+            if not vim.tbl_isempty(vim.fn.maparg(keys, 'n', false, true)) then
+                miniclue.set_mapping_desc('n', keys, desc)
+            end
+        end
+    end,
+})
