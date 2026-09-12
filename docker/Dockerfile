@@ -133,10 +133,8 @@ EOF
 
 RUN --mount=type=cache,target=/root/.npm npm install -g firebase-tools
 
-RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod \
-    go install github.com/jesseduffield/lazygit@latest
-RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod \
-    go install github.com/sosedoff/pgweb@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/jesseduffield/lazygit@latest
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/sosedoff/pgweb@latest
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
