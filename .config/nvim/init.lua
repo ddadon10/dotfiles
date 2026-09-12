@@ -15,7 +15,6 @@ vim.o.ignorecase = true
 vim.o.laststatus = 3
 vim.o.linebreak = true
 vim.o.mouse = 'a'
-vim.o.mousemoveevent = true
 vim.o.mousescroll = 'ver:1,hor:0'
 vim.o.number = true
 vim.o.pumheight = 10
@@ -52,7 +51,6 @@ vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged', 'BufLeave', 'FocusLo
 
 -- Plugins
 vim.pack.add({
-    'https://github.com/akinsho/bufferline.nvim',
     'https://github.com/ellisonleao/gruvbox.nvim',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/lewis6991/gitsigns.nvim',
@@ -86,6 +84,13 @@ vim.api.nvim_create_autocmd('ColorSchemePre', {
                 LspReferenceWrite = { bg = pal[bg .. '2'], fg = pal[accent .. '_red'] },
                 QuickScopePrimary = { bold = true, fg = pal[accent .. '_purple'], underline = true },
                 QuickScopeSecondary = { fg = pal[accent .. '_yellow'], underline = true },
+                MiniTablineCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_yellow'] },
+                MiniTablineFill = { bg = pal[bg .. '0_soft'] },
+                MiniTablineHidden = { fg = pal.gray },
+                MiniTablineModifiedCurrent = { bg = pal[bg .. '2'], fg = pal[accent .. '_orange'] },
+                MiniTablineModifiedHidden = { bg = pal[bg .. '1'], fg = pal.neutral_orange },
+                MiniTablineModifiedVisible = { bg = pal[bg .. '1'], fg = pal[accent .. '_orange'] },
+                MiniTablineVisible = { fg = pal[fg .. '3'] },
                 NvimTreeExecFile = { bold = false, fg = pal[fg .. '1'] },
                 SignColumn = { bg = pal[bg .. '0'] },
                 WinBar = { bold = true, fg = pal.gray },
@@ -345,56 +350,14 @@ end
 
 -- Full layout
 -- Tabline
-require('bufferline').setup({
-    highlights = function()
-        local pal = require('gruvbox').palette
-        local bg = vim.o.background
-        local fg = bg == 'dark' and 'light' or 'dark'
-        local accent = bg == 'dark' and 'bright' or 'faded'
-        local fill = pal[bg .. '0_soft']
-        local inactive = pal[bg .. '1']
-        local selected = pal[bg .. '2']
-        local text = pal[fg .. '1']
-        local blue = pal[accent .. '_blue']
-        local orange = pal[accent .. '_orange']
+require('mini.tabline').setup({
+    format = function(buf_id, label)
+        local info = jdt_info(vim.api.nvim_buf_get_name(buf_id))
+        if not info then return MiniTabline.default_format(buf_id, label) end
 
-        return {
-            background = { bg = inactive, fg = pal.gray },
-            buffer = { bg = inactive, fg = pal.gray },
-            buffer_selected = { bg = selected, bold = true, fg = text, italic = false },
-            buffer_visible = { bg = inactive, fg = pal.gray },
-            close_button = { bg = inactive, fg = pal.gray },
-            close_button_selected = { bg = selected, fg = text },
-            close_button_visible = { bg = inactive, fg = pal.gray },
-            duplicate = { bg = inactive, fg = pal.gray, italic = true },
-            duplicate_selected = { bg = selected, fg = text, italic = true },
-            duplicate_visible = { bg = inactive, fg = pal.gray, italic = true },
-            fill = { bg = fill, fg = pal.gray },
-            indicator_selected = { bg = selected, fg = blue },
-            indicator_visible = { bg = inactive, fg = inactive },
-            modified = { bg = inactive, fg = orange },
-            modified_selected = { bg = selected, fg = orange },
-            modified_visible = { bg = inactive, fg = orange },
-            offset_separator = { bg = fill, fg = inactive },
-            separator = { bg = inactive, fg = fill },
-            separator_selected = { bg = selected, fg = fill },
-            separator_visible = { bg = inactive, fg = fill },
-            trunc_marker = { bg = fill, fg = pal.gray },
-        }
+        local icon = MiniIcons.get('file', info.filename)
+        return string.format(' %s %s ', icon, info.filename)
     end,
-    options = {
-        close_command = function(bufnr) MiniBufremove.delete(bufnr) end,
-        diagnostics = false,
-        hover = { enabled = true, delay = 200, reveal = { 'close' } },
-        modified_icon = '●',
-        name_formatter = function(buf) local info = jdt_info(buf.path); return info and info.filename end,
-        offsets = {
-            { filetype = 'NvimTree', text = 'Explorer', text_align = 'center', separator = true },
-        },
-        right_mouse_command = function(bufnr) MiniBufremove.delete(bufnr) end,
-        show_close_icon = false,
-        sort_by = 'insert_at_end',
-    },
 })
 
 -- Aerial
@@ -475,6 +438,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
         layout_windows.editor = editor_window
 
         require('nvim-tree.api').tree.open()
+        vim.wo.winbar = '%= Explorer %='
 
         vim.api.nvim_set_current_win(editor_window)
     end,
@@ -716,11 +680,11 @@ local function close_current_buffer()
     if vim.bo.buftype ~= '' and #vim.api.nvim_tabpage_list_wins(0) > 1 then
         vim.api.nvim_win_close(0, false)
     else
-        MiniBufremove.delete()
+        MiniBufremove.wipeout()
     end
 end
-vim.keymap.set('n', '{', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Previous buffer' })
-vim.keymap.set('n', '}', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
+vim.keymap.set('n', '{', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
+vim.keymap.set('n', '}', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 vim.keymap.set('n', '|', close_current_buffer, { desc = 'Close current buffer' })
 vim.keymap.set('n', '<Leader>e', function() require('nvim-tree.api').tree.toggle() end, { desc = 'Toggle Explorer' })
 vim.keymap.set('n', '<Leader>o', '<cmd>AerialToggle!<cr>', { desc = 'Toggle Outline' })
