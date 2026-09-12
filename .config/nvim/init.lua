@@ -276,20 +276,19 @@ local function statusline()
     local branch = vim.b.gitsigns_head or ''
     local git = branch ~= '' and ' ' .. branch or ''
     local info = jdt_info(vim.api.nvim_buf_get_name(0))
-    local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r'
-        or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')
-    local filetype = vim.bo.filetype:gsub('^%l', string.upper)
-    local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
+    local filename = info and info.library .. ' › ' .. info.symbol .. '%m%r' or (MiniStatusline.is_truncated(statusline_trunc_width) and '%t%m%r' or '%F%m%r')
     local encoding = (vim.bo.fileencoding ~= '' and vim.bo.fileencoding or vim.o.encoding):upper()
+    local fileformat = ({ unix = 'LF', dos = 'CRLF', mac = 'CR' })[vim.bo.fileformat]
     local indentation = vim.bo.expandtab and 'Spaces:' .. vim.bo.shiftwidth or 'Tabs:' .. vim.bo.tabstop
-    local metadata = { 'Ln:%l Col:%c', encoding, fileformat, indentation, filetype }
+    local filetype = vim.bo.filetype:gsub('^%l', string.upper)
+    local fileinfo = { 'Ln:%l Col:%c', encoding, fileformat, indentation, filetype }
 
     return MiniStatusline.combine_groups({
         { hl = mode_hl, strings = { mode } },
         { hl = 'MiniStatuslineDevinfo', strings = { git } },
         { hl = 'MiniStatuslineFilename', strings = { filename } },
         '%<%=',
-        { hl = 'MiniStatuslineFilename', strings = metadata },
+        { hl = 'MiniStatuslineFileinfo', strings = fileinfo },
     })
 end
 
