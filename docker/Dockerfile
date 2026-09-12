@@ -72,15 +72,16 @@ EOF
 # See: https://github.com/ghostty-org/ghostty/discussions/8268
 RUN cp /usr/share/terminfo/g/ghostty /usr/share/terminfo/x/xterm-ghostty
 
-RUN --mount=type=cache,target=/root/.npm npm install -g typescript
+RUN npm install -g typescript && npm cache clean --force
 
-RUN --mount=type=cache,target=/root/.npm npm install -g \
+RUN npm install -g \
     @tailwindcss/language-server \
     bash-language-server \
     dockerfile-language-server-nodejs \
     typescript-language-server \
     vscode-langservers-extracted \
-    yaml-language-server
+    yaml-language-server \
+    && npm cache clean --force
 
 RUN <<EOF
     machine=$(uname -m)
@@ -130,16 +131,16 @@ RUN <<EOF
     rm -rf /var/lib/apt/lists/*
 EOF
 
-RUN --mount=type=cache,target=/root/.npm npm install -g firebase-tools
+RUN npm install -g firebase-tools && npm cache clean --force
 
-RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/jesseduffield/lazygit@latest
-RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/root/go/pkg/mod go install github.com/sosedoff/pgweb@latest
+RUN go install github.com/jesseduffield/lazygit@latest && go clean -cache -modcache
+RUN go install github.com/sosedoff/pgweb@latest && go clean -cache -modcache
 
 RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
     ln -sf /usr/bin/batcat /usr/local/bin/bat
 
-RUN --mount=type=cache,target=/root/.npm npm install -g ccusage
-RUN --mount=type=cache,target=/root/.npm npm install -g @openai/codex@0.154.0
+RUN npm install -g ccusage && npm cache clean --force
+RUN npm install -g @openai/codex@0.154.0 && npm cache clean --force
 
 COPY .vimrc /root/.vimrc
 COPY .config/nvim /root/.config/nvim
